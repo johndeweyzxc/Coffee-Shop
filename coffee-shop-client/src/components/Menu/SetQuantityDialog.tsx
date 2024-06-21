@@ -152,7 +152,7 @@ export default function SetQuantityDialog(props: SetQuantityDialogProps) {
         />
       </DialogContent>
       <Typography variant="body1" sx={{ fontWeight: "normal", margin: "1rem" }}>
-        Total Price: ${props.totalPrice}
+        Total Price: ₱{props.totalPrice}
       </Typography>
       <DialogActions>
         <Button onClick={props.onClose} color="info">

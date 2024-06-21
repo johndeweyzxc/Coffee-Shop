@@ -225,10 +225,12 @@ function App() {
     );
   };
   const setMenuViewComponent = () => {
+    // TODO: Check if a user is currently logged in
     component = <MenuView userId={userId === null ? "" : userId} />;
     if (currentPage !== MENU_PAGE) onChangeCurrentPage(MENU_PAGE);
   };
   const setCartViewComponent = () => {
+    // TODO: Check if a user is currently logged in
     component = <CartsView userId={userId === null ? "" : userId} />;
     if (currentPage !== CART_PAGE) onChangeCurrentPage(CART_PAGE);
   };
@@ -259,6 +261,7 @@ function App() {
     return component;
   }
 
+  // TODO: Fix the header bar
   return (
     <>
       <HeaderBar

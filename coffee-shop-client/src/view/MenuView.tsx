@@ -40,8 +40,6 @@ export default function MenuView(props: MenuViewProps) {
     onAddToCart,
   } = useMenuController();
 
-  // TODO: Implement add on feature
-
   return (
     <div className="w-screen h-screen p-4">
       <div className="flex flex-wrap w-full">

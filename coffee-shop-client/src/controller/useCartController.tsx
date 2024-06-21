@@ -18,7 +18,7 @@ const useCartController = (userId: string) => {
   };
 
   const notify = Notification();
-  const { getCarts, removeFromCart, editCartVM, getAddOnsInCart } =
+  const { getCarts, removeFromCart, editCartVM, getAddOnsInCart, getAddOns } =
     useCartViewModel();
 
   // * STATE MANAGEMENT FOR CARTS
@@ -32,7 +32,57 @@ const useCartController = (userId: string) => {
   const [carts, setCarts] = useState<UCart[]>([]);
   // Addons listed from the selected cart
   const [selectedCartAddOns, setSelectedCartAddOns] = useState<UAddOn[]>([]);
+  // Available addons from the selected product in the selected cart
+  const [availableAddOns, setAvailableAddOns] = useState<UAddOn[]>([]);
+  // Total price of product multiplied by the quantity plus addons
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  // Quantity of selected product
+  const [quantity, setQuantity] = useState<number>(1);
 
+  const onRemoveAddOnFromSelectedCart = (uAddOn: UAddOn) => {
+    const newAvailableAddOnsList = [...availableAddOns, uAddOn];
+    // TODO: Decrease totalPrice when addon is removed
+    // TODO: Implementation
+    console.log(uAddOn);
+  };
+
+  const onRemoveAddOnFromAvaialableAddOns = (uAddOn: UAddOn) => {
+    // TODO: Increase totalPrice when addon is added
+    // TODO: Implementation
+    console.log(uAddOn);
+  };
+
+  const filterAddOnsAlreadyListed = (uAddOns: UAddOn[]) => {
+    // This will filter out available addons already listed in selectedCartAddOns
+    const isAddOnInSelectedCartAddOns = (targetUAddOn: UAddOn) => {
+      const addOn = selectedCartAddOns.find((uAddOn: UAddOn) => {
+        return uAddOn.AddOnId === targetUAddOn.id;
+      });
+      if (addOn === undefined) {
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    return uAddOns.filter((uAddOn: UAddOn) => {
+      return !isAddOnInSelectedCartAddOns(uAddOn);
+    });
+  };
+  const onGetAddOnsForProductInSelectedCart = (): Unsubscribe => {
+    const onAddOns = (uAddOns: UAddOn[] | null) => {
+      if (uAddOns === null) {
+        notify.HandleOpenAlert("error", "Error fetching addons");
+      } else {
+        const addOnsCopy = [...uAddOns];
+        const filteredAddOns = filterAddOnsAlreadyListed(addOnsCopy);
+
+        filteredAddOns.forEach((value) => console.log(value));
+        setAvailableAddOns(filteredAddOns);
+      }
+    };
+    return getAddOns(selectedCart.ProductId, onAddOns);
+  };
   const onGetAddOnsForSelectedCart = (): Unsubscribe => {
     const onAddOns = (uAddOns: UAddOn[] | null) => {
       if (uAddOns === null) {
@@ -44,24 +94,55 @@ const useCartController = (userId: string) => {
     return getAddOnsInCart(userId, selectedCart.id, onAddOns);
   };
   useEffect(() => {
-    let unsubscribe: Unsubscribe | null = null;
+    let unsubsribeAddOnsProduct: Unsubscribe | null = null;
+
     if (isOpenEditor) {
       console.log(
         `[useCartController] Adding addons listener for product ${selectedCart.Name}`
       );
-      unsubscribe = onGetAddOnsForSelectedCart();
+      unsubsribeAddOnsProduct = onGetAddOnsForProductInSelectedCart();
     } else {
-      console.log(
-        `[useCartController] Removing addons listener for product ${selectedCart.Name}`
-      );
-      if (unsubscribe !== null) {
-        const unsub = unsubscribe as Unsubscribe;
-        unsub();
+      if (unsubsribeAddOnsProduct !== null) {
+        console.log(
+          `[useCartController] Removing addons listener for product ${selectedCart.Name}`
+        );
+        const unsubAddOnsProduct = unsubsribeAddOnsProduct as Unsubscribe;
+        unsubAddOnsProduct();
       }
     }
     return () => {
-      if (unsubscribe !== null) {
-        unsubscribe();
+      if (unsubsribeAddOnsProduct !== null) {
+        console.log(
+          `[useCartController] Removing addons listener for product ${selectedCart.Name}`
+        );
+        unsubsribeAddOnsProduct();
+      }
+    };
+  }, [selectedCartAddOns]);
+
+  useEffect(() => {
+    let unsubscribeAddOnsSelectedCart: Unsubscribe | null = null;
+
+    if (isOpenEditor) {
+      console.log(
+        `[useCartController] Adding addons listener for cart ${selectedCart.Name}`
+      );
+      unsubscribeAddOnsSelectedCart = onGetAddOnsForSelectedCart();
+    } else {
+      if (unsubscribeAddOnsSelectedCart !== null) {
+        console.log(
+          `[useCartController] Removing addons listener for cart ${selectedCart.Name}`
+        );
+        const unsubAddOnsCart = unsubscribeAddOnsSelectedCart as Unsubscribe;
+        unsubAddOnsCart();
+      }
+    }
+    return () => {
+      if (unsubscribeAddOnsSelectedCart !== null) {
+        console.log(
+          `[useCartController] Removing addons listener for cart ${selectedCart.Name}`
+        );
+        unsubscribeAddOnsSelectedCart();
       }
     };
   }, [isOpenEditor]);
@@ -90,16 +171,26 @@ const useCartController = (userId: string) => {
   };
   const onOpenEditor = (selectedCart: UCart) => {
     setSelectedCart(selectedCart);
+    setQuantity(selectedCart.Quantity);
+    setTotalPrice(selectedCart.TotalPrice as number);
     setIsOpenEditor(true);
   };
   const onCloseEditor = () => {
+    // TODO: Clean data
     setIsOpenEditor(false);
+
     setSelectedCart(emptyCart);
+    setSelectedCartAddOns([]);
+    setAvailableAddOns([]);
+    setQuantity(1);
+    setTotalPrice(0);
   };
 
   const onChangeQuantity = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (parseInt(value) < 0) return;
+    // TODO: Change quantity
+    // TODO: Change totalPrice when quantity increases
     const totalPrice = (selectedCart.Price as number) * parseInt(value);
     setSelectedCart({
       ...selectedCart,
@@ -113,7 +204,12 @@ const useCartController = (userId: string) => {
   };
   const onCloseDelete = () => {
     setIsOpenDelete(false);
+
     setSelectedCart(emptyCart);
+    setSelectedCartAddOns([]);
+    setAvailableAddOns([]);
+    setQuantity(1);
+    setTotalPrice(0);
   };
 
   useEffect(() => {
@@ -122,7 +218,6 @@ const useCartController = (userId: string) => {
         notify.HandleOpenAlert("error", "Failed to fetched cart data");
         return;
       }
-      carts.forEach((cart) => console.log(cart));
       setCarts(carts);
     };
 
@@ -137,8 +232,9 @@ const useCartController = (userId: string) => {
   }, [userId]);
 
   const alertSnackbar = notify.SnackBar;
-  const quantity = selectedCart.Quantity;
-  const totalPrice = selectedCart.TotalPrice;
+
+  // const quantity = selectedCart.Quantity;
+  // const totalPrice = selectedCart.TotalPrice;
   return {
     alertSnackbar,
     carts,
@@ -147,6 +243,9 @@ const useCartController = (userId: string) => {
     onEditCart,
 
     selectedCartAddOns,
+    onRemoveAddOnFromSelectedCart,
+    availableAddOns,
+    onRemoveAddOnFromAvaialableAddOns,
     selectedCart,
     quantity,
     onChangeQuantity,

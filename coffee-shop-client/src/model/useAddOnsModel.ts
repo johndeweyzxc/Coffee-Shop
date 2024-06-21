@@ -24,6 +24,7 @@ const useAddOnsModel = () => {
         const s = doc.data() as AddOn;
         const uAddOn: UAddOn = {
           id: doc.id,
+          AddOnId: s.AddOnId,
           Name: s.Name,
           Price: s.Price,
         };
@@ -59,6 +60,7 @@ const useAddOnsModel = () => {
         const s = doc.data() as AddOn;
         const uAddOn: UAddOn = {
           id: doc.id,
+          AddOnId: s.AddOnId,
           Name: s.Name,
           Price: s.Price,
         };

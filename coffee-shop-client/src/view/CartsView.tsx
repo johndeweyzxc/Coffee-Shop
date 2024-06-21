@@ -10,6 +10,7 @@ import useCartController from "../controller/useCartController";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditCartDialog from "../components/Cart/EditCartDialog";
 import DeleteCartDialog from "../components/Cart/DeleteCartDialog";
+import EditIcon from "@mui/icons-material/Edit";
 import { UCart } from "../model/api/cart";
 
 interface CartsCardProps {
@@ -42,11 +43,11 @@ function CartsCard(props: CartsCardProps) {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-        {/* <Tooltip title="Edit cart">
+        <Tooltip title="Edit cart">
           <IconButton onClick={() => props.onOpenEditor(props.uCart)}>
             <EditIcon />
           </IconButton>
-        </Tooltip> */}
+        </Tooltip>
       </CardActions>
     </Card>
   );
@@ -64,6 +65,9 @@ export default function CartsView(props: CartsViewProps) {
     onEditCart,
 
     selectedCartAddOns,
+    onRemoveAddOnFromSelectedCart,
+    availableAddOns,
+    onRemoveAddOnFromAvaialableAddOns,
     selectedCart,
     quantity,
     onChangeQuantity,
@@ -100,6 +104,10 @@ export default function CartsView(props: CartsViewProps) {
         totalPrice={totalPrice as number}
         selectedCart={selectedCart}
         onEditCart={onEditCart}
+        selectedCartAddOns={selectedCartAddOns}
+        onRemoveAddOnFromSelectedCart={onRemoveAddOnFromSelectedCart}
+        availableAddOns={availableAddOns}
+        onRemoveAddOnFromAvaialableAddOns={onRemoveAddOnFromAvaialableAddOns}
       />
       <DeleteCartDialog
         isOpen={isOpenDelete}

@@ -111,13 +111,10 @@ const useMenuController = () => {
     };
   }, [isOpenQuantity]);
 
-  const onChangeTotalPrice = (price: number) => {
-    setTotalPrice(price);
-  };
   const onChangeQuantity = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (parseInt(value) < 0) return;
-    onChangeTotalPrice((selectedProduct.Price as number) * parseInt(value));
+    setTotalPrice((selectedProduct.Price as number) * parseInt(value));
     setQuantity(parseInt(value));
   };
   const onAddToCart = (product: UProduct) => {
@@ -126,7 +123,7 @@ const useMenuController = () => {
       return;
     }
     onOpenQuantity();
-    onChangeTotalPrice(product.Price as number);
+    setTotalPrice(product.Price as number);
     setSelectedProduct(product);
   };
   const onQuantitySet = (userId: string) => {

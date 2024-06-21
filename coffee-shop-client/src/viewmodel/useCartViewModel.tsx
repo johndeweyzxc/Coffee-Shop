@@ -6,7 +6,7 @@ import { UAddOn } from "../model/api/addons";
 
 export const useCartViewModel = () => {
   const { getCarts, addToCart, removeFromCart, editCart } = useCartsModel();
-  const { getAddOnsInCart, appendAddOnsInCart } = useAddOnsModel();
+  const { getAddOnsInCart, appendAddOnsInCart, getAddOns } = useAddOnsModel();
 
   const editCartVM = (
     userId: string,
@@ -66,6 +66,7 @@ export const useCartViewModel = () => {
     removeFromCart,
     editCartVM,
 
+    getAddOns,
     getAddOnsInCart,
   };
 };

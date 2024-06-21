@@ -1,15 +1,101 @@
 import { ChangeEvent } from "react";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { UCart } from "../../model/api/cart";
+import { UAddOn } from "../../model/api/addons";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+
+interface SelectedAddOnsProps {
+  uAddOns: UAddOn[];
+  onRemoveAddOnFromSelectedCart: (uAddOn: UAddOn) => void;
+}
+function SelectedAddOns(props: SelectedAddOnsProps) {
+  return (
+    <>
+      {props.uAddOns.map((uAddOn, index) => {
+        return (
+          <Box sx={{ display: "flex", marginTop: ".5rem" }} key={index}>
+            <TextField
+              name="Name"
+              label="Name"
+              variant="standard"
+              value={uAddOn.Name}
+              sx={{ marginRight: ".5rem" }}
+              fullWidth
+            />
+            <TextField
+              name="Price"
+              label="Price"
+              variant="standard"
+              value={uAddOn.Price}
+              sx={{ marginRight: ".5rem" }}
+              fullWidth
+            />
+            <Tooltip title="Remove addon">
+              <IconButton
+                onClick={() => props.onRemoveAddOnFromSelectedCart(uAddOn)}
+              >
+                <HighlightOffIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        );
+      })}
+    </>
+  );
+}
+
+interface AvailableAddOnsProps {
+  uAddOns: UAddOn[];
+  onRemoveAddOnFromAvaialableAddOns: (uAddOn: UAddOn) => void;
+}
+function AvailableAddOns(props: AvailableAddOnsProps) {
+  return (
+    <>
+      {props.uAddOns.map((uAddOn, index) => {
+        return (
+          <Box sx={{ display: "flex", marginTop: ".5rem" }} key={index}>
+            <TextField
+              name="Name"
+              label="Name"
+              variant="standard"
+              value={uAddOn.Name}
+              sx={{ marginRight: ".5rem" }}
+              fullWidth
+            />
+            <TextField
+              name="Price"
+              label="Price"
+              variant="standard"
+              value={uAddOn.Price}
+              sx={{ marginRight: ".5rem" }}
+              fullWidth
+            />
+            <Tooltip title="Add addon">
+              <IconButton
+                onClick={() => props.onRemoveAddOnFromAvaialableAddOns(uAddOn)}
+              >
+                <AddCircleOutlineIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        );
+      })}
+    </>
+  );
+}
 
 interface EditCartDialogProps {
   isOpen: boolean;
@@ -19,6 +105,10 @@ interface EditCartDialogProps {
   totalPrice: number;
   onChangeQuantity: (e: ChangeEvent<HTMLInputElement>) => void;
   onEditCart: () => void;
+  selectedCartAddOns: UAddOn[];
+  onRemoveAddOnFromSelectedCart: (uAddOn: UAddOn) => void;
+  availableAddOns: UAddOn[];
+  onRemoveAddOnFromAvaialableAddOns: (uAddOn: UAddOn) => void;
 }
 export default function EditCartDialog(props: EditCartDialogProps) {
   return (
@@ -33,7 +123,7 @@ export default function EditCartDialog(props: EditCartDialogProps) {
         },
       }}
     >
-      <DialogTitle>Edit quantity</DialogTitle>
+      <DialogTitle>Edit cart</DialogTitle>
       <DialogContent dividers>
         <DialogContentText sx={{ marginBottom: "1rem" }}>
           Edit quantity for {props.selectedCart.Name}
@@ -49,6 +139,25 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           onChange={props.onChangeQuantity}
         />
       </DialogContent>
+      <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+        Selected Add ons
+      </Typography>
+      <SelectedAddOns
+        uAddOns={props.selectedCartAddOns}
+        onRemoveAddOnFromSelectedCart={props.onRemoveAddOnFromSelectedCart}
+      />
+      <Typography
+        variant="h6"
+        sx={{ marginTop: "1rem", marginBottom: ".5rem" }}
+      >
+        Available Add ons
+      </Typography>
+      <AvailableAddOns
+        uAddOns={props.availableAddOns}
+        onRemoveAddOnFromAvaialableAddOns={
+          props.onRemoveAddOnFromAvaialableAddOns
+        }
+      />
       <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
         Total Price: ${props.totalPrice}
       </Typography>

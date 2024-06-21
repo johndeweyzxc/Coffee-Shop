@@ -23,6 +23,7 @@ const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
 
 export interface AddOn {
+  AddOnId: string;
   Name: string;
   Price: string | number;
 }
