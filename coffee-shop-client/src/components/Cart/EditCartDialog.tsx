@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   IconButton,
   TextField,
@@ -114,7 +113,7 @@ export default function EditCartDialog(props: EditCartDialogProps) {
   return (
     <Dialog
       open={props.isOpen}
-      onClose={props.onClose}
+      onClose={props.onEditCart}
       PaperProps={{
         component: "form",
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
@@ -135,31 +134,31 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           fullWidth
           onChange={props.onChangeQuantity}
         />
-         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
-        Selected Add ons
-      </Typography>
-      <SelectedAddOns
-        uAddOns={props.selectedCartAddOns}
-        onRemoveAddOnFromSelectedCart={props.onRemoveAddOnFromSelectedCart}
-      />
-      <Typography
-        variant="h6"
-        sx={{ marginTop: "1rem", marginBottom: ".5rem" }}
-      >
-        Available Add ons
-      </Typography>
-      <AvailableAddOns
-        uAddOns={props.availableAddOns}
-        onRemoveAddOnFromAvaialableAddOns={
-          props.onRemoveAddOnFromAvaialableAddOns
-        }
-      />
+        <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+          Selected Add ons
+        </Typography>
+        <SelectedAddOns
+          uAddOns={props.selectedCartAddOns}
+          onRemoveAddOnFromSelectedCart={props.onRemoveAddOnFromSelectedCart}
+        />
+        <Typography
+          variant="h6"
+          sx={{ marginTop: "1rem", marginBottom: ".5rem" }}
+        >
+          Available Add ons
+        </Typography>
+        <AvailableAddOns
+          uAddOns={props.availableAddOns}
+          onRemoveAddOnFromAvaialableAddOns={
+            props.onRemoveAddOnFromAvaialableAddOns
+          }
+        />
       </DialogContent>
       <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
         Total Price: ${props.totalPrice}
       </Typography>
       <DialogActions>
-        <Button onClick={props.onClose} color="info">
+        <Button onClick={props.onEditCart} color="info">
           Cancel
         </Button>
         <Button type="submit" color="success">

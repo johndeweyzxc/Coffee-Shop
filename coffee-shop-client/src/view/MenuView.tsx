@@ -9,7 +9,6 @@ import {
 import useMenuController from "../controller/useMenuController";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import SetQuantityDialog from "../components/Menu/SetQuantityDialog";
-import LoginWGoogle from "../components/Login/LoginWGoogle";
 
 interface MenuViewProps {
   userId: string;
@@ -17,11 +16,6 @@ interface MenuViewProps {
 export default function MenuView(props: MenuViewProps) {
   const {
     alertSnackbar,
-
-    isOpenLoginWGoogle,
-    onOpenLoginWGoogle,
-    onCloseLoginWGoogle,
-    onLoginWithGoogle,
 
     isOpenQuantity,
     onCloseQuantity,
@@ -78,11 +72,6 @@ export default function MenuView(props: MenuViewProps) {
         totalPrice={totalPrice}
         onChangeQuantity={onChangeQuantity}
         onQuantitySet={() => onQuantitySet(props.userId)}
-      />
-      <LoginWGoogle
-        isOpen={isOpenLoginWGoogle}
-        onClose={onCloseLoginWGoogle}
-        onLoginWithGoogle={onLoginWithGoogle}
       />
     </div>
   );

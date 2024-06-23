@@ -1,4 +1,4 @@
-import { Cart, UCart } from "../model/api/cart";
+import { UCart } from "../model/api/cart";
 import useCartsModel from "../model/useCartsModel";
 import { UProduct } from "../model/api/products";
 import useAddOnsModel from "../model/useAddOnsModel";
@@ -6,20 +6,20 @@ import { AddOn, UAddOn } from "../model/api/addons";
 
 export const useCartViewModel = () => {
   const { getCarts, addToCart, removeFromCart, editCart } = useCartsModel();
-  const { getAddOnsInCart, appendAddOnsInCart, getAddOns, removeAddOnInCart } = useAddOnsModel();
+  const { getAddOnsInCart, appendAddOnsInCart, getAddOns, removeAddOnInCart } =
+    useAddOnsModel();
 
   const editCartVM = (
     userId: string,
     cartId: string,
-    totalPrice: number | string,
     newCart: UCart,
     cb: (success: boolean) => void
   ) => {
-    const cart: Cart = {
+    const cart: object = {
       Name: newCart.Name,
       Description: newCart.Description,
       Price: newCart.Price,
-      TotalPrice: totalPrice,
+      TotalPrice: newCart.TotalPrice,
       ProductId: newCart.ProductId,
       Quantity: newCart.Quantity,
     };
@@ -72,8 +72,8 @@ export const useCartViewModel = () => {
       Price: uAddOn.Price,
     };
 
-    appendAddOnsInCart(userId, cartId, addOn, cb)
-  }
+    appendAddOnsInCart(userId, cartId, addOn, cb);
+  };
 
   return {
     getCarts,

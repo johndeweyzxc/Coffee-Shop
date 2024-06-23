@@ -82,7 +82,6 @@ export const removeFromCartInFirebase = (
   cartId: string,
   cb: (success: boolean) => void
 ) => {
-  // TODO: Also remove addons when a cart is removed
   deleteDoc(doc(db, COL_USERS, userId, COL_USERS_CARTS, cartId))
     .then(() => {
       console.log(
@@ -104,11 +103,11 @@ export const removeFromCartInFirebase = (
 export const editCartInFirebase = (
   userId: string,
   cartId: string,
-  newCart: Cart,
+  newCart: object,
   cb: (success: boolean) => void
 ) => {
   const cartRef = doc(db, COL_USERS, userId, COL_USERS_CARTS, cartId);
-  updateDoc(cartRef, { Quantity: newCart.Quantity })
+  updateDoc(cartRef, newCart)
     .then(() => {
       console.log(
         `carts.editCartInFirebase: Successfully updated cart with id ${cartId}`

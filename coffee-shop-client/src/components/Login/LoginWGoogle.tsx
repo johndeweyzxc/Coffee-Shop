@@ -23,10 +23,22 @@ export default function LoginWGoogle(props: LoginWGoogleProps) {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose} color="error">
+        <Button
+          onClick={() => {
+            window.location.href = "/";
+          }}
+          color="error"
+        >
           Cancel
         </Button>
-        <Button onClick={props.onLoginWithGoogle}>Login</Button>
+        <Button
+          onClick={() => {
+            props.onClose();
+            props.onLoginWithGoogle();
+          }}
+        >
+          Login
+        </Button>
       </DialogActions>
     </Dialog>
   );

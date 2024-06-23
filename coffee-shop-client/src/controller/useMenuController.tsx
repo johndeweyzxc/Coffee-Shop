@@ -14,21 +14,9 @@ const useMenuController = () => {
     Price: 0,
   };
 
-  const { isSignedIn, signInGoogle, getProducts, getAddOns } =
-    useMenuViewModel();
+  const { getProducts, getAddOns } = useMenuViewModel();
   const { addToCartVM } = useCartViewModel();
   const notify = Notification();
-
-  // * STATE MANAGEMENT FOR AUTHENTICATION
-  // Use in dialog
-  const [isOpenLoginWGoogle, setIsOpenLoginWGoogle] = useState<boolean>(false);
-
-  const onOpenLoginWGoogle = () => setIsOpenLoginWGoogle(true);
-  const onCloseLoginWGoogle = () => setIsOpenLoginWGoogle(false);
-  const onLoginWithGoogle = () => {
-    onCloseLoginWGoogle();
-    signInGoogle(() => {});
-  };
 
   // * STATE MANAGEMENT FOR ADDING A PRODUCT TO CART
   // Use in dialog
@@ -109,19 +97,16 @@ const useMenuController = () => {
         unsubscribe();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpenQuantity]);
 
   const onChangeQuantity = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { value } = e.target;
     if (parseInt(value) < 0) return;
     setTotalPrice((selectedProduct.Price as number) * parseInt(value));
     setQuantity(parseInt(value));
   };
   const onAddToCart = (product: UProduct) => {
-    if (!isSignedIn()) {
-      onOpenLoginWGoogle();
-      return;
-    }
     onOpenQuantity();
     setTotalPrice(product.Price as number);
     setSelectedProduct(product);
@@ -162,16 +147,12 @@ const useMenuController = () => {
       console.log("[useMenuController] Removing product listener");
       unsubscribeProduct();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const alertSnackbar = notify.SnackBar;
   return {
     alertSnackbar,
-
-    isOpenLoginWGoogle,
-    onOpenLoginWGoogle,
-    onCloseLoginWGoogle,
-    onLoginWithGoogle,
 
     isOpenQuantity,
     onCloseQuantity,

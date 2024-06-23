@@ -71,7 +71,7 @@ const useCartsModel = () => {
   const editCart = (
     userId: string,
     cartId: string,
-    newCart: Cart,
+    newCart: object,
     cb: (success: boolean) => void
   ) => {
     editCartInFirebase(userId, cartId, newCart, cb);

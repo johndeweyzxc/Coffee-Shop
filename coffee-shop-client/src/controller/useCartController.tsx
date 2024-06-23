@@ -18,15 +18,15 @@ const useCartController = (userId: string) => {
   };
 
   const notify = Notification();
-  const { 
-    getCarts, 
-    removeFromCart, 
-    editCartVM, 
-    getAddOnsInCart, 
+  const {
+    getCarts,
+    removeFromCart,
+    editCartVM,
+    getAddOnsInCart,
     getAddOns,
     appendAddOnsInCartVM,
     removeAddOnInCart,
-   } = useCartViewModel();
+  } = useCartViewModel();
 
   // * STATE MANAGEMENT FOR CARTS
   // Use in dialog for editing cart
@@ -45,20 +45,18 @@ const useCartController = (userId: string) => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   // Quantity of selected product
   const [quantity, setQuantity] = useState<number>(1);
-  console.log(totalPrice);
 
   const onRemoveAddOnFromSelectedCart = (uAddOn: UAddOn) => {
     const onRemovedAddOn = (success: boolean) => {
       if (success) {
-        setTotalPrice((prev) => 1 * (prev - (uAddOn.Price as number)))
+        setTotalPrice((prev) => 1 * (prev - (uAddOn.Price as number)));
       } else {
-        notify.HandleOpenAlert("error", "Failed to remove addon from selected addons")
+        notify.HandleOpenAlert(
+          "error",
+          "Failed to remove addon from selected addons"
+        );
       }
-    }
-    // TODO: Decrease totalPrice when addon is removed
-    // TODO: TEST Implementation
-    console.log(uAddOn);
-
+    };
     removeAddOnInCart(userId, selectedCart.id, uAddOn.id, onRemovedAddOn);
   };
 
@@ -67,13 +65,13 @@ const useCartController = (userId: string) => {
       if (success) {
         setTotalPrice((prev) => 1 * (prev + (uAddOn.Price as number)));
       } else {
-        notify.HandleOpenAlert("error", "Failed to add addon to selected addons")
+        notify.HandleOpenAlert(
+          "error",
+          "Failed to add addon to selected addons"
+        );
       }
-    }
-    // TODO: Increase totalPrice when addon is added
-    // TODO: TEST Implementation
-    console.log(uAddOn);
-    appendAddOnsInCartVM(userId, selectedCart.id, uAddOn, onRemovedAddOn)
+    };
+    appendAddOnsInCartVM(userId, selectedCart.id, uAddOn, onRemovedAddOn);
   };
 
   const filterAddOnsAlreadyListed = (uAddOns: UAddOn[]) => {
@@ -142,6 +140,7 @@ const useCartController = (userId: string) => {
         unsubsribeAddOnsProduct();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCartAddOns]);
 
   useEffect(() => {
@@ -169,6 +168,7 @@ const useCartController = (userId: string) => {
         unsubscribeAddOnsSelectedCart();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpenEditor]);
 
   const onRemoveFromCart = () => {
@@ -179,8 +179,8 @@ const useCartController = (userId: string) => {
         notify.HandleOpenAlert("error", "Failed to remove from cart");
       }
     };
-    onCloseDelete();
     removeFromCart(userId, selectedCart.id, onDeletedCart);
+    onCloseDelete();
   };
   const onEditCart = () => {
     const onEditedCart = (success: boolean) => {
@@ -190,8 +190,13 @@ const useCartController = (userId: string) => {
         notify.HandleOpenAlert("error", "Failed to edit cart");
       }
     };
+    const newSelectedCart: UCart = {
+      ...selectedCart,
+      Quantity: quantity,
+      TotalPrice: totalPrice,
+    };
+    editCartVM(userId, selectedCart.id, newSelectedCart, onEditedCart);
     onCloseEditor();
-    editCartVM(userId, selectedCart.id, totalPrice, selectedCart, onEditedCart);
   };
   const onOpenEditor = (selectedCart: UCart) => {
     setSelectedCart(selectedCart);
@@ -200,9 +205,7 @@ const useCartController = (userId: string) => {
     setIsOpenEditor(true);
   };
   const onCloseEditor = () => {
-    // TODO: Clean data
     setIsOpenEditor(false);
-
     setSelectedCart(emptyCart);
     setSelectedCartAddOns([]);
     setAvailableAddOns([]);
@@ -211,16 +214,23 @@ const useCartController = (userId: string) => {
   };
 
   const onChangeQuantity = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (parseInt(value) < 0) return;
-    // TODO: Change quantity
-    // TODO: Change totalPrice when quantity increases
-    const totalPrice = (selectedCart.Price as number) * parseInt(value);
-    setSelectedCart({
-      ...selectedCart,
-      Quantity: parseInt(value),
-      TotalPrice: totalPrice,
-    });
+    const { value } = e.target;
+    if (parseInt(value) <= 0) return;
+
+    let isIncrement = true;
+    // Compare the new value and old value of quantity
+    if (parseInt(value) < quantity) {
+      isIncrement = false;
+    } else if (parseInt(value) > quantity) {
+      isIncrement = true;
+    }
+
+    setQuantity(parseInt(value));
+    if (isIncrement) {
+      setTotalPrice((prev) => prev + (selectedCart.Price as number));
+    } else {
+      setTotalPrice((prev) => prev - (selectedCart.Price as number));
+    }
   };
   const onOpenDelete = (selectedCart: UCart) => {
     setSelectedCart(selectedCart);
@@ -228,7 +238,6 @@ const useCartController = (userId: string) => {
   };
   const onCloseDelete = () => {
     setIsOpenDelete(false);
-
     setSelectedCart(emptyCart);
     setSelectedCartAddOns([]);
     setAvailableAddOns([]);
@@ -253,6 +262,7 @@ const useCartController = (userId: string) => {
         unsubscribeCart();
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const alertSnackbar = notify.SnackBar;

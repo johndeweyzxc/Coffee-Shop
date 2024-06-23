@@ -2,10 +2,10 @@ export const ADMIN_ORDER_TAB = "ORDERS";
 export const ADMIN_PRODUCT_TAB = "PRODUCTS";
 export const ADMIN_NEW_PRODUCT = "NEW PRODUCT";
 
-export const HOME_PAGE = "Home";
-export const MENU_PAGE = "Menu";
-export const CART_PAGE = "Cart";
-export const ABOUT_PAGE = "About";
+export const HOME_PAGE = "HOME";
+export const MENU_PAGE = "MENU";
+export const CART_PAGE = "CART";
+export const ABOUT_PAGE = "ABOUT";
 
 export const IN_NAME = "NAME";
 export const IN_DESCRIPTION = "DESCRIPTION";

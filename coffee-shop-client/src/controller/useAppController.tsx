@@ -1,27 +1,39 @@
 import { useEffect, useState } from "react";
-import { HOME_PAGE, MENU_PAGE } from "../strings";
+import { HOME_PAGE } from "../strings";
 import {
   AUTH_LISTENER_STATUS,
   LOGIN_WITH_GOOGLE_STATUS,
   SIGNOUT_STATUS,
 } from "../status";
 import useAppViewModel from "../viewmodel/useAppViewModel";
-import { UProduct } from "../model/api/products";
 import { User } from "firebase/auth";
 
 const useAppController = () => {
   const { addAuthListener, removeAuthListener, signInGoogle, signOut } =
     useAppViewModel();
 
+  // * STATE MANAGEMENT FOR APPLICATION INCLUDING AUTHENTICATION
+  // Indicator when a user is logged in or not
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  // The ID of the user when a user is logged in
   const [userId, setUserId] = useState<string | null>("");
+  // The email @ of the user when a user is logged in
   const [userEmail, setUserEmail] = useState<string | null>("");
+  // URL link to the profile picture of the user when a user is logged in
   const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>("");
+  // The current page being shown bellow the header
   const [currentPage, setCurrentPage] = useState<string>(HOME_PAGE);
-  const [products, setProducts] = useState<UProduct[]>([]);
+  // Use in login with google
+  const [isOpenLoginWGoogle, setIsOpenLoginWGoogle] = useState<boolean>(false);
+
+  const onCloseLoginWithGoogle = () => {
+    if (isOpenLoginWGoogle) setIsOpenLoginWGoogle(false);
+  };
+  const onOpenLoginWithGoogle = () => {
+    if (!isOpenLoginWGoogle) setIsOpenLoginWGoogle(true);
+  };
 
   const onChangeCurrentPage = (page: string) => setCurrentPage(page);
-  const onSetProducts = (products: UProduct[]) => setProducts(products);
   const setUserInfo = (user: User | null) => {
     if (user !== null) {
       setUserId(user?.uid);
@@ -53,6 +65,9 @@ const useAppController = () => {
     signInGoogle(onSignedIn);
   };
   const onSignOutWithGoogle = () => {
+    // TODO: Refactor code
+    window.location.pathname = "/";
+
     const onSignedOut = (status: SIGNOUT_STATUS) => {
       setIsLoggedIn(false);
 
@@ -62,6 +77,7 @@ const useAppController = () => {
         // DO NOTHING HERE
       }
     };
+
     signOut(onSignedOut);
   };
 
@@ -84,6 +100,7 @@ const useAppController = () => {
       console.log("[useAppController] Removing auth listener");
       removeAuthListener(unsubscribe);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
@@ -93,11 +110,11 @@ const useAppController = () => {
     userEmail,
     userPhotoUrl,
     onChangeCurrentPage,
+    isOpenLoginWGoogle,
+    onOpenLoginWithGoogle,
+    onCloseLoginWithGoogle,
     onSignInWithGoogle,
     onSignOutWithGoogle,
-
-    products,
-    onSetProducts,
   };
 };
 
