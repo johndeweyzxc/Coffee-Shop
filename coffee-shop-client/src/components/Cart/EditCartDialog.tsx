@@ -123,11 +123,8 @@ export default function EditCartDialog(props: EditCartDialogProps) {
         },
       }}
     >
-      <DialogTitle>Edit cart</DialogTitle>
+      <DialogTitle>{props.selectedCart.Name}</DialogTitle>
       <DialogContent dividers>
-        <DialogContentText sx={{ marginBottom: "1rem" }}>
-          Edit quantity for {props.selectedCart.Name}
-        </DialogContentText>
         <TextField
           name="Quantity"
           label="Quantity"
@@ -138,8 +135,7 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           fullWidth
           onChange={props.onChangeQuantity}
         />
-      </DialogContent>
-      <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
         Selected Add ons
       </Typography>
       <SelectedAddOns
@@ -158,6 +154,7 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           props.onRemoveAddOnFromAvaialableAddOns
         }
       />
+      </DialogContent>
       <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
         Total Price: ${props.totalPrice}
       </Typography>

@@ -82,6 +82,7 @@ export const removeFromCartInFirebase = (
   cartId: string,
   cb: (success: boolean) => void
 ) => {
+  // TODO: Also remove addons when a cart is removed
   deleteDoc(doc(db, COL_USERS, userId, COL_USERS_CARTS, cartId))
     .then(() => {
       console.log(

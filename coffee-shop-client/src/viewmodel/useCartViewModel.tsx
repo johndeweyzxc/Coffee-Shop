@@ -2,11 +2,11 @@ import { Cart, UCart } from "../model/api/cart";
 import useCartsModel from "../model/useCartsModel";
 import { UProduct } from "../model/api/products";
 import useAddOnsModel from "../model/useAddOnsModel";
-import { UAddOn } from "../model/api/addons";
+import { AddOn, UAddOn } from "../model/api/addons";
 
 export const useCartViewModel = () => {
   const { getCarts, addToCart, removeFromCart, editCart } = useCartsModel();
-  const { getAddOnsInCart, appendAddOnsInCart, getAddOns } = useAddOnsModel();
+  const { getAddOnsInCart, appendAddOnsInCart, getAddOns, removeAddOnInCart } = useAddOnsModel();
 
   const editCartVM = (
     userId: string,
@@ -60,6 +60,21 @@ export const useCartViewModel = () => {
     addToCart(userId, quantity, totalPrice, product, onAddedToCart);
   };
 
+  const appendAddOnsInCartVM = (
+    userId: string,
+    cartId: string,
+    uAddOn: UAddOn,
+    cb: (success: boolean) => void
+  ) => {
+    const addOn: AddOn = {
+      AddOnId: uAddOn.id,
+      Name: uAddOn.Name,
+      Price: uAddOn.Price,
+    };
+
+    appendAddOnsInCart(userId, cartId, addOn, cb)
+  }
+
   return {
     getCarts,
     addToCartVM,
@@ -68,5 +83,7 @@ export const useCartViewModel = () => {
 
     getAddOns,
     getAddOnsInCart,
+    appendAddOnsInCartVM,
+    removeAddOnInCart,
   };
 };

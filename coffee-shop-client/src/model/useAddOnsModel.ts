@@ -5,6 +5,7 @@ import {
   appendAddOnInCartInFirebase,
   getAddOnsInCartInFirebase,
   getAddOnsInFirebase,
+  removeAddOnInCartInFirebase,
 } from "./api/addons";
 import { QuerySnapshot } from "firebase/firestore";
 
@@ -38,10 +39,10 @@ const useAddOnsModel = () => {
   const appendAddOnsInCart = (
     userId: string,
     cartId: string,
-    uAddOn: UAddOn,
+    addOn: AddOn,
     cb: (success: boolean) => void
   ) => {
-    appendAddOnInCartInFirebase(userId, cartId, uAddOn, cb);
+    appendAddOnInCartInFirebase(userId, cartId, addOn, cb);
   };
 
   const getAddOnsInCart = (
@@ -71,10 +72,20 @@ const useAddOnsModel = () => {
     return getAddOnsInCartInFirebase(userId, cartId, cb);
   };
 
+  const removeAddOnInCart = (
+    userId: string,
+    cartId: string,
+    addOnId: string,
+    cb: (success: boolean) => void
+  ) => {
+    removeAddOnInCartInFirebase(userId, cartId, addOnId, cb);
+  }
+
   return {
     getAddOns,
     getAddOnsInCart,
     appendAddOnsInCart,
+    removeAddOnInCart,
   };
 };
 

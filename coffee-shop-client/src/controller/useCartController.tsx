@@ -18,8 +18,15 @@ const useCartController = (userId: string) => {
   };
 
   const notify = Notification();
-  const { getCarts, removeFromCart, editCartVM, getAddOnsInCart, getAddOns } =
-    useCartViewModel();
+  const { 
+    getCarts, 
+    removeFromCart, 
+    editCartVM, 
+    getAddOnsInCart, 
+    getAddOns,
+    appendAddOnsInCartVM,
+    removeAddOnInCart,
+   } = useCartViewModel();
 
   // * STATE MANAGEMENT FOR CARTS
   // Use in dialog for editing cart
@@ -38,18 +45,35 @@ const useCartController = (userId: string) => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   // Quantity of selected product
   const [quantity, setQuantity] = useState<number>(1);
+  console.log(totalPrice);
 
   const onRemoveAddOnFromSelectedCart = (uAddOn: UAddOn) => {
-    const newAvailableAddOnsList = [...availableAddOns, uAddOn];
+    const onRemovedAddOn = (success: boolean) => {
+      if (success) {
+        setTotalPrice((prev) => 1 * (prev - (uAddOn.Price as number)))
+      } else {
+        notify.HandleOpenAlert("error", "Failed to remove addon from selected addons")
+      }
+    }
     // TODO: Decrease totalPrice when addon is removed
-    // TODO: Implementation
+    // TODO: TEST Implementation
     console.log(uAddOn);
+
+    removeAddOnInCart(userId, selectedCart.id, uAddOn.id, onRemovedAddOn);
   };
 
   const onRemoveAddOnFromAvaialableAddOns = (uAddOn: UAddOn) => {
+    const onRemovedAddOn = (success: boolean) => {
+      if (success) {
+        setTotalPrice((prev) => 1 * (prev + (uAddOn.Price as number)));
+      } else {
+        notify.HandleOpenAlert("error", "Failed to add addon to selected addons")
+      }
+    }
     // TODO: Increase totalPrice when addon is added
-    // TODO: Implementation
+    // TODO: TEST Implementation
     console.log(uAddOn);
+    appendAddOnsInCartVM(userId, selectedCart.id, uAddOn, onRemovedAddOn)
   };
 
   const filterAddOnsAlreadyListed = (uAddOns: UAddOn[]) => {
@@ -232,9 +256,6 @@ const useCartController = (userId: string) => {
   }, [userId]);
 
   const alertSnackbar = notify.SnackBar;
-
-  // const quantity = selectedCart.Quantity;
-  // const totalPrice = selectedCart.TotalPrice;
   return {
     alertSnackbar,
     carts,

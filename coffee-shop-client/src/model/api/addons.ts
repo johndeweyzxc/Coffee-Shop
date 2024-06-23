@@ -84,23 +84,24 @@ export const getAddOnsInCartInFirebase = (
 export const appendAddOnInCartInFirebase = (
   userId: string,
   cartId: string,
-  uAddOn: UAddOn,
+  addOn: AddOn,
   cb: (success: boolean) => void
 ) => {
   addDoc(
     collection(db, COL_USERS, userId, COL_USERS_CARTS, cartId, COL_ADDONS),
-    uAddOn
+    addOn
   )
     .then((value) => {
       console.log(
         `addOns.appendAddOnInCartInFirebase: Successfully added addon with id ${value.id} in addons for cart with id ${cartId}`
       );
+      cb(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
         console.log(reason);
         console.log(
-          `addOns.appendAddOnInCartInFirebase: There is an error adding addon with name ${uAddOn.Name} in addons for cart with id ${cartId}`
+          `addOns.appendAddOnInCartInFirebase: There is an error adding addon with name ${addOn.Name} in addons for cart with id ${cartId}`
         );
         cb(false);
       }
@@ -110,9 +111,10 @@ export const appendAddOnInCartInFirebase = (
 export const removeAddOnInCartInFirebase = (
   userId: string,
   cartId: string,
+  addOnId: string,
   cb: (success: boolean) => void
 ) => {
-  deleteDoc(doc(db, COL_USERS, userId, COL_USERS_CARTS, cartId))
+  deleteDoc(doc(db, COL_USERS, userId, COL_USERS_CARTS, cartId, COL_ADDONS, addOnId))
     .then(() => {
       console.log(
         `addOns.removeAddOnInCartInFirebase: Successfully deleted addon from user with id ${userId} from cart with id ${cartId}`
