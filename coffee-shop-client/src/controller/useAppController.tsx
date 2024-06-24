@@ -8,6 +8,8 @@ import {
 import useAppViewModel from "../viewmodel/useAppViewModel";
 import { User } from "firebase/auth";
 
+export type Anchor = "top" | "left" | "bottom" | "right";
+
 const useAppController = () => {
   const { addAuthListener, removeAuthListener, signInGoogle, signOut } =
     useAppViewModel();
@@ -25,6 +27,11 @@ const useAppController = () => {
   const [currentPage, setCurrentPage] = useState<string>(HOME_PAGE);
   // Use in login with google
   const [isOpenLoginWGoogle, setIsOpenLoginWGoogle] = useState<boolean>(false);
+  // Use for drawer for small screen sizes
+  const [isOpenDrawer, setIsOpenDrawer] = useState<boolean>(false);
+
+  const onCloseDrawer = () => setIsOpenDrawer(false);
+  const onOpenDrawer = () => setIsOpenDrawer(true);
 
   const onCloseLoginWithGoogle = () => {
     if (isOpenLoginWGoogle) setIsOpenLoginWGoogle(false);
@@ -110,6 +117,11 @@ const useAppController = () => {
     userEmail,
     userPhotoUrl,
     onChangeCurrentPage,
+
+    isOpenDrawer,
+    onOpenDrawer,
+    onCloseDrawer,
+
     isOpenLoginWGoogle,
     onOpenLoginWithGoogle,
     onCloseLoginWithGoogle,

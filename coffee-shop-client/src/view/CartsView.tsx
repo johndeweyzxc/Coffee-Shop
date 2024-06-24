@@ -82,7 +82,7 @@ export default function CartsView(props: CartsViewProps) {
   } = useCartController(props.userId);
   return (
     <div className="w-screen h-screen p-4">
-      <div className="flex flex-wrap w-full">
+      <div className="flex flex-wrap w-full max-md:justify-center">
         {carts.map((cart, index) => {
           return (
             <CartsCard

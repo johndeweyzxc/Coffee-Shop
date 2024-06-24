@@ -32,7 +32,6 @@ function SelectedAddOns(props: SelectedAddOnsProps) {
               variant="standard"
               value={uAddOn.Name}
               sx={{ marginRight: ".5rem" }}
-              fullWidth
             />
             <TextField
               name="Price"
@@ -40,7 +39,6 @@ function SelectedAddOns(props: SelectedAddOnsProps) {
               variant="standard"
               value={uAddOn.Price}
               sx={{ marginRight: ".5rem" }}
-              fullWidth
             />
             <Tooltip title="Remove addon">
               <IconButton
@@ -72,7 +70,6 @@ function AvailableAddOns(props: AvailableAddOnsProps) {
               variant="standard"
               value={uAddOn.Name}
               sx={{ marginRight: ".5rem" }}
-              fullWidth
             />
             <TextField
               name="Price"
@@ -80,7 +77,6 @@ function AvailableAddOns(props: AvailableAddOnsProps) {
               variant="standard"
               value={uAddOn.Price}
               sx={{ marginRight: ".5rem" }}
-              fullWidth
             />
             <Tooltip title="Add addon">
               <IconButton
@@ -131,7 +127,6 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           type="number"
           value={props.quantity}
           sx={{ marginBottom: "1rem" }}
-          fullWidth
           onChange={props.onChangeQuantity}
         />
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>

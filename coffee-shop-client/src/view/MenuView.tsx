@@ -36,7 +36,7 @@ export default function MenuView(props: MenuViewProps) {
 
   return (
     <div className="w-screen h-screen p-4">
-      <div className="flex flex-wrap w-full">
+      <div className="flex flex-wrap w-full max-md:justify-center">
         {products.map((product, index) => {
           return (
             <Card key={index} sx={{ width: 300, margin: ".25rem" }}>

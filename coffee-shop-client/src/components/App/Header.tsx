@@ -1,6 +1,7 @@
-import { Avatar } from "@mui/material";
+import { Avatar, IconButton } from "@mui/material";
 import { ABOUT_PAGE, CART_PAGE, HOME_PAGE, MENU_PAGE } from "../../strings";
 import CoffeeShopLogo from "../../assets/images/coffee-shop-logo.jpg";
+import MenuIcon from "@mui/icons-material/Menu";
 
 interface UserInfoProps {
   userPhotoUrl: string | null;
@@ -26,7 +27,7 @@ const UserInfo = (props: UserInfoProps) => {
   };
 
   return (
-    <div className="mr-8 font-inter font-semibold flex items-center">
+    <div className="mr-8 max-md:hidden font-inter font-semibold flex items-center">
       <ProfilePicture />
       {props.userEmail === "" ? "Guest" : props.userEmail}
     </div>
@@ -39,26 +40,20 @@ interface AuthButtonsProps {
   userEmail: string | null;
 }
 const AuthButtons = (props: AuthButtonsProps) => {
-  if (props.userEmail === "") {
-    return (
-      <p
-        className="mr-8 px-4 py-1 font-inter text-[1rem] text-sm
-        font-bold border-black border-[1px] rounded-full
-        hover:bg-[#00000010] ease-in-out duration-200 cursor-pointer"
-        onClick={props.onSignIn}
-      >
-        Sign in
-      </p>
-    );
-  }
   return (
     <p
       className="mr-8 px-4 py-1 font-inter text-[1rem] text-sm
     font-bold border-black border-[1px] rounded-full
-    hover:bg-[#00000010] ease-in-out duration-200 cursor-pointer"
-      onClick={props.onSignOut}
+    hover:bg-[#00000010] ease-in-out duration-200 cursor-pointer self-center text-nowrap max-md:hidden"
+      onClick={() => {
+        if (props.userEmail === "") {
+          props.onSignIn();
+        } else {
+          props.onSignOut();
+        }
+      }}
     >
-      Sign out
+      {props.userEmail === "" ? "Sign in" : "Sign out"}
     </p>
   );
 };
@@ -70,7 +65,7 @@ interface NavButtonsProps {
 }
 const NavButtons = (props: NavButtonsProps) => {
   return (
-    <>
+    <div className="max-lg:hidden flex">
       {props.navBtns.map((nav, index) => {
         if (props.selectedNavBtn === nav) {
           return (
@@ -110,7 +105,7 @@ const NavButtons = (props: NavButtonsProps) => {
           </p>
         );
       })}
-    </>
+    </div>
   );
 };
 
@@ -121,18 +116,19 @@ interface HeaderProps {
   userPhotoUrl: string | null;
   onSignOut: () => void;
   onSignIn: () => void;
+  onOpenDrawer: () => void;
 }
 export default function Header(props: HeaderProps) {
   const NAV_LIST = [HOME_PAGE, MENU_PAGE, CART_PAGE, ABOUT_PAGE];
 
   return (
     <>
-      <div className="w-full flex justify-between items-center p-4">
-        <div className="flex items-center ml-8">
+      <div className="w-full flex justify-between items-center p-4 max-md:p-2">
+        <div className="flex items-center">
           <img
             alt="Coffee shop logo"
             src={CoffeeShopLogo}
-            className="w-14 h-14 ml-8 mr-8"
+            className="w-14 h-14 ml-8 mr-8 max-md:ml-4 max-md:mr-4 max-md:w-12 max-md:h-12"
           />
           <NavButtons
             navBtns={NAV_LIST}
@@ -150,6 +146,11 @@ export default function Header(props: HeaderProps) {
             onSignIn={props.onSignIn}
             onSignOut={props.onSignOut}
           />
+          <div className="invisible max-lg:visible">
+            <IconButton onClick={() => props.onOpenDrawer()}>
+              <MenuIcon />
+            </IconButton>
+          </div>
         </div>
       </div>
       <div className="h-[1px] bg-gray-400" />
