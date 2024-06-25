@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
 import {
   FirestoreError,
   QuerySnapshot,
@@ -12,7 +11,9 @@ import {
   onSnapshot,
   query,
 } from "firebase/firestore";
+
 import { COL_ADDONS, COL_PRODUCTS } from "../../strings";
+import { FIREBASE_CONFIG } from "../../firebaseConf";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);

@@ -1,4 +1,6 @@
 import { Unsubscribe } from "firebase/auth";
+import { QuerySnapshot } from "firebase/firestore";
+
 import {
   AddOn,
   UAddOn,
@@ -6,7 +8,6 @@ import {
   getAddOnsInFirebase,
   removeAddOnInFirebase,
 } from "./api/addOns";
-import { QuerySnapshot } from "firebase/firestore";
 
 const useAddOnsModel = () => {
   const getAddOns = (

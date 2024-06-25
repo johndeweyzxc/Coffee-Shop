@@ -1,15 +1,17 @@
+import { QuerySnapshot } from "firebase/firestore";
+import { Unsubscribe } from "firebase/auth";
+
 import {
   Product,
   UProduct,
   deleteProductInFirebase,
+  getProductImageURLInFirebase,
   getProductsInFirebase,
   updateProductInFirebase,
+  uploadProductImageInFirebase,
   uploadProductInFirebase,
 } from "./api/products";
-import { QuerySnapshot } from "firebase/firestore";
-import { Unsubscribe } from "firebase/auth";
 import { PRODUCTS_STATUS } from "../status";
-import { AddOn } from "./api/addOns";
 
 const useProductsModel = () => {
   const getProducts = (
@@ -40,7 +42,6 @@ const useProductsModel = () => {
 
   const uploadProduct = (
     product: Product,
-    addOnList: AddOn[],
     onUploaded: (success: boolean, productId: string) => void
   ) => {
     const cb = (success: boolean, productId: string) =>
@@ -62,11 +63,25 @@ const useProductsModel = () => {
     deleteProductInFirebase(id, cb);
   };
 
+  const getProductImageURL = (productId: string, cb: (url: string) => void) => {
+    getProductImageURLInFirebase(productId, cb);
+  };
+
+  const uploadProductImage = (
+    productId: string,
+    productImage: File,
+    cb: (success: boolean) => void
+  ) => {
+    uploadProductImageInFirebase(productId, productImage, cb);
+  };
+
   return {
     getProducts,
     uploadProduct,
     updateProduct,
     deleteProduct,
+    getProductImageURL,
+    uploadProductImage,
   };
 };
 

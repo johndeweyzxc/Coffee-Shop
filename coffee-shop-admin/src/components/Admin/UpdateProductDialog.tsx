@@ -1,5 +1,4 @@
 import { ChangeEvent } from "react";
-import { UProduct } from "../../model/api/products";
 import {
   Box,
   Button,
@@ -12,9 +11,11 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+
+import { AddOn, UAddOn } from "../../model/api/addOns";
+import { UProduct } from "../../model/api/products";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { AddOn, UAddOn } from "../../model/api/addOns";
 
 interface AddOnListProps {
   addOns: UAddOn[];
@@ -72,6 +73,7 @@ interface UpdateProductDialogProps {
   onChangeAddOn: (e: ChangeEvent<HTMLInputElement>) => void;
   onAddAddOns: () => void;
   onRemoveAddOn: (name: string, addOnId: string) => void;
+  onSetUProductImage: (file: File) => void;
 }
 
 export default function UpdateProductDialog(props: UpdateProductDialogProps) {
@@ -118,7 +120,19 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
           sx={{ marginBottom: "1rem" }}
           onChange={props.onChangeInput}
         />
-
+        <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+          Upload image
+        </Typography>
+        <input
+          type="file"
+          onChange={(e) => {
+            if (e.target.files !== null) {
+              const file = e.target.files[0];
+              props.onSetUProductImage(file);
+            }
+          }}
+          className="mb-4"
+        />
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
           Add ons
         </Typography>

@@ -8,11 +8,6 @@ export enum AUTH_LISTENER_STATUS {
   LOGGED_OUT,
 }
 
-export enum SIGNOUT_STATUS {
-  SUCCESS,
-  ERROR,
-}
-
 export enum PRODUCTS_STATUS {
   PERMISSION_ERROR,
   FETCHED,

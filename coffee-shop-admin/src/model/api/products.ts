@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
   FirestoreError,
   QuerySnapshot,
@@ -12,7 +13,12 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import { COL_PRODUCTS, FIRESTORE_PERMISSION_ERROR } from "../../strings";
+
+import {
+  COL_PRODUCTS,
+  FIRESTORE_PERMISSION_ERROR,
+  STORAGE_PRODUCTS,
+} from "../../strings";
 import { PRODUCTS_STATUS } from "../../status";
 import { FIREBASE_CONFIG } from "../../firebaseConf";
 
@@ -123,6 +129,56 @@ export const deleteProductInFirebase = (
           `products.deleteProductInFirebase: There is an error deleting product with id ${id}`
         );
         cb(false);
+      }
+    });
+};
+
+export const uploadProductImageInFirebase = (
+  productId: string,
+  productImage: File,
+  cb: (success: boolean) => void
+) => {
+  const storage = getStorage(app);
+  const imageRef = ref(storage, `${STORAGE_PRODUCTS}/${productId}`);
+  uploadBytes(imageRef, productImage)
+    .then(() => {
+      console.log(
+        `products.uploadProductImageInFirebase: Successfully uploaded product image with id ${productId}`
+      );
+      cb(true);
+    })
+    .catch((reason) => {
+      if (reason !== null || reason !== undefined) {
+        console.log(reason);
+        console.log(
+          `products.uploadProductImageInFirebase: There is an error uploading product image with id ${productId}`
+        );
+        cb(false);
+      }
+    });
+};
+
+export const getProductImageURLInFirebase = (
+  productId: string,
+  cb: (url: string) => void
+) => {
+  const storage = getStorage(app);
+  const imgRef = ref(storage, `${STORAGE_PRODUCTS}/${productId}`);
+
+  getDownloadURL(imgRef)
+    .then((url) => {
+      console.log(
+        `products.getProductImageURL: Got product image URL of product with ID ${productId}`
+      );
+      cb(url);
+    })
+    .catch((reason) => {
+      if (reason !== null || reason !== undefined) {
+        console.log(reason);
+        console.log(
+          `products.getProductImageURL: There is an error getting image URL of product with ID ${productId}`
+        );
+        cb("");
       }
     });
 };

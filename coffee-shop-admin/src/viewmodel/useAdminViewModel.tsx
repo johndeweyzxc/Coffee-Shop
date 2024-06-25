@@ -1,18 +1,66 @@
-import { AddOn } from "../model/api/addOns";
-import { Product } from "../model/api/products";
+import { Unsubscribe } from "firebase/auth";
+
 import useAddOnsModel from "../model/useAddOnsModel";
 import useAppAuthModel from "../model/useAppAuthModel";
 import useProductsModel from "../model/useProductsModel";
+import { AddOn } from "../model/api/addOns";
+import { Product, UProduct } from "../model/api/products";
+import { PRODUCTS_STATUS } from "../status";
 import { IN_DESCRIPTION, IN_NAME, IN_PRICE, IN_SUCCESS } from "../strings";
 
+export interface UProductVM extends UProduct {
+  ProductImageURL: string;
+}
+
 const useAdminViewModel = () => {
-  const { getProducts, uploadProduct, updateProduct, deleteProduct } =
-    useProductsModel();
-  const { signInEmail, signOut } = useAppAuthModel();
+  const {
+    getProducts,
+    uploadProduct,
+    updateProduct,
+    deleteProduct,
+    getProductImageURL,
+    uploadProductImage,
+  } = useProductsModel();
+  const { signInEmail, signOut, addAuthListener } = useAppAuthModel();
   const { getAddOns, addAddOns, removeAddOn } = useAddOnsModel();
+
+  const getProductsVM = (
+    onProducts: (products: UProductVM[] | null, status: PRODUCTS_STATUS) => void
+  ): Unsubscribe => {
+    let listUProductVM: UProductVM[] = [];
+    let totalProducts: number | undefined = 0;
+    let productsProcessed = 0;
+
+    // TODO: Move implementation in model
+    const createProductVM = (product: UProduct, status: PRODUCTS_STATUS) => {
+      const onGotProductImageUrl = (url: string) => {
+        const newUProductVM: UProductVM = { ...product, ProductImageURL: url };
+        listUProductVM = [...listUProductVM, newUProductVM];
+        productsProcessed++;
+
+        if (totalProducts === productsProcessed) {
+          onProducts(listUProductVM, status);
+          productsProcessed = 0;
+        }
+      };
+      getProductImageURL(product.id, onGotProductImageUrl);
+    };
+
+    const onReceivedProducts = (
+      products: UProduct[] | null,
+      status: PRODUCTS_STATUS
+    ) => {
+      totalProducts = products?.length;
+      listUProductVM = [];
+      products?.forEach((product) => createProductVM(product, status));
+    };
+
+    return getProducts(onReceivedProducts);
+  };
 
   const uploadProductVM = (
     product: Product,
+    productImage: File | null,
     addOnList: AddOn[],
     onUploaded: (success: boolean) => void
   ): [boolean, string, string] => {
@@ -54,18 +102,30 @@ const useAdminViewModel = () => {
           };
           addAddOns(productId, addOn, onAddedAddOns);
         });
+
+        const onUploadedProductImage = (success: boolean) => {
+          if (success) {
+            console.log("[useAdminViewModel] Successfully uploaded image");
+          } else {
+            console.error("[useAdminViewModel] Failed to upload image");
+          }
+        };
+        if (productImage !== null) {
+          uploadProductImage(productId, productImage, onUploadedProductImage);
+        }
       } else {
         onUploaded(false);
       }
     };
-    uploadProduct(newProduct, addOnList, onUploadedProduct);
+    uploadProduct(newProduct, onUploadedProduct);
 
     return [true, IN_SUCCESS, "Success"];
   };
 
   const updateProductVM = (
     product: Product,
-    id: string,
+    productImage: File | null,
+    productId: string,
     onUpdated: (success: boolean) => void
   ): [boolean, string, string] => {
     const updatedProduct: Product = { ...product };
@@ -89,7 +149,25 @@ const useAdminViewModel = () => {
 
     updatedProduct.Price = parseInt(updatedProduct.Price as string);
 
-    updateProduct(updatedProduct, id, onUpdated);
+    const onUpdateProduct = (success: boolean) => {
+      if (success) {
+        onUpdated(true);
+        const onUploadedProductImage = (success: boolean) => {
+          if (success) {
+            console.log("[useAdminViewModel] Successfully uploaded image");
+          } else {
+            console.error("[useAdminViewModel] Failed to upload image");
+          }
+        };
+        if (productImage !== null) {
+          uploadProductImage(productId, productImage, onUploadedProductImage);
+        }
+      } else {
+        onUpdated(false);
+      }
+    };
+
+    updateProduct(updatedProduct, productId, onUpdateProduct);
     return [true, IN_SUCCESS, "Success"];
   };
 
@@ -110,13 +188,14 @@ const useAdminViewModel = () => {
     addAddOnsVM,
     removeAddOn,
 
-    getProducts,
+    getProductsVM,
     uploadProductVM,
     updateProductVM,
     deleteProduct,
 
     signInEmail,
     signOut,
+    addAuthListener,
   };
 };
 

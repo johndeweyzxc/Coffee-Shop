@@ -1,3 +1,4 @@
+import { ChangeEvent, FormEvent } from "react";
 import {
   Button,
   Dialog,
@@ -7,7 +8,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { ChangeEvent, FormEvent } from "react";
 
 interface LoginWEmailProps {
   isOpen: boolean;
