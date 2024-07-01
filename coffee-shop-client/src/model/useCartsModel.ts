@@ -31,6 +31,7 @@ const useCartsModel = () => {
           Price: s.Price,
           ProductId: s.ProductId,
           Quantity: s.Quantity,
+          ProductImageURL: "",
         };
         cartList.push(ucart);
       });

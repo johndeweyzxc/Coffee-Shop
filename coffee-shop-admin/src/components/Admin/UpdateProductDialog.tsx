@@ -12,8 +12,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import { AddOn, UAddOn } from "../../model/api/addOns";
-import { UProduct } from "../../model/api/products";
+import { AddOn, UAddOn } from "../../model/useAddOnsModel";
+import { UProduct } from "../../model/useProductsModel";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 

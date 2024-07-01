@@ -12,9 +12,10 @@ const useMenuController = () => {
     Name: "",
     Description: "",
     Price: 0,
+    ProductImageURL: "",
   };
 
-  const { getProducts, getAddOns } = useMenuViewModel();
+  const { getProductsVM, listenAddOns } = useMenuViewModel();
   const { addToCartVM } = useCartViewModel();
   const notify = Notification();
 
@@ -74,7 +75,7 @@ const useMenuController = () => {
         setSelectedProdAddOns(uAddOns);
       }
     };
-    return getAddOns(selectedProduct.id, onAddOns);
+    return listenAddOns(selectedProduct.id, onAddOns);
   };
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -142,7 +143,7 @@ const useMenuController = () => {
       setProducts(products);
     };
     console.log("[useMenuController] Adding product listener");
-    const unsubscribeProduct = getProducts(onProducts);
+    const unsubscribeProduct = getProductsVM(onProducts);
     return () => {
       console.log("[useMenuController] Removing product listener");
       unsubscribeProduct();

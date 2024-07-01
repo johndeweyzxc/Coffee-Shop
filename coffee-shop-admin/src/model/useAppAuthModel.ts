@@ -1,11 +1,15 @@
 import { Unsubscribe, User } from "firebase/auth";
 
 import {
-  LoginAsAdmin,
   signInWithEmailInFirebase,
   authListenerInFirebase,
   signOutInFirebase,
 } from "./auth/appAuth";
+
+export interface LoginAsAdmin {
+  Username: string;
+  Password: string;
+}
 
 const useAppAuthModel = () => {
   const addAuthListener = (cb: (user: User | null) => void) => {

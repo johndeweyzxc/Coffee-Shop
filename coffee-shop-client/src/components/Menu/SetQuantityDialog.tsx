@@ -123,9 +123,6 @@ export default function SetQuantityDialog(props: SetQuantityDialogProps) {
     >
       <DialogTitle>Set quantity</DialogTitle>
       <DialogContent dividers>
-        <DialogContentText sx={{ marginBottom: "1rem" }}>
-          Set quantity for {props.uProduct.Name}
-        </DialogContentText>
         <TextField
           name="Quantity"
           label="Quantity"
@@ -143,7 +140,10 @@ export default function SetQuantityDialog(props: SetQuantityDialogProps) {
           uAddOns={props.currentAddOns}
           onRemoveAddOn={props.onRemoveAddon}
         />
-        <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+        <Typography
+          variant="h6"
+          sx={{ marginBottom: ".5rem", marginTop: "1rem" }}
+        >
           Available Add ons
         </Typography>
         <AddOnList

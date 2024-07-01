@@ -1,4 +1,9 @@
-import { Product, UProduct, getProductsInFirebase } from "./api/products";
+import {
+  Product,
+  UProduct,
+  getProductImageURLInFirebase,
+  getProductsInFirebase,
+} from "./api/products";
 import { QuerySnapshot } from "firebase/firestore";
 import { Unsubscribe } from "firebase/auth";
 import { PRODUCTS_STATUS } from "../status";
@@ -21,6 +26,7 @@ const useProductsModel = () => {
           Name: s.Name,
           Description: s.Description,
           Price: s.Price,
+          ProductImageURL: "",
         };
         productList.push(uproduct);
       });
@@ -30,8 +36,13 @@ const useProductsModel = () => {
     return getProductsInFirebase(cb);
   };
 
+  const getProductImageURL = (productId: string, cb: (url: string) => void) => {
+    getProductImageURLInFirebase(productId, cb);
+  };
+
   return {
     getProducts,
+    getProductImageURL,
   };
 };
 

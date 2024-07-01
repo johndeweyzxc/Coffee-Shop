@@ -21,19 +21,10 @@ import {
 } from "../../strings";
 import { PRODUCTS_STATUS } from "../../status";
 import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { Product } from "../useProductsModel";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
-
-export interface Product {
-  Name: string;
-  Description: string;
-  Price: number | string;
-}
-
-export interface UProduct extends Product {
-  id: string;
-}
 
 export const getProductsInFirebase = (
   cb: (snapshot: QuerySnapshot | null, status: PRODUCTS_STATUS) => void
@@ -168,7 +159,7 @@ export const getProductImageURLInFirebase = (
   getDownloadURL(imgRef)
     .then((url) => {
       console.log(
-        `products.getProductImageURL: Got product image URL of product with ID ${productId}`
+        `products.getProductImageURLInFirebase: Got product image URL of product with ID ${productId}`
       );
       cb(url);
     })
@@ -176,7 +167,7 @@ export const getProductImageURLInFirebase = (
       if (reason !== null || reason !== undefined) {
         console.log(reason);
         console.log(
-          `products.getProductImageURL: There is an error getting image URL of product with ID ${productId}`
+          `products.getProductImageURLInFirebase: There is an error getting image URL of product with ID ${productId}`
         );
         cb("");
       }

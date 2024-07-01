@@ -2,6 +2,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardMedia,
   IconButton,
   Tooltip,
   Typography,
@@ -40,6 +41,11 @@ export default function MenuView(props: MenuViewProps) {
         {products.map((product, index) => {
           return (
             <Card key={index} sx={{ width: 300, margin: ".25rem" }}>
+              <CardMedia
+                sx={{ height: 100 }}
+                image={product.ProductImageURL}
+                title={`An image of ${product.Name}`}
+              />
               <CardContent>
                 <Typography variant="h5">{product.Name}</Typography>
                 <Typography variant="body2">{product.Description}</Typography>

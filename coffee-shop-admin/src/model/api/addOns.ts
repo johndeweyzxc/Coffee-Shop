@@ -14,18 +14,10 @@ import {
 
 import { COL_ADDONS, COL_PRODUCTS } from "../../strings";
 import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { AddOn } from "../useAddOnsModel";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
-
-export interface AddOn {
-  Name: string;
-  Price: string | number;
-}
-
-export interface UAddOn extends AddOn {
-  id: string;
-}
 
 export const getAddOnsInFirebase = (
   productId: string,

@@ -2,7 +2,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 
 import { useGetProduct } from "../controller/useProduct/useGetProduct";
-import { UProduct } from "../model/api/products";
+import { UProduct } from "../model/useProductsModel";
 
 interface ProductViewProps {
   isLoggedIn: boolean;

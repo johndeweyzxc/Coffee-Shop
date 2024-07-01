@@ -2,8 +2,6 @@ import { QuerySnapshot } from "firebase/firestore";
 import { Unsubscribe } from "firebase/auth";
 
 import {
-  Product,
-  UProduct,
   deleteProductInFirebase,
   getProductImageURLInFirebase,
   getProductsInFirebase,
@@ -12,6 +10,17 @@ import {
   uploadProductInFirebase,
 } from "./api/products";
 import { PRODUCTS_STATUS } from "../status";
+
+export interface Product {
+  Name: string;
+  Description: string;
+  Price: number | string;
+}
+
+export interface UProduct extends Product {
+  id: string;
+  ProductImageURL: string;
+}
 
 const useProductsModel = () => {
   const getProducts = (
@@ -31,6 +40,7 @@ const useProductsModel = () => {
           Name: s.Name,
           Description: s.Description,
           Price: s.Price,
+          ProductImageURL: "",
         };
         productList.push(uproduct);
       });

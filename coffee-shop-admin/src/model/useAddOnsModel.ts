@@ -2,12 +2,19 @@ import { Unsubscribe } from "firebase/auth";
 import { QuerySnapshot } from "firebase/firestore";
 
 import {
-  AddOn,
-  UAddOn,
   addAddOnInFirebase,
   getAddOnsInFirebase,
   removeAddOnInFirebase,
 } from "./api/addOns";
+
+export interface AddOn {
+  Name: string;
+  Price: string | number;
+}
+
+export interface UAddOn extends AddOn {
+  id: string;
+}
 
 const useAddOnsModel = () => {
   const getAddOns = (

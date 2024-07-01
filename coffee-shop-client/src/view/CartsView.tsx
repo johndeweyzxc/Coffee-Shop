@@ -1,7 +1,10 @@
 import {
+  Box,
   Card,
   CardActions,
   CardContent,
+  CardMedia,
+  Divider,
   IconButton,
   Tooltip,
   Typography,
@@ -11,7 +14,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditCartDialog from "../components/Cart/EditCartDialog";
 import DeleteCartDialog from "../components/Cart/DeleteCartDialog";
 import EditIcon from "@mui/icons-material/Edit";
+import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import { UCart } from "../model/api/cart";
+import CheckoutDialog from "../components/Cart/CheckoutDialog";
 
 interface CartsCardProps {
   uCart: UCart;
@@ -19,33 +24,43 @@ interface CartsCardProps {
   onCloseEditor: () => void;
   onOpenDelete: (selectedCart: UCart) => void;
   onCloseDelete: () => void;
+  onOpenCheckOut: (uCart: UCart) => void;
 }
 function CartsCard(props: CartsCardProps) {
   return (
-    <Card sx={{ width: 300, margin: ".25rem" }}>
-      <CardContent>
+    <Card sx={{ width: 300, margin: ".25rem", padding: "0" }}>
+      <CardMedia
+        sx={{ height: 100 }}
+        image={props.uCart.ProductImageURL}
+        title={`An image of ${props.uCart.Name}`}
+      />
+      <CardContent sx={{ width: "100%" }}>
         <Typography variant="h5">{props.uCart.Name}</Typography>
         <Typography variant="body2">{props.uCart.Description}</Typography>
         <Typography variant="body2" sx={{ marginTop: "1rem" }}>
-          <b>Price: </b>${props.uCart.Price}
-        </Typography>
-        <Typography variant="body2" sx={{ marginTop: ".5rem" }}>
-          <b>Quantity: </b>
-          {props.uCart.Quantity}
-        </Typography>
-        <Typography variant="body2" sx={{ marginTop: ".5rem" }}>
           <b>Total Price: </b>${props.uCart.TotalPrice}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing>
-        <Tooltip title="Remove from cart">
-          <IconButton onClick={() => props.onOpenDelete(props.uCart)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Edit cart">
-          <IconButton onClick={() => props.onOpenEditor(props.uCart)}>
-            <EditIcon />
+      <Divider />
+      <CardActions
+        disableSpacing
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <Box>
+          <Tooltip title="Remove from cart">
+            <IconButton onClick={() => props.onOpenDelete(props.uCart)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit cart">
+            <IconButton onClick={() => props.onOpenEditor(props.uCart)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+        <Tooltip title="Checkout">
+          <IconButton onClick={() => props.onOpenCheckOut(props.uCart)}>
+            <ShoppingCartCheckoutIcon />
           </IconButton>
         </Tooltip>
       </CardActions>
@@ -79,7 +94,19 @@ export default function CartsView(props: CartsViewProps) {
     isOpenDelete,
     onOpenDelete,
     onCloseDelete,
+
+    clientName,
+    onChangeClientName,
+    shipAddress,
+    onChangeShippingAddress,
+    isOpenCheckout,
+    onOpenCheckOut,
+    onCloseCheckOut,
+    onCheckout,
+
+    checkoutAddOns,
   } = useCartController(props.userId);
+
   return (
     <div className="w-screen h-screen p-4">
       <div className="flex flex-wrap w-full max-md:justify-center">
@@ -92,6 +119,7 @@ export default function CartsView(props: CartsViewProps) {
               onCloseDelete={onCloseDelete}
               onOpenEditor={onOpenEditor}
               onCloseEditor={onCloseEditor}
+              onOpenCheckOut={onOpenCheckOut}
             />
           );
         })}
@@ -114,6 +142,17 @@ export default function CartsView(props: CartsViewProps) {
         onClose={onCloseDelete}
         selectedCart={selectedCart}
         onRemoveFromCart={onRemoveFromCart}
+      />
+      <CheckoutDialog
+        isOpen={isOpenCheckout}
+        clientName={clientName}
+        onChangeClientName={onChangeClientName}
+        onChangeShipAddress={onChangeShippingAddress}
+        onCheckout={onCheckout}
+        onClose={onCloseCheckOut}
+        selectedCart={selectedCart}
+        shipAddress={shipAddress}
+        checkoutAddOns={checkoutAddOns}
       />
       {alertSnackbar}
     </div>

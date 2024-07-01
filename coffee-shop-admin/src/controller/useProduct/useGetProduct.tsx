@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { Unsubscribe } from "firebase/auth";
 import { GridColDef, GridEventListener } from "@mui/x-data-grid";
 
-import useAdminViewModel, {
-  UProductVM,
-} from "../../viewmodel/useAdminViewModel";
-import { UProduct } from "../../model/api/products";
+import { UProduct } from "../../model/useProductsModel";
+import useAdminViewModel from "../../viewmodel/useAdminViewModel";
 import { PRODUCTS_STATUS } from "../../status";
 
 export const useGetProduct = (
@@ -51,7 +49,7 @@ export const useGetProduct = (
 
   const { getProductsVM } = useAdminViewModel();
 
-  const [products, setProducts] = useState<UProductVM[]>([]);
+  const [products, setProducts] = useState<UProduct[]>([]);
 
   const onProductClicked: GridEventListener<"rowClick"> = (params) => {
     setUpdateProduct(params.row);
@@ -62,9 +60,11 @@ export const useGetProduct = (
     let unsubscribeProduct: Unsubscribe | null = null;
 
     const onProducts = (
-      products: UProductVM[] | null,
+      products: UProduct[] | null,
       status: PRODUCTS_STATUS
     ) => {
+      products?.forEach((product) => console.log(product));
+
       if (status === PRODUCTS_STATUS.FETCHED) {
         setProducts(products!);
       } else if (status === PRODUCTS_STATUS.PERMISSION_ERROR) {

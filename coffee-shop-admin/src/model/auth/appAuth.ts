@@ -9,11 +9,7 @@ import {
 import { initializeApp } from "firebase/app";
 
 import { FIREBASE_CONFIG } from "../../firebaseConf";
-
-export interface LoginAsAdmin {
-  Username: string;
-  Password: string;
-}
+import { LoginAsAdmin } from "../useAppAuthModel";
 
 initializeApp(FIREBASE_CONFIG);
 

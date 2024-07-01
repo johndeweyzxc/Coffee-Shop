@@ -3,14 +3,10 @@ import { Unsubscribe } from "firebase/auth";
 import useAddOnsModel from "../model/useAddOnsModel";
 import useAppAuthModel from "../model/useAppAuthModel";
 import useProductsModel from "../model/useProductsModel";
-import { AddOn } from "../model/api/addOns";
-import { Product, UProduct } from "../model/api/products";
+import { AddOn } from "../model/useAddOnsModel";
+import { Product, UProduct } from "../model/useProductsModel";
 import { PRODUCTS_STATUS } from "../status";
 import { IN_DESCRIPTION, IN_NAME, IN_PRICE, IN_SUCCESS } from "../strings";
-
-export interface UProductVM extends UProduct {
-  ProductImageURL: string;
-}
 
 const useAdminViewModel = () => {
   const {
@@ -25,16 +21,15 @@ const useAdminViewModel = () => {
   const { getAddOns, addAddOns, removeAddOn } = useAddOnsModel();
 
   const getProductsVM = (
-    onProducts: (products: UProductVM[] | null, status: PRODUCTS_STATUS) => void
+    onProducts: (products: UProduct[] | null, status: PRODUCTS_STATUS) => void
   ): Unsubscribe => {
-    let listUProductVM: UProductVM[] = [];
+    let listUProductVM: UProduct[] = [];
     let totalProducts: number | undefined = 0;
     let productsProcessed = 0;
 
-    // TODO: Move implementation in model
     const createProductVM = (product: UProduct, status: PRODUCTS_STATUS) => {
       const onGotProductImageUrl = (url: string) => {
-        const newUProductVM: UProductVM = { ...product, ProductImageURL: url };
+        const newUProductVM: UProduct = { ...product, ProductImageURL: url };
         listUProductVM = [...listUProductVM, newUProductVM];
         productsProcessed++;
 

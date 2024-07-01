@@ -8,7 +8,12 @@ import {
   onSnapshot,
   query,
 } from "firebase/firestore";
-import { COL_PRODUCTS, FIRESTORE_PERMISSION_ERROR } from "../../strings";
+import {
+  COL_PRODUCTS,
+  FIRESTORE_PERMISSION_ERROR,
+  STORAGE_PRODUCTS,
+} from "../../strings";
+import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import { PRODUCTS_STATUS } from "../../status";
 import { FIREBASE_CONFIG } from "../../firebaseConf";
 
@@ -23,6 +28,7 @@ export interface Product {
 
 export interface UProduct extends Product {
   id: string;
+  ProductImageURL: string;
 }
 
 export const getProductsInFirebase = (
@@ -49,4 +55,20 @@ export const getProductsInFirebase = (
       }
     }
   );
+};
+
+export const getProductImageURLInFirebase = (
+  productId: string,
+  cb: (url: string) => void
+) => {
+  const storage = getStorage(app);
+  const imgRef = ref(storage, `${STORAGE_PRODUCTS}/${productId}`);
+
+  getDownloadURL(imgRef)
+    .then((url) => {
+      cb(url);
+    })
+    .catch(() => {
+      cb("");
+    });
 };

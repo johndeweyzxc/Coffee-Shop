@@ -2,7 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { User } from "firebase/auth";
 
 import useAdminViewModel from "../../viewmodel/useAdminViewModel";
-import { LoginAsAdmin } from "../../model/auth/appAuth";
+import { LoginAsAdmin } from "../../model/useAppAuthModel";
 import { ADMIN_NEW_PRODUCT, ADMIN_PRODUCT_TAB } from "../../strings";
 
 export default function useAppController(

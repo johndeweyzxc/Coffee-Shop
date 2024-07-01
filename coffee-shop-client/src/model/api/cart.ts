@@ -29,6 +29,7 @@ export interface Cart {
 
 export interface UCart extends Cart {
   id: string;
+  ProductImageURL: string;
 }
 
 export const getCartInFirebase = (
@@ -62,7 +63,7 @@ export const addToCartInFirebase = (
   addDoc(collection(db, COL_USERS, userId, COL_USERS_CARTS), cart)
     .then((value) => {
       console.log(
-        `carts.addToCart: Successfully added product with id ${cart.ProductId} to cart`
+        `carts.addToCartInFirebase: Successfully added product with id ${cart.ProductId} to cart`
       );
       cb(true, value.id);
     })
@@ -70,10 +71,10 @@ export const addToCartInFirebase = (
       if (reason !== null || reason !== undefined) {
         console.log(reason);
         console.log(
-          `carts.addToCart: There is an error adding product with id ${cart.ProductId} to cart`
+          `carts.addToCartInFirebase: There is an error adding product with id ${cart.ProductId} to cart`
         );
-        cb(false, "");
       }
+      cb(false, "");
     });
 };
 
@@ -95,8 +96,8 @@ export const removeFromCartInFirebase = (
         console.log(
           `carts.removeFromCartInFirebase: There is an error deleting product with id ${cartId}`
         );
-        cb(false);
       }
+      cb(false);
     });
 };
 
@@ -120,7 +121,7 @@ export const editCartInFirebase = (
         console.log(
           `carts.editCartInFirebase: There is an error updating cart with id ${cartId}`
         );
-        cb(false);
       }
+      cb(false);
     });
 };

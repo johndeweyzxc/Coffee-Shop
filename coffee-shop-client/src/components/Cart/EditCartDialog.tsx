@@ -128,6 +128,7 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           value={props.quantity}
           sx={{ marginBottom: "1rem" }}
           onChange={props.onChangeQuantity}
+          fullWidth
         />
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
           Selected Add ons

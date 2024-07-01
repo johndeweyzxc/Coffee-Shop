@@ -1,8 +1,8 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { Unsubscribe } from "firebase/firestore";
 
-import { AddOn, UAddOn } from "../../model/api/addOns";
-import { UProduct } from "../../model/api/products";
+import { AddOn, UAddOn } from "../../model/useAddOnsModel";
+import { UProduct } from "../../model/useProductsModel";
 import useAdminViewModel from "../../viewmodel/useAdminViewModel";
 
 export default function useUpdateProduct(
@@ -29,6 +29,7 @@ export default function useUpdateProduct(
       Name: "",
       Description: "",
       Price: "",
+      ProductImageURL: "",
     };
   };
 

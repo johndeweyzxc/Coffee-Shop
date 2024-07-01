@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 
-import { Product } from "../../model/api/products";
-import { AddOn } from "../../model/api/addOns";
+import { Product } from "../../model/useProductsModel";
+import { AddOn } from "../../model/useAddOnsModel";
 import useAdminViewModel from "../../viewmodel/useAdminViewModel";
 import { IN_DESCRIPTION, IN_NAME, IN_PRICE } from "../../strings";
 

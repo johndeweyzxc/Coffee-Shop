@@ -3,14 +3,20 @@ import {
   AddOn,
   UAddOn,
   appendAddOnInCartInFirebase,
+  appendAddOnInOrderInFirebase,
   getAddOnsInCartInFirebase,
-  getAddOnsInFirebase,
+  listenAddOnsInCartInFirebase,
+  listenAddOnsInFirebase,
   removeAddOnInCartInFirebase,
 } from "./api/addons";
-import { QuerySnapshot } from "firebase/firestore";
+import {
+  DocumentReference,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+} from "firebase/firestore";
 
 const useAddOnsModel = () => {
-  const getAddOns = (
+  const listenAddOns = (
     productId: string,
     onAddOns: (uAddOns: UAddOn[] | null) => void
   ): Unsubscribe => {
@@ -33,7 +39,7 @@ const useAddOnsModel = () => {
       });
       onAddOns(uAddOnList);
     };
-    return getAddOnsInFirebase(productId, cb);
+    return listenAddOnsInFirebase(productId, cb);
   };
 
   const appendAddOnsInCart = (
@@ -45,7 +51,7 @@ const useAddOnsModel = () => {
     appendAddOnInCartInFirebase(userId, cartId, addOn, cb);
   };
 
-  const getAddOnsInCart = (
+  const listenAddOnsInCart = (
     userId: string,
     cartId: string,
     onAddOns: (uAddOns: UAddOn[] | null) => void
@@ -69,7 +75,34 @@ const useAddOnsModel = () => {
       });
       onAddOns(uAddOnList);
     };
-    return getAddOnsInCartInFirebase(userId, cartId, cb);
+    return listenAddOnsInCartInFirebase(userId, cartId, cb);
+  };
+
+  const getAddOnsInCart = (
+    userId: string,
+    cartId: string,
+    onAddOns: (addOns: UAddOn[] | null) => void
+  ) => {
+    const cb = (snapshot: QueryDocumentSnapshot[] | null) => {
+      if (snapshot != null) {
+        const addOns: UAddOn[] = [];
+
+        snapshot.forEach((uAddOn) => {
+          const s = uAddOn.data() as UAddOn;
+          const newUAddOn: UAddOn = {
+            id: uAddOn.id,
+            AddOnId: s.AddOnId,
+            Name: s.Name,
+            Price: s.Price,
+          };
+          addOns.push(newUAddOn);
+        });
+        onAddOns(addOns);
+      } else {
+        onAddOns(null);
+      }
+    };
+    getAddOnsInCartInFirebase(userId, cartId, cb);
   };
 
   const removeAddOnInCart = (
@@ -79,13 +112,23 @@ const useAddOnsModel = () => {
     cb: (success: boolean) => void
   ) => {
     removeAddOnInCartInFirebase(userId, cartId, addOnId, cb);
-  }
+  };
+
+  const appendAddOnInOrder = (
+    orderId: string,
+    addOn: AddOn,
+    cb: (success: boolean) => void
+  ) => {
+    appendAddOnInOrderInFirebase(orderId, addOn, cb);
+  };
 
   return {
-    getAddOns,
+    listenAddOns,
+    listenAddOnsInCart,
     getAddOnsInCart,
     appendAddOnsInCart,
     removeAddOnInCart,
+    appendAddOnInOrder,
   };
 };
 
