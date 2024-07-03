@@ -15,8 +15,8 @@ import EditCartDialog from "../components/Cart/EditCartDialog";
 import DeleteCartDialog from "../components/Cart/DeleteCartDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
-import { UCart } from "../model/api/cart";
 import CheckoutDialog from "../components/Cart/CheckoutDialog";
+import { UCart } from "../model/useCartsModel";
 
 interface CartsCardProps {
   uCart: UCart;

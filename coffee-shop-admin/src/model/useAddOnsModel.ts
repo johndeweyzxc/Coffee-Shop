@@ -1,10 +1,11 @@
 import { Unsubscribe } from "firebase/auth";
-import { QuerySnapshot } from "firebase/firestore";
+import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 
 import {
-  addAddOnInFirebase,
+  uploadAddOnInFirebase,
+  listenAddOnsInFirebase,
+  deleteAddOnInFirebase,
   getAddOnsInFirebase,
-  removeAddOnInFirebase,
 } from "./api/addOns";
 
 export interface AddOn {
@@ -17,7 +18,7 @@ export interface UAddOn extends AddOn {
 }
 
 const useAddOnsModel = () => {
-  const getAddOns = (
+  const listenAddOns = (
     productId: string,
     onAddOns: (uAddOns: UAddOn[] | null) => void
   ): Unsubscribe => {
@@ -39,29 +40,59 @@ const useAddOnsModel = () => {
       });
       onAddOns(uAddOnList);
     };
-    return getAddOnsInFirebase(productId, cb);
+    return listenAddOnsInFirebase(productId, cb);
   };
 
-  const addAddOns = (
+  const getAddOns = (
+    productId: string,
+    onAddOns: (uAddOns: UAddOn[] | null) => void
+  ) => {
+    const cb = (snapshot: QueryDocumentSnapshot[] | null) => {
+      if (snapshot === null) {
+        onAddOns(null);
+        return;
+      }
+
+      const addOns: UAddOn[] = [];
+      snapshot.forEach((uAddOn) => {
+        const s = uAddOn.data() as UAddOn;
+        const newUAddOn: UAddOn = {
+          id: uAddOn.id,
+          Name: s.Name,
+          Price: s.Price,
+        };
+        addOns.push(newUAddOn);
+      });
+      onAddOns(addOns);
+    };
+    getAddOnsInFirebase(productId, cb);
+  };
+
+  const uploadAddOn = (
     productId: string,
     addOn: AddOn,
     cb: (success: boolean, addOnId: string | null) => void
   ) => {
-    addAddOnInFirebase(productId, addOn, cb);
+    const newAddOn: AddOn = {
+      ...addOn,
+      Price: parseInt(addOn.Price as string),
+    };
+    uploadAddOnInFirebase(productId, newAddOn, cb);
   };
 
-  const removeAddOn = (
+  const deleteAddOn = (
     productId: string,
     addOnId: string,
     cb: (success: boolean) => void
   ) => {
-    removeAddOnInFirebase(productId, addOnId, cb);
+    deleteAddOnInFirebase(productId, addOnId, cb);
   };
 
   return {
+    listenAddOns,
     getAddOns,
-    addAddOns,
-    removeAddOn,
+    uploadAddOn,
+    deleteAddOn,
   };
 };
 

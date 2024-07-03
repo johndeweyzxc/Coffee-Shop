@@ -12,10 +12,10 @@ import {
   Typography,
 } from "@mui/material";
 import React, { ChangeEvent } from "react";
-import { UProduct } from "../../model/api/products";
-import { UAddOn } from "../../model/api/addons";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { UProduct } from "../../model/useProductsModel";
+import { UAddOn } from "../../model/useAddOnsModel";
 
 interface AddOnListProps {
   uAddOns: UAddOn[];

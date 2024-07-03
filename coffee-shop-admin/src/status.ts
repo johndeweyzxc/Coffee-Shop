@@ -7,9 +7,3 @@ export enum AUTH_LISTENER_STATUS {
   LOGGED_IN,
   LOGGED_OUT,
 }
-
-export enum PRODUCTS_STATUS {
-  PERMISSION_ERROR,
-  FETCHED,
-  ERROR,
-}

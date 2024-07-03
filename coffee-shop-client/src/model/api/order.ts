@@ -9,49 +9,26 @@ import {
 
 import { FIREBASE_CONFIG } from "../../firebaseConf";
 import { COL_ORDERS } from "../../strings";
+import { Order } from "../useOrderModel";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
 
-export interface ShippingAddress {
-  Region: string;
-  City: string;
-  District: string;
-  Street: string;
-}
-
-export interface ProductOrder {
-  Name: string;
-  Description: string;
-  Price: string | number;
-  TotalPrice: string | number;
-  ProductId: string;
-  Quantity: number;
-}
-
-export interface Order {
-  ClientName: string;
-  ClientUID: string;
-  ProductOrderInfo: ProductOrder;
-  ShippingAddressLocation: ShippingAddress;
-  Status: string;
-}
-
-export interface UOrder extends Order {
-  id: string;
-  ProductImageURL: string;
-}
-
+/**
+ * Uploads an order document in "Order" collection
+ * @param order The order document that will be uploaded
+ * @param onUploadedOrder Callback handler when this operation is success or not
+ */
 export const addOrderInFirebase = (
   order: Order,
-  cb: (success: boolean, orderId: string) => void
+  onUploadedOrder: (success: boolean, orderId: string) => void
 ) => {
   addDoc(collection(db, COL_ORDERS), order)
     .then((value) => {
       console.log(
         `order.addOrderInFirebase: Successfully added order where id is ${value.id}`
       );
-      cb(true, value.id);
+      onUploadedOrder(true, value.id);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -59,21 +36,26 @@ export const addOrderInFirebase = (
         console.log(
           `order.addOrderInFirebase: There is an error adding order where product id is ${order.ProductOrderInfo.ProductId}`
         );
-        cb(false, "");
+        onUploadedOrder(false, "");
       }
     });
 };
 
+/**
+ * Deletes an order document from "Orders" collection
+ * @param orderId The UID of the order document
+ * @param onDeletedOrder Callback handler when this operation is success or not
+ */
 export const deleteOrderInFirebase = (
   orderId: string,
-  cb: (success: boolean) => void
+  onDeletedOrder: (success: boolean) => void
 ) => {
   deleteDoc(doc(db, COL_ORDERS, orderId))
     .then(() => {
       console.log(
         `order.deleteOrderInFirebase: Successfully deleted order with id ${orderId}`
       );
-      cb(true);
+      onDeletedOrder(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -82,6 +64,6 @@ export const deleteOrderInFirebase = (
           `order.deleteOrderInFirebase: There is an error deleting order with id ${orderId}`
         );
       }
-      cb(false);
+      onDeletedOrder(false);
     });
 };

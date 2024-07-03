@@ -14,6 +14,3 @@ export const COL_ORDERS = "Orders";
 export const COL_ADDONS = "AddOns";
 
 export const STORAGE_PRODUCTS = "products";
-
-export const FIRESTORE_PERMISSION_ERROR =
-  "Missing or insufficient permissions.";

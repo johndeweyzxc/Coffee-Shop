@@ -5,7 +5,7 @@ import { AddOn } from "../../model/useAddOnsModel";
 import useAdminViewModel from "../../viewmodel/useAdminViewModel";
 import { IN_DESCRIPTION, IN_NAME, IN_PRICE } from "../../strings";
 
-export interface InputHelperText {
+export interface InputHelperTextUpload {
   IsErrName: boolean;
   NameText: string;
   IsErrDescription: boolean;
@@ -73,20 +73,29 @@ export const useUploadProduct = (
     };
   };
 
+  // * STATE MANAGEMENT FOR UPLOADING PRODUCT
+  // Use in dialog when creating new product
   const [isOpenUpload, setIsOpenUpload] = useState<boolean>(false);
+  // Selected image that will be use by the product
   const [productImage, setProductImage] = useState<File | null>(null);
+  // The current product that will be created
   const [newProduct, setNewProduct] = useState<Product>(EMPTY_NEW_PRODUCT());
+  // The available addons of a selected product
   const [addOnListNewProduct, setAddOnListNewProduct] = useState<AddOn[]>([]);
+  // The currently selected addons of a selected product
   const [currAddOnNewProduct, setCurrAddOnNewProduct] = useState<AddOn>(
     EMPTY_ADDON()
   );
-  const [inputHelperText, setInputHelperText] = useState<InputHelperText>(
-    DEFAULT_INPUT_HELPER_TEXT()
-  );
+  // State for input helper text for showing input error causes
+  const [inputHelperTextUpload, setInputHelperText] =
+    useState<InputHelperTextUpload>(DEFAULT_INPUT_HELPER_TEXT());
 
   const onSetProductImage = (file: File) => setProductImage(file);
   const onOpenUpload = () => setIsOpenUpload(true);
-  const onCloseUpload = () => setIsOpenUpload(false);
+  const onCloseUpload = () => {
+    setAddOnListNewProduct([]);
+    setIsOpenUpload(false);
+  };
   const onChangeAddOnNewProduct = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === "Price" && parseInt(value) < 0) return;
@@ -160,11 +169,12 @@ export const useUploadProduct = (
     if (isInputValid) {
       onCloseUpload();
       setNewProduct(EMPTY_NEW_PRODUCT());
+      setInputHelperText(DEFAULT_INPUT_HELPER_TEXT());
     }
   };
 
   return {
-    inputHelperText,
+    inputHelperTextUpload,
 
     addOnListNewProduct,
     currAddOnNewProduct,

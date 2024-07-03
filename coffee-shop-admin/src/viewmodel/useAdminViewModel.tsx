@@ -1,16 +1,16 @@
 import { Unsubscribe } from "firebase/auth";
 
-import useAddOnsModel from "../model/useAddOnsModel";
+import useAddOnsModel, { UAddOn } from "../model/useAddOnsModel";
 import useAppAuthModel from "../model/useAppAuthModel";
 import useProductsModel from "../model/useProductsModel";
 import { AddOn } from "../model/useAddOnsModel";
 import { Product, UProduct } from "../model/useProductsModel";
-import { PRODUCTS_STATUS } from "../status";
 import { IN_DESCRIPTION, IN_NAME, IN_PRICE, IN_SUCCESS } from "../strings";
+import useOrdersModel from "../model/useOrdersModel";
 
 const useAdminViewModel = () => {
   const {
-    getProducts,
+    listenProducts,
     uploadProduct,
     updateProduct,
     deleteProduct,
@@ -18,39 +18,38 @@ const useAdminViewModel = () => {
     uploadProductImage,
   } = useProductsModel();
   const { signInEmail, signOut, addAuthListener } = useAppAuthModel();
-  const { getAddOns, addAddOns, removeAddOn } = useAddOnsModel();
+  const { listenAddOns, getAddOns, uploadAddOn, deleteAddOn } =
+    useAddOnsModel();
+  const { listenOrders, deleteOrder, updateStatusOfOrder } = useOrdersModel();
 
-  const getProductsVM = (
-    onProducts: (products: UProduct[] | null, status: PRODUCTS_STATUS) => void
+  const listenProductsVM = (
+    onProducts: (products: UProduct[] | null) => void
   ): Unsubscribe => {
     let listUProductVM: UProduct[] = [];
     let totalProducts: number | undefined = 0;
     let productsProcessed = 0;
 
-    const createProductVM = (product: UProduct, status: PRODUCTS_STATUS) => {
+    const createProductVM = (product: UProduct) => {
       const onGotProductImageUrl = (url: string) => {
         const newUProductVM: UProduct = { ...product, ProductImageURL: url };
         listUProductVM = [...listUProductVM, newUProductVM];
         productsProcessed++;
 
         if (totalProducts === productsProcessed) {
-          onProducts(listUProductVM, status);
+          onProducts(listUProductVM);
           productsProcessed = 0;
         }
       };
       getProductImageURL(product.id, onGotProductImageUrl);
     };
 
-    const onReceivedProducts = (
-      products: UProduct[] | null,
-      status: PRODUCTS_STATUS
-    ) => {
+    const onReceivedProducts = (products: UProduct[] | null) => {
       totalProducts = products?.length;
       listUProductVM = [];
-      products?.forEach((product) => createProductVM(product, status));
+      products?.forEach((product) => createProductVM(product));
     };
 
-    return getProducts(onReceivedProducts);
+    return listenProducts(onReceivedProducts);
   };
 
   const uploadProductVM = (
@@ -78,24 +77,21 @@ const useAdminViewModel = () => {
       return [false, IN_PRICE, "Invalid price"];
     }
 
-    newProduct.Price = parseInt(newProduct.Price as string);
-
-    const newAddOnList: AddOn[] = [];
-    addOnList.forEach((addOn) => {
-      const newAddOn: AddOn = {
-        ...addOn,
-        Price: parseInt(addOn.Price as string),
-      };
-      newAddOnList.push(newAddOn);
-    });
-
     const onUploadedProduct = (success: boolean, productId: string) => {
       if (success) {
-        newAddOnList.forEach((addOn) => {
+        let uploadedAddOns = 1;
+        addOnList.forEach((addOn) => {
           const onAddedAddOns = (success: boolean, _: string | null) => {
-            onUploaded(success);
+            if (success) {
+              if (addOnList?.length === uploadedAddOns) {
+                onUploaded(true);
+              }
+            } else {
+              onUploaded(false);
+            }
+            uploadedAddOns++;
           };
-          addAddOns(productId, addOn, onAddedAddOns);
+          uploadAddOn(productId, addOn, onAddedAddOns);
         });
 
         const onUploadedProductImage = (success: boolean) => {
@@ -142,8 +138,6 @@ const useAdminViewModel = () => {
       return [false, IN_PRICE, "Invalid price"];
     }
 
-    updatedProduct.Price = parseInt(updatedProduct.Price as string);
-
     const onUpdateProduct = (success: boolean) => {
       if (success) {
         onUpdated(true);
@@ -166,27 +160,46 @@ const useAdminViewModel = () => {
     return [true, IN_SUCCESS, "Success"];
   };
 
-  const addAddOnsVM = (
+  const deleteProductVM = (
     productId: string,
-    addOn: AddOn,
-    cb: (success: boolean, addOnId: string | null) => void
+    onDeleted: (success: boolean) => void
   ) => {
-    const newAddOn: AddOn = {
-      ...addOn,
-      Price: parseInt(addOn.Price as string),
+    const onAddOns = (uAddOns: UAddOn[] | null) => {
+      let deletedAddOns = 1;
+      const onDeletedAddOn = (success: boolean) => {
+        if (success) {
+          if (uAddOns?.length === deletedAddOns) {
+            onDeleted(true);
+          }
+        } else {
+          onDeleted(false);
+        }
+        deletedAddOns++;
+      };
+      uAddOns?.forEach((uAddOn) => {
+        deleteAddOn(productId, uAddOn.id, onDeletedAddOn);
+      });
     };
-    addAddOns(productId, newAddOn, cb);
+
+    const onDeletedProduct = (success: boolean) => {
+      if (success) {
+        getAddOns(productId, onAddOns);
+      } else {
+        onDeleted(false);
+      }
+    };
+    deleteProduct(productId, onDeletedProduct);
   };
 
   return {
-    getAddOns,
-    addAddOnsVM,
-    removeAddOn,
+    listenAddOns,
+    uploadAddOn,
+    deleteAddOn,
 
-    getProductsVM,
+    listenProductsVM,
     uploadProductVM,
     updateProductVM,
-    deleteProduct,
+    deleteProductVM,
 
     signInEmail,
     signOut,

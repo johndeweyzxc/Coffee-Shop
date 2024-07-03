@@ -1,15 +1,24 @@
 import {
-  Product,
-  UProduct,
   getProductImageURLInFirebase,
-  getProductsInFirebase,
+  listenProductInFirebase,
 } from "./api/products";
 import { QuerySnapshot } from "firebase/firestore";
 import { Unsubscribe } from "firebase/auth";
 import { PRODUCTS_STATUS } from "../status";
 
+export interface Product {
+  Name: string;
+  Description: string;
+  Price: number | string;
+}
+
+export interface UProduct extends Product {
+  id: string;
+  ProductImageURL: string;
+}
+
 const useProductsModel = () => {
-  const getProducts = (
+  const listenProduct = (
     onProducts: (products: UProduct[] | null, status: PRODUCTS_STATUS) => void
   ): Unsubscribe => {
     const cb = (snapshot: QuerySnapshot | null, status: PRODUCTS_STATUS) => {
@@ -33,7 +42,7 @@ const useProductsModel = () => {
       onProducts(productList, status);
     };
 
-    return getProductsInFirebase(cb);
+    return listenProductInFirebase(cb);
   };
 
   const getProductImageURL = (productId: string, cb: (url: string) => void) => {
@@ -41,7 +50,7 @@ const useProductsModel = () => {
   };
 
   return {
-    getProducts,
+    listenProduct,
     getProductImageURL,
   };
 };

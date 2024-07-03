@@ -15,11 +15,6 @@ import {
   SIGNOUT_STATUS,
 } from "../../status";
 
-export interface LoginAsAdmin {
-  Username: string;
-  Password: string;
-}
-
 initializeApp(FIREBASE_CONFIG);
 const provider = new GoogleAuthProvider();
 

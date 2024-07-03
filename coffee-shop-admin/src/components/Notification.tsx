@@ -1,7 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import { Alert, IconButton, Snackbar } from "@mui/material";
-
 import CloseIcon from "@mui/icons-material/Close";
 
 interface AlertAttribute {

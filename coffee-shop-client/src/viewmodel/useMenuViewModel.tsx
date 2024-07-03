@@ -1,14 +1,13 @@
 import { Unsubscribe } from "firebase/firestore";
-import { UProduct } from "../model/api/products";
 import useAddOnsModel from "../model/useAddOnsModel";
-import useProductsModel from "../model/useProductsModel";
+import useProductsModel, { UProduct } from "../model/useProductsModel";
 import { PRODUCTS_STATUS } from "../status";
 
 const useMenuViewModel = () => {
-  const { getProducts, getProductImageURL } = useProductsModel();
-  const { listenAddOns } = useAddOnsModel();
+  const { listenProduct, getProductImageURL } = useProductsModel();
+  const { listenAddOnsFromProduct } = useAddOnsModel();
 
-  const getProductsVM = (
+  const listenProductVM = (
     onProducts: (products: UProduct[] | null, status: PRODUCTS_STATUS) => void
   ): Unsubscribe => {
     let listUProductVM: UProduct[] = [];
@@ -38,10 +37,10 @@ const useMenuViewModel = () => {
       products?.forEach((product) => createProductVM(product, status));
     };
 
-    return getProducts(onReceivedProducts);
+    return listenProduct(onReceivedProducts);
   };
 
-  return { getProductsVM, listenAddOns };
+  return { listenProductVM, listenAddOnsFromProduct };
 };
 
 export default useMenuViewModel;

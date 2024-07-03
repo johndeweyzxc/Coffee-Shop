@@ -14,54 +14,55 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-import {
-  COL_PRODUCTS,
-  FIRESTORE_PERMISSION_ERROR,
-  STORAGE_PRODUCTS,
-} from "../../strings";
-import { PRODUCTS_STATUS } from "../../status";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
 import { Product } from "../useProductsModel";
+import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { COL_PRODUCTS, STORAGE_PRODUCTS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
 
-export const getProductsInFirebase = (
-  cb: (snapshot: QuerySnapshot | null, status: PRODUCTS_STATUS) => void
+/**
+ * Listens for any changes of product document in "Products" collection
+ * @param onChange Callback handler when there is an update of any product document in "Products" collection
+ * @returns Unsubscriber function to detach this listener
+ */
+export const listenProductsInFirebase = (
+  onChange: (snapshot: QuerySnapshot | null) => void
 ): Unsubscribe => {
   const q = query(collection(db, COL_PRODUCTS));
   return onSnapshot(
     q,
     (snapshot) => {
       console.log(
-        `products.getProductsInFirebase: Fetched ${snapshot.size} product data`
+        `products.listenProductsInFirebase: Fetched ${snapshot.size} product data`
       );
-      cb(snapshot, PRODUCTS_STATUS.FETCHED);
+      onChange(snapshot);
     },
     (error: FirestoreError) => {
       console.log(
-        "products.getProductsInFirebase: There is an error fetching product data, ",
+        "products.listenProductsInFirebase: There is an error fetching product data",
         error.message
       );
-      if (error.message === FIRESTORE_PERMISSION_ERROR) {
-        cb(null, PRODUCTS_STATUS.PERMISSION_ERROR);
-      } else {
-        cb(null, PRODUCTS_STATUS.ERROR);
-      }
+      onChange(null);
     }
   );
 };
 
+/**
+ * Uploads a product document in "Products" collection
+ * @param product The product that will be uploaded
+ * @param onUploadedProduct Callback handler when this operation is success or not
+ */
 export const uploadProductInFirebase = (
   product: Product,
-  cb: (success: boolean, productId: string) => void
+  onUploadedProduct: (success: boolean, productId: string) => void
 ) => {
   addDoc(collection(db, COL_PRODUCTS), product)
     .then((value) => {
       console.log(
         `products.uploadProductInFirebase: Successfully uploaded new product with id ${value.id}`
       );
-      cb(true, value.id);
+      onUploadedProduct(true, value.id);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -69,17 +70,23 @@ export const uploadProductInFirebase = (
         console.log(
           `products.uploadProductInFirebase: There is an error uploading new product ${product.Name}`
         );
-        cb(false, "");
+        onUploadedProduct(false, "");
       }
     });
 };
 
+/**
+ * Updates or edit the content of product document in "Products" collection
+ * @param product New version of the product document
+ * @param productId The UID of the product document that will be edited
+ * @param onEditedCart Callback handler when this operation is success or not
+ */
 export const updateProductInFirebase = (
   product: Product,
-  id: string,
-  cb: (success: boolean) => void
+  productId: string,
+  onEditedCart: (success: boolean) => void
 ) => {
-  const productRef = doc(db, COL_PRODUCTS, id);
+  const productRef = doc(db, COL_PRODUCTS, productId);
   updateDoc(productRef, {
     Name: product.Name,
     Description: product.Description,
@@ -87,47 +94,58 @@ export const updateProductInFirebase = (
   })
     .then(() => {
       console.log(
-        `products.updateProductInFirebase: Successfully updated product with id ${id}`
+        `products.updateProductInFirebase: Successfully updated product with id ${productId}`
       );
-      cb(true);
+      onEditedCart(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
         console.log(reason);
         console.log(
-          `products.updateProductInFirebase: There is an error updating product with id ${id}`
+          `products.updateProductInFirebase: There is an error updating product with id ${productId}`
         );
-        cb(false);
+        onEditedCart(false);
       }
     });
 };
 
+/**
+ * Deletes a product document in "Products" collection
+ * @param productId The UID of the product document that will be deleted
+ * @param onDeletedProduct Callback handler when this operation is success or not
+ */
 export const deleteProductInFirebase = (
-  id: string,
-  cb: (success: boolean) => void
+  productId: string,
+  onDeletedProduct: (success: boolean) => void
 ) => {
-  deleteDoc(doc(db, COL_PRODUCTS, id))
+  deleteDoc(doc(db, COL_PRODUCTS, productId))
     .then(() => {
       console.log(
-        `products.deleteProductInFirebase: Successfully deleted product with id ${id}`
+        `products.deleteProductInFirebase: Successfully deleted product with id ${productId}`
       );
-      cb(true);
+      onDeletedProduct(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
         console.log(reason);
         console.log(
-          `products.deleteProductInFirebase: There is an error deleting product with id ${id}`
+          `products.deleteProductInFirebase: There is an error deleting product with id ${productId}`
         );
-        cb(false);
+        onDeletedProduct(false);
       }
     });
 };
 
+/**
+ * Uploads an image of a product in Firebase Storage
+ * @param productId The UID of the product document
+ * @param productImage Image file of a product
+ * @param onUploadedProductImage Callback handler when this operation is success or not
+ */
 export const uploadProductImageInFirebase = (
   productId: string,
   productImage: File,
-  cb: (success: boolean) => void
+  onUploadedProductImage: (success: boolean) => void
 ) => {
   const storage = getStorage(app);
   const imageRef = ref(storage, `${STORAGE_PRODUCTS}/${productId}`);
@@ -136,7 +154,7 @@ export const uploadProductImageInFirebase = (
       console.log(
         `products.uploadProductImageInFirebase: Successfully uploaded product image with id ${productId}`
       );
-      cb(true);
+      onUploadedProductImage(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -144,32 +162,30 @@ export const uploadProductImageInFirebase = (
         console.log(
           `products.uploadProductImageInFirebase: There is an error uploading product image with id ${productId}`
         );
-        cb(false);
+        onUploadedProductImage(false);
       }
     });
 };
 
+/**
+ * Gets the image URL of a product document if it exists in Firebase storage
+ * @param productId The UID of a product document
+ * @param onGotImageURL Callback handler when the URL is found
+ */
 export const getProductImageURLInFirebase = (
   productId: string,
-  cb: (url: string) => void
+  onGotImageURL: (url: string) => void
 ) => {
   const storage = getStorage(app);
   const imgRef = ref(storage, `${STORAGE_PRODUCTS}/${productId}`);
 
   getDownloadURL(imgRef)
     .then((url) => {
-      console.log(
-        `products.getProductImageURLInFirebase: Got product image URL of product with ID ${productId}`
-      );
-      cb(url);
+      onGotImageURL(url);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
-        console.log(reason);
-        console.log(
-          `products.getProductImageURLInFirebase: There is an error getting image URL of product with ID ${productId}`
-        );
-        cb("");
+        onGotImageURL("");
       }
     });
 };

@@ -11,15 +11,16 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-
-import { AddOn, UAddOn } from "../../model/useAddOnsModel";
-import { UProduct } from "../../model/useProductsModel";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
+import { AddOn, UAddOn } from "../../model/useAddOnsModel";
+import { UProduct } from "../../model/useProductsModel";
+import { InputHelperTextUpdate } from "../../controller/useProduct/useUpdateProduct";
+
 interface AddOnListProps {
   addOns: UAddOn[];
-  onRemoveAddOn: (name: string, addOnId: string) => void;
+  onRemoveAddOn: (addOnId: string) => void;
 }
 function AddOnList(props: AddOnListProps) {
   if (props.addOns === undefined) {
@@ -48,9 +49,7 @@ function AddOnList(props: AddOnListProps) {
               fullWidth
             />
             <Tooltip title="Remove addon">
-              <IconButton
-                onClick={() => props.onRemoveAddOn(uAddOn.Name, uAddOn.id)}
-              >
+              <IconButton onClick={() => props.onRemoveAddOn(uAddOn.id)}>
                 <HighlightOffIcon />
               </IconButton>
             </Tooltip>
@@ -72,12 +71,50 @@ interface UpdateProductDialogProps {
   currAddOn: AddOn;
   onChangeAddOn: (e: ChangeEvent<HTMLInputElement>) => void;
   onAddAddOns: () => void;
-  onRemoveAddOn: (name: string, addOnId: string) => void;
+  onRemoveAddOn: (addOnId: string) => void;
   onSetUProductImage: (file: File) => void;
+  inputHelperText: InputHelperTextUpdate;
 }
 
 export default function UpdateProductDialog(props: UpdateProductDialogProps) {
-  // TODO: Add helper text for input errors
+  const RenderAddOns = () => {
+    if (props.addOnListUProduct.length === 0) {
+      return (
+        <Typography variant="subtitle2" sx={{ maginTop: ".5rem" }}>
+          No addons is found for this product
+        </Typography>
+      );
+    } else {
+      return (
+        <AddOnList
+          addOns={props.addOnListUProduct}
+          onRemoveAddOn={props.onRemoveAddOn}
+        />
+      );
+    }
+  };
+
+  const RenderImage = () => {
+    if (props.uProduct.ProductImageURL === "") {
+      return (
+        <Typography
+          variant="subtitle2"
+          sx={{ marginTop: ".5rem", marginBottom: ".5rem" }}
+        >
+          No image is found for this product
+        </Typography>
+      );
+    } else {
+      return (
+        <img
+          src={props.uProduct.ProductImageURL}
+          alt={`An image of ${props.uProduct.Name}`}
+          width="350"
+          className="self-center my-2"
+        />
+      );
+    }
+  };
 
   return (
     <Dialog
@@ -91,9 +128,11 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
         },
       }}
     >
-      <DialogTitle>Create New Product</DialogTitle>
+      <DialogTitle>Update product</DialogTitle>
       <DialogContent>
         <TextField
+          error={props.inputHelperText.IsErrName}
+          helperText={props.inputHelperText.NameText}
           name="Name"
           label="Name"
           variant="standard"
@@ -103,6 +142,8 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
           onChange={props.onChangeInput}
         />
         <TextField
+          error={props.inputHelperText.IsErrDescription}
+          helperText={props.inputHelperText.DescriptionText}
           name="Description"
           label="Description"
           variant="standard"
@@ -112,17 +153,21 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
           onChange={props.onChangeInput}
         />
         <TextField
+          error={props.inputHelperText.IsErrPrice}
+          helperText={props.inputHelperText.PriceText}
           name="Price"
           label="Price"
           variant="standard"
+          type="number"
           value={props.uProduct.Price}
           fullWidth
           sx={{ marginBottom: "1rem" }}
           onChange={props.onChangeInput}
         />
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
-          Upload image
+          Product image
         </Typography>
+        <RenderImage />
         <input
           type="file"
           onChange={(e) => {
@@ -133,13 +178,11 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
           }}
           className="mb-4"
         />
+
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
           Add ons
         </Typography>
-        <AddOnList
-          addOns={props.addOnListUProduct}
-          onRemoveAddOn={props.onRemoveAddOn}
-        />
+        <RenderAddOns />
         <Typography
           variant="h6"
           sx={{ marginTop: "1rem", marginBottom: ".5rem" }}

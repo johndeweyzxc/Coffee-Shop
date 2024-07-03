@@ -1,6 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { COL_USERS, COL_USERS_CARTS } from "../../strings";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
 import {
   FirestoreError,
   QuerySnapshot,
@@ -15,57 +13,59 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
+import { Cart } from "../useCartsModel";
+import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { COL_USERS, COL_USERS_CARTS } from "../../strings";
+
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
 
-export interface Cart {
-  Name: string;
-  Description: string;
-  Price: string | number;
-  TotalPrice: string | number;
-  ProductId: string;
-  Quantity: number;
-}
-
-export interface UCart extends Cart {
-  id: string;
-  ProductImageURL: string;
-}
-
-export const getCartInFirebase = (
+/**
+ * Listens for any changes of cart document in "Carts" collection
+ * @param userId The UID of currently signed in user
+ * @param onChange Callback handler when there is an update in "Carts" collection
+ * @returns Unsubscriber function to detach this listener
+ */
+export const listenCartInFirebase = (
   userId: string,
-  cb: (snapshot: QuerySnapshot | null) => void
+  onChange: (snapshot: QuerySnapshot | null) => void
 ): Unsubscribe => {
   const q = query(collection(db, COL_USERS, userId, COL_USERS_CARTS));
   return onSnapshot(
     q,
     (snapshot) => {
       console.log(
-        `carts.getCartInFirebase: Fetched ${snapshot.size} cart data`
+        `carts.listenCartInFirebase: Fetched ${snapshot.size} cart data`
       );
-      cb(snapshot);
+      onChange(snapshot);
     },
     (error: FirestoreError) => {
       console.log(error.message);
       console.log(
-        "carts.getCartInFirebase: There is an error fetching cart data"
+        "carts.listenCartInFirebase: There is an error fetching cart data"
       );
-      cb(null);
+      onChange(null);
     }
   );
 };
 
+/**
+ * Uploads a cart document to "Carts" collection
+ * @param userId The UID of currently signed in user
+ * @param cart The cart that will be uploaded into "Carts" collection
+ * @param onAddedToCart Callback handler when this operation is success or not
+ */
 export const addToCartInFirebase = (
   userId: string,
   cart: Cart,
-  cb: (success: boolean, cartId: string) => void
+  onAddedToCart: (success: boolean, cartId: string) => void
 ) => {
   addDoc(collection(db, COL_USERS, userId, COL_USERS_CARTS), cart)
     .then((value) => {
       console.log(
         `carts.addToCartInFirebase: Successfully added product with id ${cart.ProductId} to cart`
       );
-      cb(true, value.id);
+      onAddedToCart(true, value.id);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -74,21 +74,27 @@ export const addToCartInFirebase = (
           `carts.addToCartInFirebase: There is an error adding product with id ${cart.ProductId} to cart`
         );
       }
-      cb(false, "");
+      onAddedToCart(false, "");
     });
 };
 
+/**
+ * Deletes a cart document in "Carts" collection
+ * @param userId The UID of currently signed in user
+ * @param cartId The UID of the cart document that will be deleted
+ * @param onRemovedFromCart Callback handler when this operation is success or not
+ */
 export const removeFromCartInFirebase = (
   userId: string,
   cartId: string,
-  cb: (success: boolean) => void
+  onRemovedFromCart: (success: boolean) => void
 ) => {
   deleteDoc(doc(db, COL_USERS, userId, COL_USERS_CARTS, cartId))
     .then(() => {
       console.log(
         `carts.removeFromCartInFirebase: Successfully deleted cart with id ${cartId}`
       );
-      cb(true);
+      onRemovedFromCart(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -97,15 +103,22 @@ export const removeFromCartInFirebase = (
           `carts.removeFromCartInFirebase: There is an error deleting product with id ${cartId}`
         );
       }
-      cb(false);
+      onRemovedFromCart(false);
     });
 };
 
+/**
+ * Updates or edit the content of cart document in "Carts" collection
+ * @param userId The UID of currently signed in user
+ * @param cartId The UID of the cart document that will be edited
+ * @param newCart New version of the cart document
+ * @param onEditedCart Callback handler when this operation is success or not
+ */
 export const editCartInFirebase = (
   userId: string,
   cartId: string,
   newCart: object,
-  cb: (success: boolean) => void
+  onEditedCart: (success: boolean) => void
 ) => {
   const cartRef = doc(db, COL_USERS, userId, COL_USERS_CARTS, cartId);
   updateDoc(cartRef, newCart)
@@ -113,7 +126,7 @@ export const editCartInFirebase = (
       console.log(
         `carts.editCartInFirebase: Successfully updated cart with id ${cartId}`
       );
-      cb(true);
+      onEditedCart(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -122,6 +135,6 @@ export const editCartInFirebase = (
           `carts.editCartInFirebase: There is an error updating cart with id ${cartId}`
         );
       }
-      cb(false);
+      onEditedCart(false);
     });
 };

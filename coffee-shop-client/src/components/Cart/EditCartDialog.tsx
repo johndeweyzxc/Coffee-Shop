@@ -11,10 +11,10 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { UCart } from "../../model/api/cart";
-import { UAddOn } from "../../model/api/addons";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { UCart } from "../../model/useCartsModel";
+import { UAddOn } from "../../model/useAddOnsModel";
 
 interface SelectedAddOnsProps {
   uAddOns: UAddOn[];
@@ -99,7 +99,7 @@ interface EditCartDialogProps {
   quantity: number;
   totalPrice: number;
   onChangeQuantity: (e: ChangeEvent<HTMLInputElement>) => void;
-  onEditCart: () => void;
+  onEditCart: (dialogImproperlyClosed: boolean) => void;
   selectedCartAddOns: UAddOn[];
   onRemoveAddOnFromSelectedCart: (uAddOn: UAddOn) => void;
   availableAddOns: UAddOn[];
@@ -109,12 +109,12 @@ export default function EditCartDialog(props: EditCartDialogProps) {
   return (
     <Dialog
       open={props.isOpen}
-      onClose={props.onEditCart}
+      onClose={() => props.onEditCart(true)}
       PaperProps={{
         component: "form",
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
           event.preventDefault();
-          props.onEditCart();
+          props.onEditCart(false);
         },
       }}
     >
@@ -154,7 +154,7 @@ export default function EditCartDialog(props: EditCartDialogProps) {
         Total Price: ${props.totalPrice}
       </Typography>
       <DialogActions>
-        <Button onClick={props.onEditCart} color="info">
+        <Button onClick={() => props.onEditCart(true)} color="info">
           Cancel
         </Button>
         <Button type="submit" color="success">

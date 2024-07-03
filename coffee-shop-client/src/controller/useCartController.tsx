@@ -1,11 +1,11 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import Notification from "../components/Notification";
 import { useCartViewModel } from "../viewmodel/useCartViewModel";
-import { UCart } from "../model/api/cart";
-import { UAddOn } from "../model/api/addons";
 import { Unsubscribe } from "firebase/auth";
 import { useOrderViewModel } from "../viewmodel/useOrderViewModel";
-import { ShippingAddress } from "../model/api/order";
+import { ShippingAddress } from "../model/useOrderModel";
+import { UCart } from "../model/useCartsModel";
+import { UAddOn } from "../model/useAddOnsModel";
 
 const useCartController = (userId: string) => {
   const emptyCart = {
@@ -29,13 +29,13 @@ const useCartController = (userId: string) => {
 
   const notify = Notification();
   const {
-    getCartsVM,
-    removeFromCart,
+    listenCartVM,
+    removeFromCartVM,
     editCartVM,
 
-    getAddOnsInCart,
-    listenAddOnsInCart,
-    listenAddOns,
+    getAddOnsFromCart,
+    listenAddOnsFromCart,
+    listenAddOnsFromProduct,
     appendAddOnsInCartVM,
     removeAddOnInCart,
   } = useCartViewModel();
@@ -122,11 +122,10 @@ const useCartController = (userId: string) => {
         const addOnsCopy = [...uAddOns];
         const filteredAddOns = filterAddOnsAlreadyListed(addOnsCopy);
 
-        filteredAddOns.forEach((value) => console.log(value));
         setAvailableAddOns(filteredAddOns);
       }
     };
-    return listenAddOns(selectedCart.ProductId, onAddOns);
+    return listenAddOnsFromProduct(selectedCart.ProductId, onAddOns);
   };
   const onGetAddOnsForSelectedCart = (): Unsubscribe => {
     const onAddOns = (uAddOns: UAddOn[] | null) => {
@@ -136,7 +135,7 @@ const useCartController = (userId: string) => {
         setSelectedCartAddOns(uAddOns);
       }
     };
-    return listenAddOnsInCart(userId, selectedCart.id, onAddOns);
+    return listenAddOnsFromCart(userId, selectedCart.id, onAddOns);
   };
   useEffect(() => {
     let unsubsribeAddOnsProduct: Unsubscribe | null = null;
@@ -202,11 +201,12 @@ const useCartController = (userId: string) => {
         notify.HandleOpenAlert("error", "Failed to remove from cart");
       }
     };
-    removeFromCart(userId, selectedCart.id, onDeletedCart);
+    removeFromCartVM(userId, selectedCart.id, onDeletedCart);
     onCloseDelete();
   };
-  const onEditCart = () => {
+  const onEditCart = (dialogImproperlyClosed: boolean) => {
     const onEditedCart = (success: boolean) => {
+      if (dialogImproperlyClosed) return;
       if (success) {
         notify.HandleOpenAlert("success", "Successfully edited cart");
       } else {
@@ -278,14 +278,13 @@ const useCartController = (userId: string) => {
   const onOpenCheckOut = (selectedCart: UCart) => {
     setSelectedCart(selectedCart);
     const onAddOns = (uAddOns: UAddOn[] | null) => {
-      uAddOns?.forEach((uAddOn) => console.log(uAddOn));
       if (uAddOns === null) {
         setCheckoutAddOns([]);
         return;
       }
       setCheckoutAddOns(uAddOns);
     };
-    getAddOnsInCart(userId, selectedCart.id, onAddOns);
+    getAddOnsFromCart(userId, selectedCart.id, onAddOns);
     setIsOpenCheckout(true);
   };
   const onCloseCheckOut = () => {
@@ -322,7 +321,7 @@ const useCartController = (userId: string) => {
 
     if (userId !== "") {
       console.log("[useCartController] Adding cart listener");
-      const unsubscribeCart = getCartsVM(userId, onCartsVM);
+      const unsubscribeCart = listenCartVM(userId, onCartsVM);
       return () => {
         console.log("[useCartController] Removing cart listener");
         unsubscribeCart();

@@ -1,22 +1,26 @@
 import { Unsubscribe } from "firebase/auth";
 import {
-  AddOn,
-  UAddOn,
   appendAddOnInCartInFirebase,
   appendAddOnInOrderInFirebase,
-  getAddOnsInCartInFirebase,
-  listenAddOnsInCartInFirebase,
-  listenAddOnsInFirebase,
-  removeAddOnInCartInFirebase,
+  getAddOnsFromCartInFirebase,
+  listenAddOnsFromCartInFirebase,
+  listenAddOnsFromProductInFirebase,
+  removeAddOnFromCartInFirebase,
 } from "./api/addons";
-import {
-  DocumentReference,
-  QueryDocumentSnapshot,
-  QuerySnapshot,
-} from "firebase/firestore";
+import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
+
+export interface AddOn {
+  AddOnId: string;
+  Name: string;
+  Price: string | number;
+}
+
+export interface UAddOn extends AddOn {
+  id: string;
+}
 
 const useAddOnsModel = () => {
-  const listenAddOns = (
+  const listenAddOnsFromProduct = (
     productId: string,
     onAddOns: (uAddOns: UAddOn[] | null) => void
   ): Unsubscribe => {
@@ -39,19 +43,24 @@ const useAddOnsModel = () => {
       });
       onAddOns(uAddOnList);
     };
-    return listenAddOnsInFirebase(productId, cb);
+    return listenAddOnsFromProductInFirebase(productId, cb);
   };
 
-  const appendAddOnsInCart = (
+  const appendAddOnInCart = (
     userId: string,
     cartId: string,
-    addOn: AddOn,
+    uAddOn: UAddOn,
     cb: (success: boolean) => void
   ) => {
+    const addOn: AddOn = {
+      AddOnId: uAddOn.id,
+      Name: uAddOn.Name,
+      Price: uAddOn.Price,
+    };
     appendAddOnInCartInFirebase(userId, cartId, addOn, cb);
   };
 
-  const listenAddOnsInCart = (
+  const listenAddOnsFromCart = (
     userId: string,
     cartId: string,
     onAddOns: (uAddOns: UAddOn[] | null) => void
@@ -75,10 +84,10 @@ const useAddOnsModel = () => {
       });
       onAddOns(uAddOnList);
     };
-    return listenAddOnsInCartInFirebase(userId, cartId, cb);
+    return listenAddOnsFromCartInFirebase(userId, cartId, cb);
   };
 
-  const getAddOnsInCart = (
+  const getAddOnsFromCart = (
     userId: string,
     cartId: string,
     onAddOns: (addOns: UAddOn[] | null) => void
@@ -86,7 +95,6 @@ const useAddOnsModel = () => {
     const cb = (snapshot: QueryDocumentSnapshot[] | null) => {
       if (snapshot != null) {
         const addOns: UAddOn[] = [];
-
         snapshot.forEach((uAddOn) => {
           const s = uAddOn.data() as UAddOn;
           const newUAddOn: UAddOn = {
@@ -102,7 +110,7 @@ const useAddOnsModel = () => {
         onAddOns(null);
       }
     };
-    getAddOnsInCartInFirebase(userId, cartId, cb);
+    getAddOnsFromCartInFirebase(userId, cartId, cb);
   };
 
   const removeAddOnInCart = (
@@ -111,22 +119,27 @@ const useAddOnsModel = () => {
     addOnId: string,
     cb: (success: boolean) => void
   ) => {
-    removeAddOnInCartInFirebase(userId, cartId, addOnId, cb);
+    removeAddOnFromCartInFirebase(userId, cartId, addOnId, cb);
   };
 
   const appendAddOnInOrder = (
     orderId: string,
-    addOn: AddOn,
+    uAddOn: UAddOn,
     cb: (success: boolean) => void
   ) => {
+    const addOn: AddOn = {
+      AddOnId: uAddOn.AddOnId,
+      Name: uAddOn.Name,
+      Price: uAddOn.Price,
+    };
     appendAddOnInOrderInFirebase(orderId, addOn, cb);
   };
 
   return {
-    listenAddOns,
-    listenAddOnsInCart,
-    getAddOnsInCart,
-    appendAddOnsInCart,
+    listenAddOnsFromProduct,
+    listenAddOnsFromCart,
+    getAddOnsFromCart,
+    appendAddOnInCart,
     removeAddOnInCart,
     appendAddOnInOrder,
   };

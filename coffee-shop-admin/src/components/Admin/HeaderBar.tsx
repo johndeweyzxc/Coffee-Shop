@@ -1,13 +1,13 @@
+import { Context, useContext } from "react";
 import { User } from "firebase/auth";
 import { Avatar } from "@mui/material";
 
+import CoffeeShopLogo from "../../assets/images/coffee-shop-logo.jpg";
 import {
   ADMIN_NEW_PRODUCT,
   ADMIN_ORDER_TAB,
   ADMIN_PRODUCT_TAB,
 } from "../../strings";
-import CoffeeShopLogo from "../../assets/images/coffee-shop-logo.jpg";
-import { Context, useContext } from "react";
 
 interface UserInfoProps {
   userPhotoUrl: string;
@@ -153,13 +153,7 @@ export default function Headerbar(props: {
             onOpenLogin={onOpenLogin}
             onSignOut={onSignOut}
           />
-          <div className="invisible max-lg:visible">
-            {/* 
-            TODO: Implement drawer for small screen sizes
-            <IconButton onClick={() => props.onOpenDrawer()}>
-              <MenuIcon />
-            </IconButton> */}
-          </div>
+          <div className="invisible max-lg:visible"></div>
         </div>
       </div>
       <div className="h-[1px] bg-gray-400" />

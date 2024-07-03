@@ -11,12 +11,12 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 import { Product } from "../../model/useProductsModel";
 import { AddOn } from "../../model/useAddOnsModel";
-import { InputHelperText } from "../../controller/useProduct/useUploadProduct";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { InputHelperTextUpload } from "../../controller/useProduct/useUploadProduct";
 
 interface AddOnListProps {
   addOns: AddOn[];
@@ -62,7 +62,7 @@ interface UploadProductDialogProps {
   newProduct: Product;
   onChangeInput: (e: ChangeEvent<HTMLInputElement>) => void;
   onUploadProduct: () => void;
-  inputHelperText: InputHelperText;
+  inputHelperText: InputHelperTextUpload;
   addOnListNewProduct: AddOn[];
   currAddOn: AddOn;
   onChangeAddOn: (e: ChangeEvent<HTMLInputElement>) => void;

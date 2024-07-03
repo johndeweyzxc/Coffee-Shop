@@ -1,5 +1,4 @@
 import React, { ChangeEvent } from "react";
-import { UCart } from "../../model/api/cart";
 import {
   Box,
   Button,
@@ -10,8 +9,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { ShippingAddress } from "../../model/api/order";
-import { UAddOn } from "../../model/api/addons";
+import { ShippingAddress } from "../../model/useOrderModel";
+import { UCart } from "../../model/useCartsModel";
+import { UAddOn } from "../../model/useAddOnsModel";
 
 interface SelectedAddOnsProps {
   uAddOns: UAddOn[];

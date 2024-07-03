@@ -1,10 +1,10 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { UProduct } from "../model/api/products";
 import Notification from "../components/Notification";
 import useMenuViewModel from "../viewmodel/useMenuViewModel";
 import { useCartViewModel } from "../viewmodel/useCartViewModel";
-import { UAddOn } from "../model/api/addons";
 import { Unsubscribe } from "firebase/firestore";
+import { UProduct } from "../model/useProductsModel";
+import { UAddOn } from "../model/useAddOnsModel";
 
 const useMenuController = () => {
   const EMPTY_PRODUCT: UProduct = {
@@ -15,7 +15,7 @@ const useMenuController = () => {
     ProductImageURL: "",
   };
 
-  const { getProductsVM, listenAddOns } = useMenuViewModel();
+  const { listenProductVM, listenAddOnsFromProduct } = useMenuViewModel();
   const { addToCartVM } = useCartViewModel();
   const notify = Notification();
 
@@ -75,7 +75,7 @@ const useMenuController = () => {
         setSelectedProdAddOns(uAddOns);
       }
     };
-    return listenAddOns(selectedProduct.id, onAddOns);
+    return listenAddOnsFromProduct(selectedProduct.id, onAddOns);
   };
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -143,7 +143,7 @@ const useMenuController = () => {
       setProducts(products);
     };
     console.log("[useMenuController] Adding product listener");
-    const unsubscribeProduct = getProductsVM(onProducts);
+    const unsubscribeProduct = listenProductVM(onProducts);
     return () => {
       console.log("[useMenuController] Removing product listener");
       unsubscribeProduct();

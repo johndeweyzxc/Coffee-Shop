@@ -1,89 +1,149 @@
 import { initializeApp } from "firebase/app";
 import {
   FirestoreError,
+  QueryDocumentSnapshot,
   QuerySnapshot,
   Unsubscribe,
   addDoc,
   collection,
   deleteDoc,
   doc,
+  getDocs,
   getFirestore,
   onSnapshot,
   query,
 } from "firebase/firestore";
 
-import { COL_ADDONS, COL_PRODUCTS } from "../../strings";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
 import { AddOn } from "../useAddOnsModel";
+import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { COL_ADDONS, COL_PRODUCTS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
 
-export const getAddOnsInFirebase = (
+/**
+ * Listens for any changes of AddOn document in "AddOns" collection in a product document
+ * @param productId The UID of the product document
+ * @param onChange Callback handler when there is an update of any AddOn document in "AddOns" collection
+ * @returns Unsubscriber function to detach this listener
+ */
+export const listenAddOnsInFirebase = (
   productId: string,
-  cb: (snapshot: QuerySnapshot | null) => void
+  onChange: (snapshot: QuerySnapshot | null) => void
 ): Unsubscribe => {
   const q = query(collection(db, COL_PRODUCTS, productId, COL_ADDONS));
   return onSnapshot(
     q,
     (snapshot) => {
       console.log(
-        `carts.getAddOnsInFirebase: Fetched ${snapshot.size} addon data`
+        `addOns.listenAddOnsInFirebase: Fetched ${snapshot.size} addon data`
       );
-      cb(snapshot);
+      onChange(snapshot);
     },
     (error: FirestoreError) => {
       console.log(error.message);
       console.log(
-        "carts.getAddOnsInFirebase: There is an error fetching addon data"
+        "addOns.listenAddOnsInFirebase: There is an error fetching addon data"
       );
-      cb(null);
+      onChange(null);
     }
   );
 };
 
-export const addAddOnInFirebase = (
+/**
+ * Gets all the AddOn document from "AddOns" collection in product document
+ * @param productId The UID of the product document
+ * @param onGotAddOns Callback handler when the data arrives
+ */
+export const getAddOnsInFirebase = (
+  productId: string,
+  onGotAddOns: (snapshot: QueryDocumentSnapshot[] | null) => void
+) => {
+  const q = query(collection(db, COL_PRODUCTS, productId, COL_ADDONS));
+  getDocs(q)
+    .then((value) => {
+      console.log(
+        `addons.getAddOnsInFirebase: Fetched ${value.size} addon data`
+      );
+      onGotAddOns(value.docs);
+    })
+    .catch((reason) => {
+      if (reason !== null || reason !== undefined) {
+        console.log(reason);
+        console.log(
+          "addons.getAddOnsInFirebase: There is an error fetching addon data"
+        );
+      }
+      onGotAddOns(null);
+    });
+};
+
+/**
+ * Gets all the AddOn document from "AddOns" collection in order document
+ * @param orderId The UID of the order document
+ * @param onGotAddOns Callback handler when the data arrives
+ */
+export const getAddOnsFromOrderInFirebase = (
+  orderId: string,
+  onGotAddOns: (snapshot: QueryDocumentSnapshot[] | null) => void
+) => {
+  // TODO: Implementation
+};
+
+/**
+ * Uploads an AddOn product document in "AddOns" collection in product document
+ * @param productId The UID of the product document
+ * @param addOn The addon that will be uploaded
+ * @param onUploadedAddOn Callback handler when this operation is success or not
+ */
+export const uploadAddOnInFirebase = (
   productId: string,
   addOn: AddOn,
-  cb: (success: boolean, addOnId: string | null) => void
+  onUploadedAddOn: (success: boolean, addOnId: string | null) => void
 ) => {
   addDoc(collection(db, COL_PRODUCTS, productId, COL_ADDONS), addOn)
     .then((value) => {
       console.log(
-        `addOns.addAddOnInFirebase: Successfully added addon with name ${addOn.Name} in addons for product with id ${productId}`
+        `addOns.uploadAddOnInFirebase: Successfully added addon with name ${addOn.Name} in addons for product with id ${productId}`
       );
-      cb(true, value.id);
+      onUploadedAddOn(true, value.id);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
         console.log(reason);
         console.log(
-          `addOns.addAddOnInFirebase: There is an error adding product with name ${addOn.Name} in addons for product with id ${productId}`
+          `addOns.uploadAddOnInFirebase: There is an error adding product with name ${addOn.Name} in addons for product with id ${productId}`
         );
-        cb(false, null);
+        onUploadedAddOn(false, null);
       }
     });
 };
 
-export const removeAddOnInFirebase = (
+/**
+ * Deletes an AddOn document in "AddOns" collection in product document
+ * @param productId The UID of the product document
+ * @param addOnId The UID of the addon document
+ * @param onRemovedAddOn Callback handler when this operation is success or not
+ */
+export const deleteAddOnInFirebase = (
   productId: string,
   addOnId: string,
-  cb: (success: boolean) => void
+  onRemovedAddOn: (success: boolean) => void
 ) => {
   deleteDoc(doc(db, COL_PRODUCTS, productId, COL_ADDONS, addOnId))
     .then(() => {
       console.log(
-        `addOns.removeAddOnInFirebase: Successfully deleted addon with id ${addOnId} from product with id ${productId}`
+        `addOns.deleteAddOnInFirebase: Successfully deleted addon with id ${addOnId} from product with id ${productId}`
       );
-      cb(true);
+      onRemovedAddOn(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
         console.log(reason);
         console.log(
-          `addOns.removeAddOnInFirebase: There is an error deleting addon with id ${addOnId} from product with id ${productId}`
+          `addOns.deleteAddOnInFirebase: There is an error deleting addon with id ${addOnId} from product with id ${productId}`
         );
-        cb(false);
+        onRemovedAddOn(false);
       }
     });
 };

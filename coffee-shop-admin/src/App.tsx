@@ -5,22 +5,22 @@ import "@fontsource/roboto/700.css";
 import { Typography } from "@mui/material";
 import { createContext } from "react";
 
-import useAppController from "./controller/useApp/useAppController";
-import useUpdateProduct from "./controller/useProduct/useUpdateProduct";
-import { useUploadProduct } from "./controller/useProduct/useUploadProduct";
+import ProductView from "./view/ProductView";
 import LoginWEmailDialog from "./components/Admin/LoginWEmailDialog";
 import Headerbar from "./components/Admin/HeaderBar";
 import UploadProductDialog from "./components/Admin/UploadProductDialog";
 import UpdateProductDialog from "./components/Admin/UpdateProductDialog";
 import Notification from "./components/Notification";
-import ProductView from "./view/ProductView";
+import useAppController from "./controller/useApp/useAppController";
+import useUpdateProduct from "./controller/useProduct/useUpdateProduct";
+import { useUploadProduct } from "./controller/useProduct/useUploadProduct";
 import { ADMIN_ORDER_TAB, ADMIN_PRODUCT_TAB } from "./strings";
 
 function App() {
   const notify = Notification();
 
   const {
-    inputHelperText,
+    inputHelperTextUpload,
 
     addOnListNewProduct,
     currAddOnNewProduct,
@@ -53,6 +53,8 @@ function App() {
   } = useAppController(notify.HandleOpenAlert, onOpenUpload);
 
   const {
+    inputHelperTextUpdate,
+
     addOnListUProduct,
     currAddOnUProduct,
     onChangeAddOnUProduct,
@@ -145,7 +147,7 @@ function App() {
         onChangeInput={onChangeNewProduct}
         onClose={onCloseUpload}
         onUploadProduct={onUploadProduct}
-        inputHelperText={inputHelperText}
+        inputHelperText={inputHelperTextUpload}
         addOnListNewProduct={addOnListNewProduct}
         currAddOn={currAddOnNewProduct}
         onChangeAddOn={onChangeAddOnNewProduct}
@@ -166,6 +168,7 @@ function App() {
         onChangeAddOn={onChangeAddOnUProduct}
         onRemoveAddOn={onRemoveAddOnUProduct}
         onSetUProductImage={onSetUProductImage}
+        inputHelperText={inputHelperTextUpdate}
       />
       {notify.SnackBar}
     </>

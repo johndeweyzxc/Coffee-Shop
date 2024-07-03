@@ -1,16 +1,28 @@
 import { QuerySnapshot, Unsubscribe } from "firebase/firestore";
 import {
-  Cart,
-  UCart,
   addToCartInFirebase,
   editCartInFirebase,
-  getCartInFirebase,
+  listenCartInFirebase,
   removeFromCartInFirebase,
 } from "./api/cart";
-import { UProduct } from "./api/products";
+import { UProduct } from "./useProductsModel";
+
+export interface Cart {
+  Name: string;
+  Description: string;
+  Price: string | number;
+  TotalPrice: string | number;
+  ProductId: string;
+  Quantity: number;
+}
+
+export interface UCart extends Cart {
+  id: string;
+  ProductImageURL: string;
+}
 
 const useCartsModel = () => {
-  const getCarts = (
+  const listenCart = (
     userId: string,
     onCarts: (carts: UCart[] | null) => void
   ): Unsubscribe => {
@@ -19,7 +31,6 @@ const useCartsModel = () => {
         onCarts(null);
         return;
       }
-
       const cartList: UCart[] = [];
       snapshot.forEach((doc) => {
         const s = doc.data() as Cart;
@@ -39,7 +50,7 @@ const useCartsModel = () => {
       onCarts(cartList);
     };
 
-    return getCartInFirebase(userId, cb);
+    return listenCartInFirebase(userId, cb);
   };
 
   const addToCart = (
@@ -72,14 +83,22 @@ const useCartsModel = () => {
   const editCart = (
     userId: string,
     cartId: string,
-    newCart: object,
+    newCart: UCart,
     cb: (success: boolean) => void
   ) => {
-    editCartInFirebase(userId, cartId, newCart, cb);
+    const cart: object = {
+      Name: newCart.Name,
+      Description: newCart.Description,
+      Price: newCart.Price,
+      TotalPrice: newCart.TotalPrice,
+      ProductId: newCart.ProductId,
+      Quantity: newCart.Quantity,
+    };
+    editCartInFirebase(userId, cartId, cart, cb);
   };
 
   return {
-    getCarts,
+    listenCart,
     addToCart,
     removeFromCart,
     editCart,

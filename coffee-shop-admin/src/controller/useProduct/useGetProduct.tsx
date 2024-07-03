@@ -4,7 +4,6 @@ import { GridColDef, GridEventListener } from "@mui/x-data-grid";
 
 import { UProduct } from "../../model/useProductsModel";
 import useAdminViewModel from "../../viewmodel/useAdminViewModel";
-import { PRODUCTS_STATUS } from "../../status";
 
 export const useGetProduct = (
   isLoggedIn: boolean,
@@ -47,40 +46,31 @@ export const useGetProduct = (
     },
   ];
 
-  const { getProductsVM } = useAdminViewModel();
+  const { listenProductsVM } = useAdminViewModel();
 
+  // * STATE MANAGEMENT FOR RETRIEVING PRODUCTS
+  // Available products
   const [products, setProducts] = useState<UProduct[]>([]);
 
   const onProductClicked: GridEventListener<"rowClick"> = (params) => {
     setUpdateProduct(params.row);
     onOpenUpdate();
   };
-
   useEffect(() => {
     let unsubscribeProduct: Unsubscribe | null = null;
-
-    const onProducts = (
-      products: UProduct[] | null,
-      status: PRODUCTS_STATUS
-    ) => {
-      products?.forEach((product) => console.log(product));
-
-      if (status === PRODUCTS_STATUS.FETCHED) {
-        setProducts(products!);
-      } else if (status === PRODUCTS_STATUS.PERMISSION_ERROR) {
-        // DO NOTHING HERE
-      } else if (status === PRODUCTS_STATUS.ERROR) {
+    const onProducts = (products: UProduct[] | null) => {
+      if (products === null) {
         handleOpenAlert("error", "Failed to fetched product data");
+      } else {
+        setProducts(products);
       }
     };
-
     if (isLoggedIn) {
       console.log("[useAdminController] Adding product listener");
-      unsubscribeProduct = getProductsVM(onProducts);
+      unsubscribeProduct = listenProductsVM(onProducts);
     } else {
       setProducts([]);
     }
-
     return () => {
       console.log("[useAdminController] Removing product listener");
       if (unsubscribeProduct !== null) unsubscribeProduct();

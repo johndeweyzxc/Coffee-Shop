@@ -1,40 +1,20 @@
-import { AddOn, UAddOn } from "../model/api/addons";
-import { UCart } from "../model/api/cart";
-import { Order, ProductOrder, ShippingAddress } from "../model/api/order";
-import useAddOnsModel from "../model/useAddOnsModel";
-import useCartsModel from "../model/useCartsModel";
-import useOrderModel from "../model/useOrderModel";
+import useAddOnsModel, { UAddOn } from "../model/useAddOnsModel";
+import useCartsModel, { UCart } from "../model/useCartsModel";
+import useOrderModel, { ShippingAddress } from "../model/useOrderModel";
 
 export const useOrderViewModel = () => {
   const { addOrder } = useOrderModel();
   const { removeFromCart } = useCartsModel();
-  const { getAddOnsInCart, appendAddOnInOrder, removeAddOnInCart } =
+  const { getAddOnsFromCart, appendAddOnInOrder, removeAddOnInCart } =
     useAddOnsModel();
 
   const addOrderVM = (
-    cart: UCart,
+    uCart: UCart,
     shippingAddr: ShippingAddress,
     clientName: string,
     clientUID: string,
     cb: (success: boolean) => void
   ) => {
-    const productOrder: ProductOrder = {
-      Name: cart.Name,
-      Description: cart.Description,
-      Price: cart.Price,
-      ProductId: cart.ProductId,
-      Quantity: cart.Quantity,
-      TotalPrice: cart.TotalPrice,
-    };
-
-    const newOrder: Order = {
-      ClientName: clientName,
-      ClientUID: clientUID,
-      ProductOrderInfo: productOrder,
-      ShippingAddressLocation: shippingAddr,
-      Status: "Order requested",
-    };
-
     const appendAddOnInOrderCollection = (orderId: string) => {
       const onRemovedCart = (removeSuccess: boolean) => {
         if (removeSuccess) {
@@ -45,13 +25,19 @@ export const useOrderViewModel = () => {
       };
 
       const onAddOns = (uAddOns: UAddOn[] | null) => {
+        if (uAddOns?.length === 0) {
+          // * EMPTY ADDON
+          removeFromCart(clientUID, uCart.id, onRemovedCart);
+          return;
+        }
+
         uAddOns?.forEach((uAddOn, index) => {
           const onRemovedAddOn = (success: boolean) => {
             if (success) {
               if (uAddOns.length === index + 1) {
                 // * LAST ADDON
                 // * Delete the cart
-                removeFromCart(clientUID, cart.id, onRemovedCart);
+                removeFromCart(clientUID, uCart.id, onRemovedCart);
               }
             } else {
               cb(false);
@@ -59,16 +45,15 @@ export const useOrderViewModel = () => {
           };
           const onAppendedAddOn = (success: boolean) => {
             if (success) {
-              removeAddOnInCart(clientUID, cart.id, uAddOn.id, onRemovedAddOn);
+              removeAddOnInCart(clientUID, uCart.id, uAddOn.id, onRemovedAddOn);
             } else {
               cb(false);
             }
           };
-          // TODO: Fix addon to not include "id"
-          appendAddOnInOrder(orderId, uAddOn as AddOn, onAppendedAddOn);
+          appendAddOnInOrder(orderId, uAddOn, onAppendedAddOn);
         });
       };
-      getAddOnsInCart(clientUID, cart.id, onAddOns);
+      getAddOnsFromCart(clientUID, uCart.id, onAddOns);
     };
 
     const onAddedOrder = (success: boolean, orderId: string) => {
@@ -80,7 +65,7 @@ export const useOrderViewModel = () => {
         cb(false);
       }
     };
-    addOrder(newOrder, onAddedOrder);
+    addOrder(uCart, clientName, clientUID, shippingAddr, onAddedOrder);
   };
 
   return { addOrderVM };

@@ -1,25 +1,20 @@
-import { UCart } from "../model/api/cart";
-import useCartsModel from "../model/useCartsModel";
-import { UProduct } from "../model/api/products";
-import useAddOnsModel from "../model/useAddOnsModel";
-import { AddOn, UAddOn } from "../model/api/addons";
+import useCartsModel, { UCart } from "../model/useCartsModel";
+import useAddOnsModel, { UAddOn } from "../model/useAddOnsModel";
 import { Unsubscribe } from "firebase/firestore";
-import useProductsModel from "../model/useProductsModel";
+import useProductsModel, { UProduct } from "../model/useProductsModel";
 
 export const useCartViewModel = () => {
-  // TODO: Remove the AddOns column residual when a cart is deleted
-
-  const { getCarts, addToCart, removeFromCart, editCart } = useCartsModel();
-  const { getAddOnsInCart } = useAddOnsModel();
+  const { listenCart, addToCart, removeFromCart, editCart } = useCartsModel();
   const {
-    listenAddOnsInCart,
-    appendAddOnsInCart,
-    listenAddOns,
+    listenAddOnsFromProduct,
+    listenAddOnsFromCart,
+    getAddOnsFromCart,
+    appendAddOnInCart,
     removeAddOnInCart,
   } = useAddOnsModel();
   const { getProductImageURL } = useProductsModel();
 
-  const getCartsVM = (
+  const listenCartVM = (
     userId: string,
     onCarts: (carts: UCart[] | null) => void
   ): Unsubscribe => {
@@ -51,24 +46,16 @@ export const useCartViewModel = () => {
       }
     };
 
-    return getCarts(userId, onReceivedCarts);
+    return listenCart(userId, onReceivedCarts);
   };
 
   const editCartVM = (
     userId: string,
     cartId: string,
-    newCart: UCart,
+    uCart: UCart,
     cb: (success: boolean) => void
   ) => {
-    const cart: object = {
-      Name: newCart.Name,
-      Description: newCart.Description,
-      Price: newCart.Price,
-      TotalPrice: newCart.TotalPrice,
-      ProductId: newCart.ProductId,
-      Quantity: newCart.Quantity,
-    };
-    editCart(userId, cartId, cart, cb);
+    editCart(userId, cartId, uCart, cb);
   };
 
   const addToCartVM = (
@@ -79,23 +66,13 @@ export const useCartViewModel = () => {
     uAddOns: UAddOn[],
     cb: (success: boolean) => void
   ) => {
-    const newAddOnList: AddOn[] = [];
-    uAddOns.forEach((addOn) => {
-      const newAddOn: AddOn = {
-        AddOnId: addOn.id,
-        Name: addOn.Name,
-        Price: addOn.Price,
-      };
-      newAddOnList.push(newAddOn);
-    });
-
     const onAddedToCart = (success: boolean, cartId: string) => {
       if (success) {
-        newAddOnList.forEach((addOn) => {
+        uAddOns.forEach((uAddOn) => {
           const onAddedAdOns = (success: boolean) => {
             if (!success) cb(false);
           };
-          appendAddOnsInCart(userId, cartId, addOn, onAddedAdOns);
+          appendAddOnInCart(userId, cartId, uAddOn, onAddedAdOns);
         });
         cb(true);
       } else {
@@ -112,24 +89,50 @@ export const useCartViewModel = () => {
     uAddOn: UAddOn,
     cb: (success: boolean) => void
   ) => {
-    const addOn: AddOn = {
-      AddOnId: uAddOn.id,
-      Name: uAddOn.Name,
-      Price: uAddOn.Price,
+    appendAddOnInCart(userId, cartId, uAddOn, cb);
+  };
+
+  const removeFromCartVM = (
+    userId: string,
+    cartId: string,
+    cb: (success: boolean) => void
+  ) => {
+    const onAddOns = (uAddOns: UAddOn[] | null) => {
+      let deletedAddOns = 1;
+      const onRemovedAddOnInCart = (success: boolean) => {
+        if (success) {
+          if (uAddOns?.length === deletedAddOns) {
+            cb(true);
+          }
+        } else {
+          cb(false);
+        }
+        deletedAddOns++;
+      };
+      uAddOns?.forEach((uAddOn) => {
+        removeAddOnInCart(userId, cartId, uAddOn.id, onRemovedAddOnInCart);
+      });
     };
 
-    appendAddOnsInCart(userId, cartId, addOn, cb);
+    const onRemovedFromCart = (success: boolean) => {
+      if (success) {
+        getAddOnsFromCart(userId, cartId, onAddOns);
+      } else {
+        cb(false);
+      }
+    };
+    removeFromCart(userId, cartId, onRemovedFromCart);
   };
 
   return {
-    getCartsVM,
+    listenCartVM,
     addToCartVM,
-    removeFromCart,
+    removeFromCartVM,
     editCartVM,
 
-    getAddOnsInCart,
-    listenAddOns,
-    listenAddOnsInCart,
+    getAddOnsFromCart,
+    listenAddOnsFromProduct,
+    listenAddOnsFromCart,
     appendAddOnsInCartVM,
     removeAddOnInCart,
   };

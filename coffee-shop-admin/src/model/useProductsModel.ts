@@ -4,12 +4,11 @@ import { Unsubscribe } from "firebase/auth";
 import {
   deleteProductInFirebase,
   getProductImageURLInFirebase,
-  getProductsInFirebase,
+  listenProductsInFirebase,
   updateProductInFirebase,
   uploadProductImageInFirebase,
   uploadProductInFirebase,
 } from "./api/products";
-import { PRODUCTS_STATUS } from "../status";
 
 export interface Product {
   Name: string;
@@ -23,12 +22,12 @@ export interface UProduct extends Product {
 }
 
 const useProductsModel = () => {
-  const getProducts = (
-    onProducts: (products: UProduct[] | null, status: PRODUCTS_STATUS) => void
+  const listenProducts = (
+    onProducts: (products: UProduct[] | null) => void
   ): Unsubscribe => {
-    const cb = (snapshot: QuerySnapshot | null, status: PRODUCTS_STATUS) => {
+    const cb = (snapshot: QuerySnapshot | null) => {
       if (snapshot === null) {
-        onProducts(null, status);
+        onProducts(null);
         return;
       }
 
@@ -44,16 +43,17 @@ const useProductsModel = () => {
         };
         productList.push(uproduct);
       });
-      onProducts(productList, status);
+      onProducts(productList);
     };
 
-    return getProductsInFirebase(cb);
+    return listenProductsInFirebase(cb);
   };
 
   const uploadProduct = (
     product: Product,
     onUploaded: (success: boolean, productId: string) => void
   ) => {
+    product.Price = parseInt(product.Price as string);
     const cb = (success: boolean, productId: string) =>
       onUploaded(success, productId);
     uploadProductInFirebase(product, cb);
@@ -64,6 +64,7 @@ const useProductsModel = () => {
     id: string,
     onUpdated: (success: boolean) => void
   ) => {
+    product.Price = parseInt(product.Price as string);
     const cb = (success: boolean) => onUpdated(success);
     updateProductInFirebase(product, id, cb);
   };
@@ -86,7 +87,7 @@ const useProductsModel = () => {
   };
 
   return {
-    getProducts,
+    listenProducts,
     uploadProduct,
     updateProduct,
     deleteProduct,
