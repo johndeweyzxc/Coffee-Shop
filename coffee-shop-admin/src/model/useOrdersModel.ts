@@ -5,14 +5,14 @@ import {
   updateStatusOfOrderInFirebase,
 } from "./api/orders";
 
-export interface ShippingAddress {
+interface ShippingAddress {
   Region: string;
   City: string;
   District: string;
   Street: string;
 }
 
-export interface ProductOrder {
+interface ProductOrder {
   Name: string;
   Description: string;
   Price: string | number;
@@ -21,7 +21,7 @@ export interface ProductOrder {
   Quantity: number;
 }
 
-export interface Order {
+interface Order {
   ClientName: string;
   ClientUID: string;
   ProductOrderInfo: ProductOrder;
@@ -29,8 +29,11 @@ export interface Order {
   Status: string;
 }
 
-export interface UOrder extends Order {
+export interface UOrder extends ProductOrder, ShippingAddress {
   id: string;
+  ClientName: string;
+  ClientUID: string;
+  Status: string;
 }
 
 const useOrdersModel = () => {
@@ -50,8 +53,19 @@ const useOrdersModel = () => {
           id: doc.id,
           ClientName: s.ClientName,
           ClientUID: s.ClientUID,
-          ProductOrderInfo: s.ProductOrderInfo,
-          ShippingAddressLocation: s.ShippingAddressLocation,
+
+          Name: s.ProductOrderInfo.Name,
+          Description: s.ProductOrderInfo.Description,
+          Price: s.ProductOrderInfo.Price,
+          ProductId: s.ProductOrderInfo.ProductId,
+          Quantity: s.ProductOrderInfo.Quantity,
+          TotalPrice: s.ProductOrderInfo.TotalPrice,
+
+          City: s.ShippingAddressLocation.City,
+          District: s.ShippingAddressLocation.District,
+          Region: s.ShippingAddressLocation.Region,
+          Street: s.ShippingAddressLocation.Street,
+
           Status: s.Status,
         };
         orderList.push(uorder);

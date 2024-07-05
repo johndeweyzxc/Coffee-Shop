@@ -15,6 +15,7 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { UCart } from "../../model/useCartsModel";
 import { UAddOn } from "../../model/useAddOnsModel";
+import { truncateName } from "../../utils/stringUtils";
 
 interface SelectedAddOnsProps {
   uAddOns: UAddOn[];
@@ -35,7 +36,7 @@ function SelectedAddOns(props: SelectedAddOnsProps) {
             />
             <TextField
               name="Price"
-              label="Price"
+              label="Price in Peso (PHP)"
               variant="standard"
               value={uAddOn.Price}
               sx={{ marginRight: ".5rem" }}
@@ -73,7 +74,7 @@ function AvailableAddOns(props: AvailableAddOnsProps) {
             />
             <TextField
               name="Price"
-              label="Price"
+              label="Price in Peso (PHP)"
               variant="standard"
               value={uAddOn.Price}
               sx={{ marginRight: ".5rem" }}
@@ -106,6 +107,53 @@ interface EditCartDialogProps {
   onRemoveAddOnFromAvaialableAddOns: (uAddOn: UAddOn) => void;
 }
 export default function EditCartDialog(props: EditCartDialogProps) {
+  const RenderSelectedAddOns = () => {
+    if (props.selectedCartAddOns.length === 0) {
+      return (
+        <Typography variant="subtitle2" sx={{ maginTop: ".5rem", width: 400 }}>
+          No selected add ons
+        </Typography>
+      );
+    } else {
+      return (
+        <SelectedAddOns
+          uAddOns={props.selectedCartAddOns}
+          onRemoveAddOnFromSelectedCart={props.onRemoveAddOnFromSelectedCart}
+        />
+      );
+    }
+  };
+
+  const RenderAvailableAddOns = () => {
+    if (
+      props.availableAddOns.length === 0 &&
+      props.selectedCartAddOns.length !== 0
+    ) {
+      return (
+        <Typography variant="subtitle2" sx={{ maginTop: ".5rem", width: 400 }}>
+          All add ons have already been selected
+        </Typography>
+      );
+    }
+
+    if (props.availableAddOns.length === 0) {
+      return (
+        <Typography variant="subtitle2" sx={{ maginTop: ".5rem", width: 400 }}>
+          No available add ons for this product
+        </Typography>
+      );
+    } else {
+      return (
+        <AvailableAddOns
+          uAddOns={props.availableAddOns}
+          onRemoveAddOnFromAvaialableAddOns={
+            props.onRemoveAddOnFromAvaialableAddOns
+          }
+        />
+      );
+    }
+  };
+
   return (
     <Dialog
       open={props.isOpen}
@@ -118,11 +166,31 @@ export default function EditCartDialog(props: EditCartDialogProps) {
         },
       }}
     >
-      <DialogTitle>{props.selectedCart.Name}</DialogTitle>
+      <DialogTitle>{truncateName(props.selectedCart.Name)}</DialogTitle>
       <DialogContent dividers>
+        <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+          Product description
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: "1rem" }}>
+          {props.selectedCart.Description}
+        </Typography>
+        <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+          Product price
+        </Typography>
+        <TextField
+          name="Price"
+          label="Price in Peso (PHP)"
+          variant="standard"
+          value={props.selectedCart.Price}
+          sx={{ marginBottom: "1rem" }}
+          fullWidth
+        />
+        <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+          Product quantity
+        </Typography>
         <TextField
           name="Quantity"
-          label="Quantity"
+          label="Set quantity"
           variant="standard"
           type="number"
           value={props.quantity}
@@ -133,31 +201,27 @@ export default function EditCartDialog(props: EditCartDialogProps) {
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
           Selected Add ons
         </Typography>
-        <SelectedAddOns
-          uAddOns={props.selectedCartAddOns}
-          onRemoveAddOnFromSelectedCart={props.onRemoveAddOnFromSelectedCart}
-        />
+        <RenderSelectedAddOns />
         <Typography
           variant="h6"
           sx={{ marginTop: "1rem", marginBottom: ".5rem" }}
         >
           Available Add ons
         </Typography>
-        <AvailableAddOns
-          uAddOns={props.availableAddOns}
-          onRemoveAddOnFromAvaialableAddOns={
-            props.onRemoveAddOnFromAvaialableAddOns
-          }
-        />
+        <RenderAvailableAddOns />
       </DialogContent>
       <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
         Total Price: ${props.totalPrice}
       </Typography>
       <DialogActions>
-        <Button onClick={() => props.onEditCart(true)} color="info">
+        <Button
+          onClick={() => props.onEditCart(true)}
+          sx={{ textTransform: "none" }}
+          color="info"
+        >
           Cancel
         </Button>
-        <Button type="submit" color="success">
+        <Button type="submit" sx={{ textTransform: "none" }} color="success">
           Update
         </Button>
       </DialogActions>

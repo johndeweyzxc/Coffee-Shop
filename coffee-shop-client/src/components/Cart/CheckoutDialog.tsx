@@ -55,6 +55,18 @@ interface CheckoutDialogProps {
   checkoutAddOns: UAddOn[];
 }
 export default function CheckoutDialog(props: CheckoutDialogProps) {
+  const RenderSelectedAddOns = () => {
+    if (props.checkoutAddOns.length === 0) {
+      return (
+        <Typography variant="subtitle2" sx={{ maginTop: ".5rem", width: 400 }}>
+          No selected add ons
+        </Typography>
+      );
+    } else {
+      return <SelectedAddOns uAddOns={props.checkoutAddOns} />;
+    }
+  };
+
   return (
     <Dialog
       open={props.isOpen}
@@ -94,7 +106,7 @@ export default function CheckoutDialog(props: CheckoutDialogProps) {
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
           Add ons
         </Typography>
-        <SelectedAddOns uAddOns={props.checkoutAddOns} />
+        <RenderSelectedAddOns />
         <Typography
           variant="h6"
           sx={{ marginBottom: ".5rem", marginTop: "1rem" }}
@@ -146,13 +158,17 @@ export default function CheckoutDialog(props: CheckoutDialogProps) {
         </Box>
       </DialogContent>
       <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
-        <b>Total Price: </b>${props.selectedCart.TotalPrice}
+        <b>Total Price: </b>₱{props.selectedCart.TotalPrice}
       </Typography>
       <DialogActions>
-        <Button onClick={props.onClose} color="info">
+        <Button
+          onClick={props.onClose}
+          sx={{ textTransform: "none" }}
+          color="info"
+        >
           Cancel
         </Button>
-        <Button type="submit" color="success">
+        <Button type="submit" sx={{ textTransform: "none" }} color="success">
           Checkout
         </Button>
       </DialogActions>

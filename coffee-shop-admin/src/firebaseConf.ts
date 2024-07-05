@@ -6,3 +6,5 @@ export const FIREBASE_CONFIG = {
   messagingSenderId: "935980230455",
   appId: "1:935980230455:web:f855dfd9b614df00809cb2",
 };
+
+export const IS_DEV_MODE = true;

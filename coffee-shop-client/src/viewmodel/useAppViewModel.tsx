@@ -1,13 +1,19 @@
 import useAppAuthModel from "../model/useAppAuthModel";
 
 const useAppViewModel = () => {
-  const { addAuthListener, removeAuthListener, signInGoogle, signOut } =
-    useAppAuthModel();
-  return {
+  const {
     addAuthListener,
-    removeAuthListener,
     signInGoogle,
     signOut,
+    signInUsingEmailAndPassword,
+    registerUsingEmailAndPassword,
+  } = useAppAuthModel();
+  return {
+    addAuthListener,
+    signInGoogle,
+    signOut,
+    signInUsingEmailAndPassword,
+    registerUsingEmailAndPassword,
   };
 };
 

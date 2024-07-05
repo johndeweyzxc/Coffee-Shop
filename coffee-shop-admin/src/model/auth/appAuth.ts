@@ -1,6 +1,7 @@
 import {
   Unsubscribe,
   User,
+  connectAuthEmulator,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -8,15 +9,20 @@ import {
 } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 
-import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../firebaseConf";
 import { LoginAsAdmin } from "../useAppAuthModel";
 
 initializeApp(FIREBASE_CONFIG);
+const auth = getAuth();
+if (IS_DEV_MODE) {
+  console.log("[appAuth] Application using auth running in development mode");
+  connectAuthEmulator(auth, "http://127.0.0.1:9099");
+}
 
 export const authListenerInFirebase = (
   cb: (user: User | null) => void
 ): Unsubscribe => {
-  return onAuthStateChanged(getAuth(), (user) => {
+  return onAuthStateChanged(auth, (user) => {
     if (user) {
       console.log(
         `appAuth.authListenerInFirebase: User is authenticated with id ${user.uid}`
@@ -33,7 +39,7 @@ export const signInWithEmailInFirebase = (
   loginData: LoginAsAdmin,
   cb: (success: boolean) => void
 ) => {
-  signInWithEmailAndPassword(getAuth(), loginData.Username, loginData.Password)
+  signInWithEmailAndPassword(auth, loginData.Username, loginData.Password)
     .then((result) => {
       console.log(
         `appAuth.signInWithEmailInFirebase: User signed in using email ${result.user.email}`
@@ -52,7 +58,7 @@ export const signInWithEmailInFirebase = (
 };
 
 export const signOutInFirebase = (cb: (success: boolean) => void) => {
-  signOut(getAuth())
+  signOut(auth)
     .then(() => {
       console.log("appAuth.signOutWithGoogleInFirebase: User signed out");
       cb(true);

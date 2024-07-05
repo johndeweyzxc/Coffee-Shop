@@ -1,11 +1,11 @@
 import { initializeApp } from "firebase/app";
 import {
   FirestoreError,
-  QueryDocumentSnapshot,
   QuerySnapshot,
   Unsubscribe,
   addDoc,
   collection,
+  connectFirestoreEmulator,
   deleteDoc,
   doc,
   getDocs,
@@ -26,6 +26,12 @@ import {
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
+if (window.location.hostname === "localhost") {
+  console.log(
+    "[addons] Application using firestore running in development mode"
+  );
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+}
 
 /**
  * Listens for any changes of AddOn document in "AddOns" collection in product document
@@ -98,7 +104,7 @@ export const listenAddOnsFromCartInFirebase = (
 export const getAddOnsFromCartInFirebase = (
   userId: string,
   cartId: string,
-  onGotAddOns: (snapshot: QueryDocumentSnapshot[] | null) => void
+  onGotAddOns: (snapshot: QuerySnapshot | null) => void
 ) => {
   const q = query(
     collection(db, COL_USERS, userId, COL_USERS_CARTS, cartId, COL_ADDONS)
@@ -108,13 +114,40 @@ export const getAddOnsFromCartInFirebase = (
       console.log(
         `carts.getAddOnsFromCartInFirebase: Fetched ${value.size} addon data`
       );
-      onGotAddOns(value.docs);
+      onGotAddOns(value);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
         console.log(reason);
         console.log(
           "carts.getAddOnsFromCartInFirebase: There is an error fetching addon data"
+        );
+      }
+      onGotAddOns(null);
+    });
+};
+
+/**
+ * Get all the AddOn document from "AddOns" collection in order document
+ * @param orderId The UID of order document
+ * @param onGotAddOns Callback handler when the data arrives
+ */
+export const getAddOnsFromOrderInFirebase = (
+  orderId: string,
+  onGotAddOns: (snapshot: QuerySnapshot | null) => void
+) => {
+  getDocs(query(collection(db, COL_ORDERS, orderId, COL_ADDONS)))
+    .then((value) => {
+      console.log(
+        `carts.getAddOnsFromOrderInFirebase: Fetched ${value.size} addon data`
+      );
+      onGotAddOns(value);
+    })
+    .catch((reason) => {
+      if (reason !== null || reason !== undefined) {
+        console.log(reason);
+        console.log(
+          "carts.getAddOnsFromOrderInFirebase: There is an error fetching addon data"
         );
       }
       onGotAddOns(null);

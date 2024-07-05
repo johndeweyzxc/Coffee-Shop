@@ -8,7 +8,7 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import { ABOUT_PAGE, CART_PAGE, HOME_PAGE, MENU_PAGE } from "../../strings";
+import { NAV_LIST } from "../../strings";
 
 interface UserInfoProps {
   userPhotoUrl: string | null;
@@ -75,8 +75,6 @@ interface NavDrawerProps {
   onSignOut: () => void;
 }
 export default function NavDrawer(props: NavDrawerProps) {
-  const NAV_LIST = [HOME_PAGE, MENU_PAGE, CART_PAGE, ABOUT_PAGE];
-
   return (
     <Drawer
       anchor="right"

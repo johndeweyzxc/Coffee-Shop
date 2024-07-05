@@ -40,7 +40,7 @@ const useCartController = (userId: string) => {
     removeAddOnInCart,
   } = useCartViewModel();
 
-  const { addOrderVM } = useOrderViewModel();
+  const { uploadOrderVM } = useOrderViewModel();
 
   // * STATE MANAGEMENT FOR CARTS
   // Use in dialog for editing cart
@@ -300,7 +300,7 @@ const useCartController = (userId: string) => {
         notify.HandleOpenAlert("error", "Failed to check out");
       }
     };
-    addOrderVM(
+    uploadOrderVM(
       selectedCart,
       shipAddress,
       clientName,

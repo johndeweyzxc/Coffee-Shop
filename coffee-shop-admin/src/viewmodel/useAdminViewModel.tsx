@@ -18,8 +18,13 @@ const useAdminViewModel = () => {
     uploadProductImage,
   } = useProductsModel();
   const { signInEmail, signOut, addAuthListener } = useAppAuthModel();
-  const { listenAddOns, getAddOns, uploadAddOn, deleteAddOn } =
-    useAddOnsModel();
+  const {
+    listenAddOns,
+    getAddOns,
+    getAddOnsFromOrder,
+    uploadAddOn,
+    deleteAddOn,
+  } = useAddOnsModel();
   const { listenOrders, deleteOrder, updateStatusOfOrder } = useOrdersModel();
 
   const listenProductsVM = (
@@ -191,7 +196,14 @@ const useAdminViewModel = () => {
     deleteProduct(productId, onDeletedProduct);
   };
 
+  const onChangeStatusIsValid = (newStatus: string, oldStatus: string) => {
+    if (newStatus.length === 0 || newStatus.length > 50) return false;
+    if (newStatus === oldStatus) return false;
+    return true;
+  };
+
   return {
+    getAddOnsFromOrder,
     listenAddOns,
     uploadAddOn,
     deleteAddOn,
@@ -204,6 +216,11 @@ const useAdminViewModel = () => {
     signInEmail,
     signOut,
     addAuthListener,
+
+    listenOrders,
+    deleteOrder,
+    updateStatusOfOrder,
+    onChangeStatusIsValid,
   };
 };
 

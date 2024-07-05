@@ -1,11 +1,18 @@
 import { initializeApp } from "firebase/app";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import {
+  connectStorageEmulator,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import {
   FirestoreError,
   QuerySnapshot,
   Unsubscribe,
   addDoc,
   collection,
+  connectFirestoreEmulator,
   deleteDoc,
   doc,
   getFirestore,
@@ -15,11 +22,19 @@ import {
 } from "firebase/firestore";
 
 import { Product } from "../useProductsModel";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../firebaseConf";
 import { COL_PRODUCTS, STORAGE_PRODUCTS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
+const storage = getStorage(app);
+if (IS_DEV_MODE) {
+  console.log(
+    "[products] Application using firestore and storage running in development mode"
+  );
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  connectStorageEmulator(storage, "127.0.0.1", 9199);
+}
 
 /**
  * Listens for any changes of product document in "Products" collection
@@ -176,7 +191,6 @@ export const getProductImageURLInFirebase = (
   productId: string,
   onGotImageURL: (url: string) => void
 ) => {
-  const storage = getStorage(app);
   const imgRef = ref(storage, `${STORAGE_PRODUCTS}/${productId}`);
 
   getDownloadURL(imgRef)

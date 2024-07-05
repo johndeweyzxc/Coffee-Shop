@@ -1,13 +1,15 @@
 import { Unsubscribe } from "firebase/auth";
+import { QuerySnapshot } from "firebase/firestore";
+
 import {
   appendAddOnInCartInFirebase,
   appendAddOnInOrderInFirebase,
   getAddOnsFromCartInFirebase,
+  getAddOnsFromOrderInFirebase,
   listenAddOnsFromCartInFirebase,
   listenAddOnsFromProductInFirebase,
   removeAddOnFromCartInFirebase,
 } from "./api/addons";
-import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 
 export interface AddOn {
   AddOnId: string;
@@ -20,6 +22,21 @@ export interface UAddOn extends AddOn {
 }
 
 const useAddOnsModel = () => {
+  const convertQuerySnapshotUAddOn = (snapshot: QuerySnapshot) => {
+    const uAddOnList: UAddOn[] = [];
+    snapshot.forEach((doc) => {
+      const s = doc.data() as AddOn;
+      const uAddOn: UAddOn = {
+        id: doc.id,
+        AddOnId: s.AddOnId,
+        Name: s.Name,
+        Price: s.Price,
+      };
+      uAddOnList.push(uAddOn);
+    });
+    return uAddOnList;
+  };
+
   const listenAddOnsFromProduct = (
     productId: string,
     onAddOns: (uAddOns: UAddOn[] | null) => void
@@ -29,18 +46,7 @@ const useAddOnsModel = () => {
         onAddOns(null);
         return;
       }
-
-      const uAddOnList: UAddOn[] = [];
-      snapshot.forEach((doc) => {
-        const s = doc.data() as AddOn;
-        const uAddOn: UAddOn = {
-          id: doc.id,
-          AddOnId: s.AddOnId,
-          Name: s.Name,
-          Price: s.Price,
-        };
-        uAddOnList.push(uAddOn);
-      });
+      const uAddOnList = convertQuerySnapshotUAddOn(snapshot);
       onAddOns(uAddOnList);
     };
     return listenAddOnsFromProductInFirebase(productId, cb);
@@ -70,18 +76,7 @@ const useAddOnsModel = () => {
         onAddOns(null);
         return;
       }
-
-      const uAddOnList: UAddOn[] = [];
-      snapshot.forEach((doc) => {
-        const s = doc.data() as AddOn;
-        const uAddOn: UAddOn = {
-          id: doc.id,
-          AddOnId: s.AddOnId,
-          Name: s.Name,
-          Price: s.Price,
-        };
-        uAddOnList.push(uAddOn);
-      });
+      const uAddOnList = convertQuerySnapshotUAddOn(snapshot);
       onAddOns(uAddOnList);
     };
     return listenAddOnsFromCartInFirebase(userId, cartId, cb);
@@ -92,25 +87,30 @@ const useAddOnsModel = () => {
     cartId: string,
     onAddOns: (addOns: UAddOn[] | null) => void
   ) => {
-    const cb = (snapshot: QueryDocumentSnapshot[] | null) => {
-      if (snapshot != null) {
-        const addOns: UAddOn[] = [];
-        snapshot.forEach((uAddOn) => {
-          const s = uAddOn.data() as UAddOn;
-          const newUAddOn: UAddOn = {
-            id: uAddOn.id,
-            AddOnId: s.AddOnId,
-            Name: s.Name,
-            Price: s.Price,
-          };
-          addOns.push(newUAddOn);
-        });
-        onAddOns(addOns);
-      } else {
+    const cb = (snapshot: QuerySnapshot | null) => {
+      if (snapshot === null) {
         onAddOns(null);
+        return;
       }
+      const uAddOnList = convertQuerySnapshotUAddOn(snapshot);
+      onAddOns(uAddOnList);
     };
     getAddOnsFromCartInFirebase(userId, cartId, cb);
+  };
+
+  const getAddOnsFromOrder = (
+    orderId: string,
+    onAddOns: (addOns: UAddOn[] | null) => void
+  ) => {
+    const cb = (snapshot: QuerySnapshot | null) => {
+      if (snapshot === null) {
+        onAddOns(null);
+        return;
+      }
+      const uAddOnList = convertQuerySnapshotUAddOn(snapshot);
+      onAddOns(uAddOnList);
+    };
+    getAddOnsFromOrderInFirebase(orderId, cb);
   };
 
   const removeAddOnInCart = (
@@ -139,6 +139,7 @@ const useAddOnsModel = () => {
     listenAddOnsFromProduct,
     listenAddOnsFromCart,
     getAddOnsFromCart,
+    getAddOnsFromOrder,
     appendAddOnInCart,
     removeAddOnInCart,
     appendAddOnInOrder,

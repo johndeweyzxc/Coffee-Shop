@@ -4,6 +4,7 @@ import {
   QuerySnapshot,
   Unsubscribe,
   collection,
+  connectFirestoreEmulator,
   deleteDoc,
   doc,
   getFirestore,
@@ -12,11 +13,17 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../firebaseConf";
 import { COL_ORDERS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
+if (IS_DEV_MODE) {
+  console.log(
+    "[orders] Application using firestore running in development mode"
+  );
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+}
 
 /**
  * Listens for any changes of order document in "Orders" collection

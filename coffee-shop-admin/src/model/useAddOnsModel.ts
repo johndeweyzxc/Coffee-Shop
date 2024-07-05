@@ -6,6 +6,7 @@ import {
   listenAddOnsInFirebase,
   deleteAddOnInFirebase,
   getAddOnsInFirebase,
+  getAddOnsFromOrderInFirebase,
 } from "./api/addOns";
 
 export interface AddOn {
@@ -88,9 +89,35 @@ const useAddOnsModel = () => {
     deleteAddOnInFirebase(productId, addOnId, cb);
   };
 
+  const getAddOnsFromOrder = (
+    orderId: string,
+    onAddOns: (uAddOns: UAddOn[] | null) => void
+  ) => {
+    const cb = (snapshot: QueryDocumentSnapshot[] | null) => {
+      if (snapshot === null) {
+        onAddOns(null);
+        return;
+      }
+
+      const addOns: UAddOn[] = [];
+      snapshot.forEach((doc) => {
+        const s = doc.data() as AddOn;
+        const uAddOn: UAddOn = {
+          id: doc.id,
+          Name: s.Name,
+          Price: s.Price,
+        };
+        addOns.push(uAddOn);
+      });
+      onAddOns(addOns);
+    };
+    getAddOnsFromOrderInFirebase(orderId, cb);
+  };
+
   return {
     listenAddOns,
     getAddOns,
+    getAddOnsFromOrder,
     uploadAddOn,
     deleteAddOn,
   };

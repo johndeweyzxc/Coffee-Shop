@@ -24,10 +24,18 @@ export default function DeleteCartDialog(props: DeleteCartDialogProps) {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose} color="info">
+        <Button
+          onClick={props.onClose}
+          sx={{ textTransform: "none" }}
+          color="info"
+        >
           Cancel
         </Button>
-        <Button onClick={props.onRemoveFromCart} color="error">
+        <Button
+          onClick={props.onRemoveFromCart}
+          sx={{ textTransform: "none" }}
+          color="error"
+        >
           Remove
         </Button>
       </DialogActions>

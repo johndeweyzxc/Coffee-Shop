@@ -2,37 +2,38 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import useAppController from "./controller/useAppController";
-import MenuView from "./view/MenuView";
-import { ABOUT_PAGE, CART_PAGE, MENU_PAGE } from "./strings";
-import CartsView from "./view/CartsView";
 
+import useAuthController from "./controller/special/useAuthController";
+import useAppController from "./controller/useAppController";
+import HomeView from "./view/HomeView";
+import MenuView from "./view/MenuView";
+import CartsView from "./view/CartsView";
+import OrdersView from "./view/OrdersView";
 import AboutView from "./view/AboutView";
 import Header from "./components/App/Header";
 import LoginWGoogle from "./components/Login/LoginWGoogle";
-import HomeView from "./view/HomeView";
 import Footer from "./components/App/Footer";
 import NavDrawer from "./components/App/NavDrawer";
+import { ABOUT_PAGE, CART_PAGE, MENU_PAGE, ORDER_PAGE } from "./strings";
 
 function App() {
   const {
     currentPage,
-    isLoggedIn,
-    userId,
-    userEmail,
-    userPhotoUrl,
     onChangeCurrentPage,
-
     isOpenDrawer,
     onOpenDrawer,
     onCloseDrawer,
+  } = useAppController();
 
+  const {
+    isLoggedIn,
+    currentUser,
     isOpenLoginWGoogle,
     onOpenLoginWithGoogle,
     onCloseLoginWithGoogle,
     onSignInWithGoogle,
     onSignOutWithGoogle,
-  } = useAppController();
+  } = useAuthController();
 
   let component = <div className="w-screen h-screen"></div>;
 
@@ -41,26 +42,33 @@ function App() {
     component = <HomeView onChangeCurrentPage={onChangeCurrentPage} />;
   };
   const setMenuViewComponent = () => {
-    // TODO: Fix mechanism to allow smooth transition from signed in to signed out state
     if (!isLoggedIn) {
       onOpenLoginWithGoogle();
       return;
     } else {
       onCloseLoginWithGoogle();
     }
-    component = <MenuView userId={userId === null ? "" : userId} />;
+    component = <MenuView userId={currentUser.id} />;
     if (currentPage !== MENU_PAGE) onChangeCurrentPage(MENU_PAGE);
   };
   const setCartViewComponent = () => {
-    // TODO: Fix mechanism to allow smooth transition from signed in to signed out state
     if (!isLoggedIn) {
       onOpenLoginWithGoogle();
       return;
     } else {
       onCloseLoginWithGoogle();
     }
-    component = <CartsView userId={userId === null ? "" : userId} />;
+    component = <CartsView userId={currentUser.id} />;
     if (currentPage !== CART_PAGE) onChangeCurrentPage(CART_PAGE);
+  };
+  const setOrderViewComponent = () => {
+    if (!isLoggedIn) {
+      onOpenLoginWithGoogle();
+    } else {
+      onCloseLoginWithGoogle();
+    }
+    component = <OrdersView userId={currentUser.id} />;
+    if (currentPage !== ORDER_PAGE) onChangeCurrentPage(ORDER_PAGE);
   };
   const setAboutViewComponent = () => {
     onCloseLoginWithGoogle();
@@ -81,6 +89,9 @@ function App() {
     case "/about":
       setAboutViewComponent();
       break;
+    case "/order":
+      setOrderViewComponent();
+      break;
     default:
       setHomeViewComponent();
       break;
@@ -91,8 +102,8 @@ function App() {
       <Header
         selectedNav={currentPage}
         onChangeCurrentPage={onChangeCurrentPage}
-        userEmail={userEmail}
-        userPhotoUrl={userPhotoUrl}
+        userEmail={currentUser.Email}
+        userPhotoUrl={currentUser.PhotoURL}
         onSignOut={onSignOutWithGoogle}
         onSignIn={onSignInWithGoogle}
         onOpenDrawer={onOpenDrawer}
@@ -107,8 +118,8 @@ function App() {
       <NavDrawer
         isOpenDrawer={isOpenDrawer}
         onCloseDrawer={onCloseDrawer}
-        userEmail={userEmail}
-        userPhotoUrl={userPhotoUrl}
+        userEmail={currentUser.Email}
+        userPhotoUrl={currentUser.PhotoURL}
         onSignIn={onSignInWithGoogle}
         onSignOut={onSignOutWithGoogle}
       />

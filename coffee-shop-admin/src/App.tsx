@@ -15,6 +15,7 @@ import useAppController from "./controller/useApp/useAppController";
 import useUpdateProduct from "./controller/useProduct/useUpdateProduct";
 import { useUploadProduct } from "./controller/useProduct/useUploadProduct";
 import { ADMIN_ORDER_TAB, ADMIN_PRODUCT_TAB } from "./strings";
+import OrderView from "./view/OrderView";
 
 function App() {
   const notify = Notification();
@@ -88,7 +89,12 @@ function App() {
   };
 
   const setOrderViewComponent = () => {
-    // TODO: Implementation
+    component = (
+      <OrderView
+        handleOpenAlert={notify.HandleOpenAlert}
+        isLoggedIn={isLoggedIn}
+      />
+    );
   };
 
   if (isOpenLogin) {

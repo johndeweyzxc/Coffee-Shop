@@ -2,6 +2,15 @@ export const HOME_PAGE = "HOME";
 export const MENU_PAGE = "MENU";
 export const CART_PAGE = "CART";
 export const ABOUT_PAGE = "ABOUT";
+export const ORDER_PAGE = "ORDER";
+
+export const NAV_LIST = [
+  HOME_PAGE,
+  MENU_PAGE,
+  CART_PAGE,
+  ORDER_PAGE,
+  ABOUT_PAGE,
+];
 
 export const SIGN_OUT = "Sign out";
 

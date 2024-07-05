@@ -3,6 +3,11 @@ export enum LOGIN_WITH_EMAIL_STATUS {
   ERROR,
 }
 
+export enum REGISTER_WITH_EMAIL_STATUS {
+  SUCCESS,
+  ERROR,
+}
+
 export enum LOGIN_WITH_GOOGLE_STATUS {
   SUCCESS,
   ERROR,

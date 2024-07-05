@@ -9,7 +9,9 @@ import {
 } from "@mui/material";
 import useMenuController from "../controller/useMenuController";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import SetQuantityDialog from "../components/Menu/SetQuantityDialog";
+import SetQuantityDialog from "../components/Menu/AddToCartDialog";
+import DefaultProductImage from "../assets/images/default-product-image.png";
+import { truncateDescription, truncateName } from "../utils/stringUtils";
 
 interface MenuViewProps {
   userId: string;
@@ -40,15 +42,23 @@ export default function MenuView(props: MenuViewProps) {
       <div className="flex flex-wrap w-full max-md:justify-center">
         {products.map((product, index) => {
           return (
-            <Card key={index} sx={{ width: 300, margin: ".25rem" }}>
+            <Card key={index} sx={{ width: 300, margin: ".5rem" }}>
               <CardMedia
-                sx={{ height: 100 }}
-                image={product.ProductImageURL}
+                sx={{ height: 200, objectFit: "fill" }}
+                image={
+                  product.ProductImageURL === ""
+                    ? DefaultProductImage
+                    : product.ProductImageURL
+                }
                 title={`An image of ${product.Name}`}
               />
               <CardContent>
-                <Typography variant="h5">{product.Name}</Typography>
-                <Typography variant="body2">{product.Description}</Typography>
+                <Typography variant="h5">
+                  {truncateName(product.Name)}
+                </Typography>
+                <Typography variant="body2">
+                  {truncateDescription(product.Description)}
+                </Typography>
               </CardContent>
               <CardActions
                 disableSpacing

@@ -1,4 +1,5 @@
-import { addOrderInFirebase } from "./api/order";
+import { QuerySnapshot } from "firebase/firestore";
+import { listenOrderInFirebase, uploadOrderInFirebase } from "./api/order";
 import { UCart } from "./useCartsModel";
 
 export interface ShippingAddress {
@@ -31,7 +32,7 @@ export interface UOrder extends Order {
 }
 
 const useOrderModel = () => {
-  const addOrder = (
+  const uploadOrder = (
     uCart: UCart,
     clientName: string,
     clientUID: string,
@@ -55,10 +56,39 @@ const useOrderModel = () => {
       Status: "Order requested",
     };
 
-    addOrderInFirebase(order, cb);
+    uploadOrderInFirebase(order, cb);
   };
 
-  return { addOrder };
+  const listenOrders = (
+    clientUID: string,
+    onOrders: (orders: UOrder[] | null) => void
+  ) => {
+    const cb = (snapshot: QuerySnapshot | null) => {
+      if (snapshot === null) {
+        onOrders(null);
+        return;
+      }
+
+      const orderList: UOrder[] = [];
+      snapshot.forEach((doc) => {
+        const s = doc.data() as Order;
+        const uorder: UOrder = {
+          id: doc.id,
+          ClientName: s.ClientName,
+          ClientUID: s.ClientUID,
+          ProductImageURL: "",
+          ProductOrderInfo: s.ProductOrderInfo,
+          ShippingAddressLocation: s.ShippingAddressLocation,
+          Status: s.Status,
+        };
+        orderList.push(uorder);
+      });
+      onOrders(orderList);
+    };
+    return listenOrderInFirebase(clientUID, cb);
+  };
+
+  return { listenOrders, uploadOrder };
 };
 
 export default useOrderModel;

@@ -27,11 +27,13 @@ export default function LoginWGoogle(props: LoginWGoogleProps) {
           onClick={() => {
             window.location.href = "/";
           }}
+          sx={{ textTransform: "none" }}
           color="error"
         >
           Cancel
         </Button>
         <Button
+          sx={{ textTransform: "none" }}
           onClick={() => {
             props.onClose();
             props.onLoginWithGoogle();

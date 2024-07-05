@@ -6,6 +6,7 @@ import {
   Unsubscribe,
   addDoc,
   collection,
+  connectFirestoreEmulator,
   deleteDoc,
   doc,
   getDocs,
@@ -15,11 +16,17 @@ import {
 } from "firebase/firestore";
 
 import { AddOn } from "../useAddOnsModel";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
-import { COL_ADDONS, COL_PRODUCTS } from "../../strings";
+import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../firebaseConf";
+import { COL_ADDONS, COL_ORDERS, COL_PRODUCTS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
+if (IS_DEV_MODE) {
+  console.log(
+    "[addons] Application using firestore running in development mode"
+  );
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+}
 
 /**
  * Listens for any changes of AddOn document in "AddOns" collection in a product document
@@ -87,7 +94,22 @@ export const getAddOnsFromOrderInFirebase = (
   orderId: string,
   onGotAddOns: (snapshot: QueryDocumentSnapshot[] | null) => void
 ) => {
-  // TODO: Implementation
+  getDocs(query(collection(db, COL_ORDERS, orderId, COL_ADDONS)))
+    .then((value) => {
+      console.log(
+        `addOns.getAddOnsFromOrderInFirebase: Fetched ${value.size} addon data`
+      );
+      onGotAddOns(value.docs);
+    })
+    .catch((reason) => {
+      if (reason !== null || reason !== undefined) {
+        console.log(reason);
+        console.log(
+          "addOns.getAddOnsFromOrderInFirebase: There is an error fetching addon data"
+        );
+      }
+      onGotAddOns(null);
+    });
 };
 
 /**

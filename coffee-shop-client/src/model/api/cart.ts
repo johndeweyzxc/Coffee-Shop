@@ -5,6 +5,7 @@ import {
   Unsubscribe,
   addDoc,
   collection,
+  connectFirestoreEmulator,
   deleteDoc,
   doc,
   getFirestore,
@@ -19,6 +20,12 @@ import { COL_USERS, COL_USERS_CARTS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
+if (window.location.hostname === "localhost") {
+  console.log(
+    "[carts] Application using firestore running in development mode"
+  );
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+}
 
 /**
  * Listens for any changes of cart document in "Carts" collection

@@ -108,7 +108,7 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
       return (
         <img
           src={props.uProduct.ProductImageURL}
-          alt={`An image of ${props.uProduct.Name}`}
+          alt={props.uProduct.Name}
           width="350"
           className="self-center my-2"
         />

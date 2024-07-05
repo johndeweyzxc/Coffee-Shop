@@ -1,14 +1,54 @@
+import { Unsubscribe } from "firebase/firestore";
 import useAddOnsModel, { UAddOn } from "../model/useAddOnsModel";
 import useCartsModel, { UCart } from "../model/useCartsModel";
-import useOrderModel, { ShippingAddress } from "../model/useOrderModel";
+import useOrderModel, { ShippingAddress, UOrder } from "../model/useOrderModel";
+import useProductsModel from "../model/useProductsModel";
 
 export const useOrderViewModel = () => {
-  const { addOrder } = useOrderModel();
+  const { getProductImageURL } = useProductsModel();
+  const { listenOrders, uploadOrder } = useOrderModel();
   const { removeFromCart } = useCartsModel();
-  const { getAddOnsFromCart, appendAddOnInOrder, removeAddOnInCart } =
-    useAddOnsModel();
+  const {
+    getAddOnsFromCart,
+    getAddOnsFromOrder,
+    appendAddOnInOrder,
+    removeAddOnInCart,
+  } = useAddOnsModel();
 
-  const addOrderVM = (
+  const listenOrdersVM = (
+    clientUID: string,
+    onOrders: (uOrders: UOrder[] | null) => void
+  ): Unsubscribe => {
+    let listUOrderVM: UOrder[] = [];
+    let totalOrders: number | undefined = 0;
+    let ordersProcessed = 0;
+
+    const createOrderVM = (uOrder: UOrder) => {
+      const onGotProductImageUrl = (url: string) => {
+        const newUOrderVM: UOrder = { ...uOrder, ProductImageURL: url };
+        listUOrderVM = [...listUOrderVM, newUOrderVM];
+        ordersProcessed++;
+
+        if (totalOrders === ordersProcessed) {
+          onOrders(listUOrderVM);
+          ordersProcessed = 0;
+        }
+      };
+      getProductImageURL(
+        uOrder.ProductOrderInfo.ProductId,
+        onGotProductImageUrl
+      );
+    };
+
+    const onReceivedOrders = (orders: UOrder[] | null) => {
+      totalOrders = orders?.length;
+      listUOrderVM = [];
+      orders?.forEach((uOrder) => createOrderVM(uOrder));
+    };
+    return listenOrders(clientUID, onReceivedOrders);
+  };
+
+  const uploadOrderVM = (
     uCart: UCart,
     shippingAddr: ShippingAddress,
     clientName: string,
@@ -65,8 +105,8 @@ export const useOrderViewModel = () => {
         cb(false);
       }
     };
-    addOrder(uCart, clientName, clientUID, shippingAddr, onAddedOrder);
+    uploadOrder(uCart, clientName, clientUID, shippingAddr, onAddedOrder);
   };
 
-  return { addOrderVM };
+  return { listenOrdersVM, uploadOrderVM, getAddOnsFromOrder };
 };

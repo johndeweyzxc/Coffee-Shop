@@ -51,7 +51,9 @@ const useMenuController = () => {
       (uAddOn) => uAddOn.id !== addOnId
     );
     if (targetAddOn !== undefined) {
-      setTotalPrice((prev) => prev + parseInt(targetAddOn.Price as string));
+      setTotalPrice(
+        (prev) => 1 * (prev + parseInt(targetAddOn.Price as string))
+      );
       setCurrentAddOns((prev) => [...prev, targetAddOn]);
     }
     setSelectedProdAddOns(newSelectedProdAddOns);
@@ -62,7 +64,9 @@ const useMenuController = () => {
       (uAddOn) => uAddOn.id !== addOnId
     );
     if (targetAddOn !== undefined) {
-      setTotalPrice((prev) => prev - parseInt(targetAddOn.Price as string));
+      setTotalPrice(
+        (prev) => 1 * (prev - parseInt(targetAddOn.Price as string))
+      );
       setSelectedProdAddOns((prev) => [...prev, targetAddOn]);
     }
     setCurrentAddOns(newCurrentAddOns);
@@ -103,9 +107,21 @@ const useMenuController = () => {
 
   const onChangeQuantity = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    if (parseInt(value) < 0) return;
-    setTotalPrice((selectedProduct.Price as number) * parseInt(value));
+    if (parseInt(value) <= 0) return;
+    let isIncrement = true;
+    // Compare the new value and old value of quantity
+    if (parseInt(value) < quantity) {
+      isIncrement = false;
+    } else if (parseInt(value) > quantity) {
+      isIncrement = true;
+    }
+
     setQuantity(parseInt(value));
+    if (isIncrement) {
+      setTotalPrice((prev) => prev + (selectedProduct.Price as number));
+    } else {
+      setTotalPrice((prev) => prev - (selectedProduct.Price as number));
+    }
   };
   const onAddToCart = (product: UProduct) => {
     onOpenQuantity();

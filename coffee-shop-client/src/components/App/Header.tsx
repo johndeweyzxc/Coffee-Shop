@@ -1,5 +1,5 @@
 import { Avatar, IconButton } from "@mui/material";
-import { ABOUT_PAGE, CART_PAGE, HOME_PAGE, MENU_PAGE } from "../../strings";
+import { HOME_PAGE, NAV_LIST } from "../../strings";
 import CoffeeShopLogo from "../../assets/images/coffee-shop-logo.jpg";
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -74,6 +74,7 @@ const NavButtons = (props: NavButtonsProps) => {
               font-bold cursor-pointer"
               key={index}
               onClick={() => {
+                // TODO: Refactor code
                 props.onChangeCurrentPage(nav);
                 if (nav === HOME_PAGE) {
                   window.location.href = "/";
@@ -119,8 +120,6 @@ interface HeaderProps {
   onOpenDrawer: () => void;
 }
 export default function Header(props: HeaderProps) {
-  const NAV_LIST = [HOME_PAGE, MENU_PAGE, CART_PAGE, ABOUT_PAGE];
-
   return (
     <>
       <div className="w-full flex justify-between items-center p-4 max-md:p-2">

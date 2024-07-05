@@ -17,6 +17,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import CheckoutDialog from "../components/Cart/CheckoutDialog";
 import { UCart } from "../model/useCartsModel";
+import DefaultProductImage from "../assets/images/default-product-image.png";
+import { truncateDescription, truncateName } from "../utils/stringUtils";
 
 interface CartsCardProps {
   uCart: UCart;
@@ -28,17 +30,23 @@ interface CartsCardProps {
 }
 function CartsCard(props: CartsCardProps) {
   return (
-    <Card sx={{ width: 300, margin: ".25rem", padding: "0" }}>
+    <Card sx={{ width: 300, margin: ".5rem", padding: "0" }}>
       <CardMedia
-        sx={{ height: 100 }}
-        image={props.uCart.ProductImageURL}
+        sx={{ height: 200 }}
+        image={
+          props.uCart.ProductImageURL === ""
+            ? DefaultProductImage
+            : props.uCart.ProductImageURL
+        }
         title={`An image of ${props.uCart.Name}`}
       />
       <CardContent sx={{ width: "100%" }}>
-        <Typography variant="h5">{props.uCart.Name}</Typography>
-        <Typography variant="body2">{props.uCart.Description}</Typography>
+        <Typography variant="h5">{truncateName(props.uCart.Name)}</Typography>
+        <Typography variant="body2">
+          {truncateDescription(props.uCart.Description)}
+        </Typography>
         <Typography variant="body2" sx={{ marginTop: "1rem" }}>
-          <b>Total Price: </b>${props.uCart.TotalPrice}
+          <b>Total Price: </b>₱{props.uCart.TotalPrice}
         </Typography>
       </CardContent>
       <Divider />

@@ -4,11 +4,17 @@ import {
   QuerySnapshot,
   Unsubscribe,
   collection,
+  connectFirestoreEmulator,
   getFirestore,
   onSnapshot,
   query,
 } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref } from "firebase/storage";
+import {
+  connectStorageEmulator,
+  getDownloadURL,
+  getStorage,
+  ref,
+} from "firebase/storage";
 
 import { FIREBASE_CONFIG } from "../../firebaseConf";
 import { PRODUCTS_STATUS } from "../../status";
@@ -20,6 +26,14 @@ import {
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
+const storage = getStorage(app);
+if (window.location.hostname === "localhost") {
+  console.log(
+    "[products] Application using storage and firestore running in development mode"
+  );
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  connectStorageEmulator(storage, "127.0.0.1", 9199);
+}
 
 /**
  * Listens for any changes of product document in "Products" collection
@@ -61,7 +75,6 @@ export const getProductImageURLInFirebase = (
   productId: string,
   onGotImageURL: (url: string) => void
 ) => {
-  const storage = getStorage(app);
   const imgRef = ref(storage, `${STORAGE_PRODUCTS}/${productId}`);
 
   getDownloadURL(imgRef)
