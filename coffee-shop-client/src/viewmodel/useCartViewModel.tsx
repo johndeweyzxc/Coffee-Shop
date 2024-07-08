@@ -69,27 +69,29 @@ export const useCartViewModel = () => {
     const onAddedToCart = (success: boolean, cartId: string) => {
       if (success) {
         uAddOns.forEach((uAddOn) => {
-          const onAddedAdOns = (success: boolean) => {
+          const onAddedAddOns = (success: boolean) => {
             if (!success) cb(false);
           };
-          appendAddOnInCart(userId, cartId, uAddOn, onAddedAdOns);
+          // * 2. Copy each AddOn document from product into cart
+          appendAddOnInCart(userId, cartId, product.id, uAddOn, onAddedAddOns);
         });
         cb(true);
       } else {
         cb(false);
       }
     };
-
-    addToCart(userId, quantity, totalPrice, product, onAddedToCart);
+    // * 1. Upload cart by copying product info from product into cart
+    addToCart(userId, quantity, totalPrice, uAddOns, product, onAddedToCart);
   };
 
   const appendAddOnsInCartVM = (
     userId: string,
     cartId: string,
+    productId: string,
     uAddOn: UAddOn,
     cb: (success: boolean) => void
   ) => {
-    appendAddOnInCart(userId, cartId, uAddOn, cb);
+    appendAddOnInCart(userId, cartId, productId, uAddOn, cb);
   };
 
   const removeFromCartVM = (

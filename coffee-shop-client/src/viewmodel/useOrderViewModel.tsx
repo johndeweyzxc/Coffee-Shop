@@ -43,7 +43,11 @@ export const useOrderViewModel = () => {
     const onReceivedOrders = (orders: UOrder[] | null) => {
       totalOrders = orders?.length;
       listUOrderVM = [];
-      orders?.forEach((uOrder) => createOrderVM(uOrder));
+      if (totalOrders === 0) {
+        onOrders([]);
+      } else {
+        orders?.forEach((uOrder) => createOrderVM(uOrder));
+      }
     };
     return listenOrders(clientUID, onReceivedOrders);
   };
@@ -55,57 +59,70 @@ export const useOrderViewModel = () => {
     clientUID: string,
     cb: (success: boolean) => void
   ) => {
+    let uAddOnList: UAddOn[] = [];
+
     const appendAddOnInOrderCollection = (orderId: string) => {
       const onRemovedCart = (removeSuccess: boolean) => {
         if (removeSuccess) {
+          // * 6. Notify user about successful operation
           cb(true);
         } else {
           cb(false);
         }
       };
 
-      const onAddOns = (uAddOns: UAddOn[] | null) => {
-        if (uAddOns?.length === 0) {
-          // * EMPTY ADDON
-          removeFromCart(clientUID, uCart.id, onRemovedCart);
-          return;
-        }
+      if (uAddOnList.length === 0) {
+        removeFromCart(clientUID, uCart.id, onRemovedCart);
+      }
 
-        uAddOns?.forEach((uAddOn, index) => {
-          const onRemovedAddOn = (success: boolean) => {
-            if (success) {
-              if (uAddOns.length === index + 1) {
-                // * LAST ADDON
-                // * Delete the cart
-                removeFromCart(clientUID, uCart.id, onRemovedCart);
-              }
-            } else {
-              cb(false);
+      uAddOnList?.forEach((uAddOn, index) => {
+        const onRemovedAddOn = (success: boolean) => {
+          if (success) {
+            if (uAddOnList.length === index + 1) {
+              // * 5. On successful deletion of last AddOn document, delete the Cart document
+              removeFromCart(clientUID, uCart.id, onRemovedCart);
             }
-          };
-          const onAppendedAddOn = (success: boolean) => {
-            if (success) {
-              removeAddOnInCart(clientUID, uCart.id, uAddOn.id, onRemovedAddOn);
-            } else {
-              cb(false);
-            }
-          };
-          appendAddOnInOrder(orderId, uAddOn, onAppendedAddOn);
-        });
-      };
-      getAddOnsFromCart(clientUID, uCart.id, onAddOns);
+          } else {
+            cb(false);
+          }
+        };
+        const onAppendedAddOn = (success: boolean) => {
+          if (success) {
+            // * 4. On successful copy of a single AddOn document, delete it from Cart
+            removeAddOnInCart(clientUID, uCart.id, uAddOn.id, onRemovedAddOn);
+          } else {
+            cb(false);
+          }
+        };
+
+        // * 3. Copy each AddOn document from Cart into Order
+        appendAddOnInOrder(orderId, uCart.ProductId, uAddOn, onAppendedAddOn);
+      });
     };
 
     const onAddedOrder = (success: boolean, orderId: string) => {
       if (success) {
-        // * Copy all the addons from cart into the order
-        // * Then upon successful copy of addons, delete the cart
         appendAddOnInOrderCollection(orderId);
       } else {
         cb(false);
       }
     };
-    uploadOrder(uCart, clientName, clientUID, shippingAddr, onAddedOrder);
+
+    const onAddOns = (uAddOns: UAddOn[] | null) => {
+      if (uAddOns !== null) uAddOnList = uAddOns;
+      // * 2. Upload order by copying product info from cart into order
+      uploadOrder(
+        uCart,
+        uAddOnList,
+        clientName,
+        clientUID,
+        shippingAddr,
+        onAddedOrder
+      );
+    };
+
+    // * 1. Fetched all AddOn document from Cart
+    getAddOnsFromCart(clientUID, uCart.id, onAddOns);
   };
 
   return { listenOrdersVM, uploadOrderVM, getAddOnsFromOrder };

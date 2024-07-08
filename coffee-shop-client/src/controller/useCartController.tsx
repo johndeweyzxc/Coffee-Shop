@@ -8,23 +8,27 @@ import { UCart } from "../model/useCartsModel";
 import { UAddOn } from "../model/useAddOnsModel";
 
 const useCartController = (userId: string) => {
-  const emptyCart = {
-    id: "",
-    Name: "",
-    Description: "",
-    Price: 0,
-    ProductId: "",
-    Quantity: 0,
-    TotalPrice: 0,
-    AddOns: [],
-    ProductImageURL: "",
+  const EMPTY_CART = () => {
+    return {
+      id: "",
+      Name: "",
+      Description: "",
+      Price: 0,
+      ProductId: "",
+      Quantity: 0,
+      TotalPrice: 0,
+      AddOnIds: [],
+      ProductImageURL: "",
+    };
   };
 
-  const emptyShippingAddress = {
-    Region: "",
-    City: "",
-    District: "",
-    Street: "",
+  const EMPTY_SHIPPING_ADDRESS = () => {
+    return {
+      Region: "",
+      City: "",
+      District: "",
+      Street: "",
+    };
   };
 
   const notify = Notification();
@@ -48,7 +52,7 @@ const useCartController = (userId: string) => {
   // Use in dialog for deleting cart
   const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
   // Placeholder when a cart is clicked
-  const [selectedCart, setSelectedCart] = useState<UCart>(emptyCart);
+  const [selectedCart, setSelectedCart] = useState<UCart>(EMPTY_CART());
   // Items added to cart by the user
   const [carts, setCarts] = useState<UCart[]>([]);
   // Addons listed from the selected cart when edit dialog appears
@@ -60,8 +64,9 @@ const useCartController = (userId: string) => {
   // Quantity of selected product
   const [quantity, setQuantity] = useState<number>(1);
   // Shipping address information for checking out
-  const [shipAddress, setShipAddress] =
-    useState<ShippingAddress>(emptyShippingAddress);
+  const [shipAddress, setShipAddress] = useState<ShippingAddress>(
+    EMPTY_SHIPPING_ADDRESS()
+  );
   // Use in dialog for checking out a cart
   const [isOpenCheckout, setIsOpenCheckout] = useState<boolean>(false);
   // Client's name to be use when checking out a cart
@@ -94,7 +99,13 @@ const useCartController = (userId: string) => {
         );
       }
     };
-    appendAddOnsInCartVM(userId, selectedCart.id, uAddOn, onRemovedAddOn);
+    appendAddOnsInCartVM(
+      userId,
+      selectedCart.id,
+      selectedCart.ProductId,
+      uAddOn,
+      onRemovedAddOn
+    );
   };
 
   const filterAddOnsAlreadyListed = (uAddOns: UAddOn[]) => {
@@ -138,6 +149,7 @@ const useCartController = (userId: string) => {
     return listenAddOnsFromCart(userId, selectedCart.id, onAddOns);
   };
   useEffect(() => {
+    // TODO: Instead of attaching a listener, just fetch all addons
     let unsubsribeAddOnsProduct: Unsubscribe | null = null;
 
     if (isOpenEditor) {
@@ -166,6 +178,7 @@ const useCartController = (userId: string) => {
   }, [selectedCartAddOns]);
 
   useEffect(() => {
+    // TODO: Instead of attaching a listener, just fetch all addons
     let unsubscribeAddOnsSelectedCart: Unsubscribe | null = null;
 
     if (isOpenEditor) {
@@ -229,7 +242,7 @@ const useCartController = (userId: string) => {
   };
   const onCloseEditor = () => {
     setIsOpenEditor(false);
-    setSelectedCart(emptyCart);
+    setSelectedCart(EMPTY_CART());
     setSelectedCartAddOns([]);
     setAvailableAddOns([]);
     setQuantity(1);
@@ -261,7 +274,7 @@ const useCartController = (userId: string) => {
   };
   const onCloseDelete = () => {
     setIsOpenDelete(false);
-    setSelectedCart(emptyCart);
+    setSelectedCart(EMPTY_CART());
     setSelectedCartAddOns([]);
     setAvailableAddOns([]);
     setQuantity(1);
@@ -290,7 +303,7 @@ const useCartController = (userId: string) => {
   const onCloseCheckOut = () => {
     setIsOpenCheckout(false);
     setCheckoutAddOns([]);
-    setSelectedCart(emptyCart);
+    setSelectedCart(EMPTY_CART());
   };
   const onCheckout = () => {
     const onSuccessfullyCheckedOut = (success: boolean) => {

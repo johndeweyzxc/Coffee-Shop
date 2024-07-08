@@ -13,10 +13,25 @@ import {
 } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { styled } from "@mui/material/styles";
+import ImageIcon from "@mui/icons-material/Image";
 
 import { AddOn, UAddOn } from "../../model/useAddOnsModel";
 import { UProduct } from "../../model/useProductsModel";
 import { InputHelperTextUpdate } from "../../controller/useProduct/useUpdateProduct";
+import DefaultProductImage from "../../assets/images/default-product-image.png";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 interface AddOnListProps {
   addOns: UAddOn[];
@@ -73,6 +88,7 @@ interface UpdateProductDialogProps {
   onAddAddOns: () => void;
   onRemoveAddOn: (addOnId: string) => void;
   onSetUProductImage: (file: File) => void;
+  productImage: File | null;
   inputHelperText: InputHelperTextUpdate;
 }
 
@@ -95,14 +111,32 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
   };
 
   const RenderImage = () => {
+    if (props.productImage !== null) {
+      return (
+        <img
+          src={URL.createObjectURL(props.productImage)}
+          alt={props.uProduct.Name}
+          width="350"
+          className="self-center my-2"
+        />
+      );
+    }
+
     if (props.uProduct.ProductImageURL === "") {
       return (
-        <Typography
-          variant="subtitle2"
-          sx={{ marginTop: ".5rem", marginBottom: ".5rem" }}
-        >
-          No image is found for this product
-        </Typography>
+        <>
+          <Typography
+            variant="subtitle2"
+            sx={{ marginTop: ".5rem", marginBottom: ".5rem" }}
+          >
+            No image is found for this product, showing default image instead
+          </Typography>
+          <img
+            src={DefaultProductImage}
+            alt="Default coffee product image"
+            width="350"
+          />
+        </>
       );
     } else {
       return (
@@ -168,16 +202,29 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
           Product image
         </Typography>
         <RenderImage />
-        <input
-          type="file"
-          onChange={(e) => {
-            if (e.target.files !== null) {
-              const file = e.target.files[0];
-              props.onSetUProductImage(file);
-            }
+        <Button
+          component="label"
+          role={undefined}
+          variant="outlined"
+          startIcon={<ImageIcon />}
+          sx={{
+            marginTop: ".5rem",
+            marginBottom: "1rem",
           }}
-          className="mb-4"
-        />
+          fullWidth
+        >
+          Upload image
+          <VisuallyHiddenInput
+            type="file"
+            onChange={(e) => {
+              if (e.target.files !== null) {
+                const file = e.target.files[0];
+                props.onSetUProductImage(file);
+              }
+            }}
+            className="mb-4"
+          />
+        </Button>
 
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
           Add ons
@@ -217,10 +264,15 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose} color="info">
-          Cancel
+        <Button
+          onClick={props.onClose}
+          color="info"
+          sx={{ textTransform: "none" }}
+        >
+          Close
         </Button>
         <Button
+          sx={{ textTransform: "none" }}
           onClick={() => {
             props.onDelete();
             props.onClose();
@@ -229,7 +281,7 @@ export default function UpdateProductDialog(props: UpdateProductDialogProps) {
         >
           Delete
         </Button>
-        <Button type="submit" color="success">
+        <Button type="submit" color="success" sx={{ textTransform: "none" }}>
           Update
         </Button>
       </DialogActions>

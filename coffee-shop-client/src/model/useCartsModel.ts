@@ -6,6 +6,7 @@ import {
   removeFromCartInFirebase,
 } from "./api/cart";
 import { UProduct } from "./useProductsModel";
+import { UAddOn } from "./useAddOnsModel";
 
 export interface Cart {
   Name: string;
@@ -14,6 +15,7 @@ export interface Cart {
   TotalPrice: string | number;
   ProductId: string;
   Quantity: number;
+  AddOnIds: string[];
 }
 
 export interface UCart extends Cart {
@@ -43,6 +45,7 @@ const useCartsModel = () => {
           ProductId: s.ProductId,
           Quantity: s.Quantity,
           ProductImageURL: "",
+          AddOnIds: s.AddOnIds,
         };
         cartList.push(ucart);
       });
@@ -57,9 +60,16 @@ const useCartsModel = () => {
     userId: string,
     quantity: number,
     totalPrice: number,
+    uAddOns: UAddOn[],
     product: UProduct,
     cb: (success: boolean, cartId: string) => void
   ) => {
+    let addOnIds: string[] = [];
+    uAddOns.forEach((uAddOn, index) => {
+      if (index < 2) {
+        addOnIds.push(uAddOn.id);
+      }
+    });
     const ucart: Cart = {
       Name: product.Name,
       Description: product.Description,
@@ -67,6 +77,7 @@ const useCartsModel = () => {
       TotalPrice: totalPrice,
       ProductId: product.id,
       Quantity: quantity,
+      AddOnIds: addOnIds,
     };
 
     addToCartInFirebase(userId, ucart, cb);

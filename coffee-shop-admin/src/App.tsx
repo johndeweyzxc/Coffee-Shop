@@ -37,6 +37,7 @@ function App() {
     newProduct,
     onChangeNewProduct,
     onUploadProduct,
+    productImage,
   } = useUploadProduct(notify.HandleOpenAlert);
 
   const {
@@ -62,6 +63,7 @@ function App() {
     onRemoveAddOnUProduct,
     onAddAddOnsUProduct,
     onSetUProductImage,
+    uProductImage,
 
     isOpenUpdate,
     onOpenUpdate,
@@ -160,6 +162,7 @@ function App() {
         onAddAddOns={onAddAddOnsNewProduct}
         onRemoveAddOn={onRemoveAddOnNewProduct}
         onSetProductImage={onSetProductImage}
+        productImage={productImage}
       />
       <UpdateProductDialog
         isOpen={isOpenUpdate}
@@ -174,6 +177,7 @@ function App() {
         onChangeAddOn={onChangeAddOnUProduct}
         onRemoveAddOn={onRemoveAddOnUProduct}
         onSetUProductImage={onSetUProductImage}
+        productImage={uProductImage}
         inputHelperText={inputHelperTextUpdate}
       />
       {notify.SnackBar}

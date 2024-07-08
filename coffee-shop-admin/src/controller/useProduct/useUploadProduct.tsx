@@ -94,6 +94,7 @@ export const useUploadProduct = (
   const onOpenUpload = () => setIsOpenUpload(true);
   const onCloseUpload = () => {
     setAddOnListNewProduct([]);
+    setProductImage(null);
     setIsOpenUpload(false);
   };
   const onChangeAddOnNewProduct = (e: ChangeEvent<HTMLInputElement>) => {
@@ -190,5 +191,6 @@ export const useUploadProduct = (
     newProduct,
     onChangeNewProduct,
     onUploadProduct,
+    productImage,
   };
 };

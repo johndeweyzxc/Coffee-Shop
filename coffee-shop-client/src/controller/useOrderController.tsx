@@ -19,6 +19,7 @@ const useOrderController = (userId: string) => {
         ProductId: "",
         Quantity: 0,
         TotalPrice: 0,
+        AddOnIds: [],
       },
       ShippingAddressLocation: {
         City: "",

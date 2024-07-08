@@ -13,6 +13,7 @@ import {
 
 export interface AddOn {
   AddOnId: string;
+  ProductId: string;
   Name: string;
   Price: string | number;
 }
@@ -29,6 +30,7 @@ const useAddOnsModel = () => {
       const uAddOn: UAddOn = {
         id: doc.id,
         AddOnId: s.AddOnId,
+        ProductId: s.ProductId,
         Name: s.Name,
         Price: s.Price,
       };
@@ -55,11 +57,13 @@ const useAddOnsModel = () => {
   const appendAddOnInCart = (
     userId: string,
     cartId: string,
+    productId: string,
     uAddOn: UAddOn,
     cb: (success: boolean) => void
   ) => {
     const addOn: AddOn = {
       AddOnId: uAddOn.id,
+      ProductId: productId,
       Name: uAddOn.Name,
       Price: uAddOn.Price,
     };
@@ -124,11 +128,13 @@ const useAddOnsModel = () => {
 
   const appendAddOnInOrder = (
     orderId: string,
+    productId: string,
     uAddOn: UAddOn,
     cb: (success: boolean) => void
   ) => {
     const addOn: AddOn = {
       AddOnId: uAddOn.AddOnId,
+      ProductId: productId,
       Name: uAddOn.Name,
       Price: uAddOn.Price,
     };

@@ -87,7 +87,7 @@ export default function useUpdateProduct(
   // Use in dialog when a product is clicked from the table
   const [isOpenUpdate, setIsOpenUpdate] = useState<boolean>(false);
   // The current image of a selected product from the table
-  const [productImage, setProductImage] = useState<File | null>(null);
+  const [uProductImage, setUproductImage] = useState<File | null>(null);
   // The current product that is selected from the table
   const [updateProduct, setUpdateProduct] = useState<UProduct>(EMPTY_PRODUCT());
   // The available addons of a selected product
@@ -100,11 +100,12 @@ export default function useUpdateProduct(
   const [inputHelperTextUpdate, setInputHelperText] =
     useState<InputHelperTextUpdate>(DEFAULT_INPUT_HELPER_TEXT());
 
-  const onSetUProductImage = (file: File) => setProductImage(file);
+  const onSetUProductImage = (file: File) => setUproductImage(file);
   const onOpenUpdate = () => setIsOpenUpdate(true);
   const onCloseUpdate = () => {
     setIsOpenUpdate(false);
     setCurrAddOnNewProduct(EMPTY_ADDON());
+    setUproductImage(null);
   };
   const onChangeAddOnUProduct = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -168,7 +169,7 @@ export default function useUpdateProduct(
     };
     const result = updateProductVM(
       updateProduct,
-      productImage,
+      uProductImage,
       updateProduct.id,
       onUpdated
     );
@@ -247,6 +248,7 @@ export default function useUpdateProduct(
     onRemoveAddOnUProduct,
     onAddAddOnsUProduct,
     onSetUProductImage,
+    uProductImage,
 
     isOpenUpdate,
     onOpenUpdate,

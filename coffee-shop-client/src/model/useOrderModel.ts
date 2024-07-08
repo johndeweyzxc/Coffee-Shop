@@ -1,6 +1,7 @@
 import { QuerySnapshot } from "firebase/firestore";
 import { listenOrderInFirebase, uploadOrderInFirebase } from "./api/order";
 import { UCart } from "./useCartsModel";
+import { UAddOn } from "./useAddOnsModel";
 
 export interface ShippingAddress {
   Region: string;
@@ -16,6 +17,7 @@ export interface ProductOrder {
   TotalPrice: string | number;
   ProductId: string;
   Quantity: number;
+  AddOnIds: string[];
 }
 
 export interface Order {
@@ -34,11 +36,19 @@ export interface UOrder extends Order {
 const useOrderModel = () => {
   const uploadOrder = (
     uCart: UCart,
+    uAddOns: UAddOn[],
     clientName: string,
     clientUID: string,
     shippingAddr: ShippingAddress,
     cb: (success: boolean, orderId: string) => void
   ) => {
+    let addOnIds: string[] = [];
+    uAddOns.forEach((uAddOn, index) => {
+      if (index < 2) {
+        addOnIds.push(uAddOn.AddOnId);
+      }
+    });
+
     const productOrder: ProductOrder = {
       Name: uCart.Name,
       Description: uCart.Description,
@@ -46,6 +56,7 @@ const useOrderModel = () => {
       ProductId: uCart.ProductId,
       Quantity: uCart.Quantity,
       TotalPrice: uCart.TotalPrice,
+      AddOnIds: addOnIds,
     };
 
     const order: Order = {

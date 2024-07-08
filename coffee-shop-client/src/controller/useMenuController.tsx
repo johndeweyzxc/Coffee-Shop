@@ -82,6 +82,7 @@ const useMenuController = () => {
     return listenAddOnsFromProduct(selectedProduct.id, onAddOns);
   };
   useEffect(() => {
+    // TODO: Instead of attaching a listener, just fetch all addons
     let unsubscribe: Unsubscribe | null = null;
     if (isOpenQuantity) {
       console.log(
