@@ -52,10 +52,21 @@ export const useCartViewModel = () => {
   const editCartVM = (
     userId: string,
     cartId: string,
+    quantity: number,
+    totalPrice: number,
+    selectedCartAddOns: UAddOn[],
     uCart: UCart,
     cb: (success: boolean) => void
   ) => {
-    editCart(userId, cartId, uCart, cb);
+    let addOnIds: string[] = [];
+    selectedCartAddOns.forEach((uAddOn) => addOnIds.push(uAddOn.id));
+    const newSelectedCart: UCart = {
+      ...uCart,
+      AddOnIds: addOnIds,
+      Quantity: quantity,
+      TotalPrice: totalPrice,
+    };
+    editCart(userId, cartId, newSelectedCart, cb);
   };
 
   const addToCartVM = (
@@ -86,12 +97,33 @@ export const useCartViewModel = () => {
 
   const appendAddOnsInCartVM = (
     userId: string,
-    cartId: string,
-    productId: string,
+    uCart: UCart,
     uAddOn: UAddOn,
     cb: (success: boolean) => void
   ) => {
-    appendAddOnInCart(userId, cartId, productId, uAddOn, cb);
+    const onUpdatedIdsInCart = (success: boolean) => {
+      if (success) {
+        cb(true);
+      } else {
+        cb(false);
+      }
+    };
+    const onAppendedAddOn = (success: boolean, addOnId: string) => {
+      if (success) {
+        const newUAddOnIdList = [...uCart.AddOnIds, addOnId];
+        const newUCart: UCart = { ...uCart, AddOnIds: newUAddOnIdList };
+        editCart(userId, uCart.id, newUCart, onUpdatedIdsInCart);
+      } else {
+        cb(false);
+      }
+    };
+    appendAddOnInCart(
+      userId,
+      uCart.id,
+      uCart.ProductId,
+      uAddOn,
+      onAppendedAddOn
+    );
   };
 
   const removeFromCartVM = (
@@ -126,6 +158,34 @@ export const useCartViewModel = () => {
     removeFromCart(userId, cartId, onRemovedFromCart);
   };
 
+  const removeAddOnInCartVM = (
+    userId: string,
+    uCart: UCart,
+    addOnId: string,
+    cb: (success: boolean) => void
+  ) => {
+    const newUAddOnIdList = uCart.AddOnIds.filter(
+      (uAddOnId) => uAddOnId !== addOnId
+    );
+    const newUCart: UCart = { ...uCart, AddOnIds: newUAddOnIdList };
+
+    const onUpdatedIdsOnCart = (success: boolean) => {
+      if (success) {
+        cb(true);
+      } else {
+        cb(false);
+      }
+    };
+    const onRemovedAddOn = (success: boolean) => {
+      if (success) {
+        editCart(userId, uCart.id, newUCart, onUpdatedIdsOnCart);
+      } else {
+        cb(false);
+      }
+    };
+    removeAddOnInCart(userId, uCart.id, addOnId, onRemovedAddOn);
+  };
+
   return {
     listenCartVM,
     addToCartVM,
@@ -136,6 +196,6 @@ export const useCartViewModel = () => {
     listenAddOnsFromProduct,
     listenAddOnsFromCart,
     appendAddOnsInCartVM,
-    removeAddOnInCart,
+    removeAddOnInCartVM,
   };
 };

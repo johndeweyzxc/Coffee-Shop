@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 
-import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../firebaseConf";
+import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../FirebaseConfig";
 import { LoginAsAdmin } from "../useAppAuthModel";
 
 initializeApp(FIREBASE_CONFIG);

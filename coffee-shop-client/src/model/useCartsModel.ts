@@ -98,6 +98,7 @@ const useCartsModel = () => {
     cb: (success: boolean) => void
   ) => {
     const cart: object = {
+      AddOnIds: newCart.AddOnIds,
       Name: newCart.Name,
       Description: newCart.Description,
       Price: newCart.Price,

@@ -16,6 +16,8 @@ export interface AddOn {
   ProductId: string;
   Name: string;
   Price: string | number;
+  OrderId: string;
+  CartId: string;
 }
 
 export interface UAddOn extends AddOn {
@@ -23,7 +25,11 @@ export interface UAddOn extends AddOn {
 }
 
 const useAddOnsModel = () => {
-  const convertQuerySnapshotUAddOn = (snapshot: QuerySnapshot) => {
+  const convertQuerySnapshotUAddOn = (
+    snapshot: QuerySnapshot,
+    orderId: string,
+    cartId: string
+  ) => {
     const uAddOnList: UAddOn[] = [];
     snapshot.forEach((doc) => {
       const s = doc.data() as AddOn;
@@ -33,6 +39,8 @@ const useAddOnsModel = () => {
         ProductId: s.ProductId,
         Name: s.Name,
         Price: s.Price,
+        OrderId: orderId,
+        CartId: cartId,
       };
       uAddOnList.push(uAddOn);
     });
@@ -48,7 +56,7 @@ const useAddOnsModel = () => {
         onAddOns(null);
         return;
       }
-      const uAddOnList = convertQuerySnapshotUAddOn(snapshot);
+      const uAddOnList = convertQuerySnapshotUAddOn(snapshot, "", "");
       onAddOns(uAddOnList);
     };
     return listenAddOnsFromProductInFirebase(productId, cb);
@@ -59,13 +67,15 @@ const useAddOnsModel = () => {
     cartId: string,
     productId: string,
     uAddOn: UAddOn,
-    cb: (success: boolean) => void
+    cb: (success: boolean, addOnId: string) => void
   ) => {
     const addOn: AddOn = {
       AddOnId: uAddOn.id,
       ProductId: productId,
       Name: uAddOn.Name,
       Price: uAddOn.Price,
+      CartId: cartId,
+      OrderId: "",
     };
     appendAddOnInCartInFirebase(userId, cartId, addOn, cb);
   };
@@ -80,7 +90,7 @@ const useAddOnsModel = () => {
         onAddOns(null);
         return;
       }
-      const uAddOnList = convertQuerySnapshotUAddOn(snapshot);
+      const uAddOnList = convertQuerySnapshotUAddOn(snapshot, "", cartId);
       onAddOns(uAddOnList);
     };
     return listenAddOnsFromCartInFirebase(userId, cartId, cb);
@@ -96,7 +106,7 @@ const useAddOnsModel = () => {
         onAddOns(null);
         return;
       }
-      const uAddOnList = convertQuerySnapshotUAddOn(snapshot);
+      const uAddOnList = convertQuerySnapshotUAddOn(snapshot, "", cartId);
       onAddOns(uAddOnList);
     };
     getAddOnsFromCartInFirebase(userId, cartId, cb);
@@ -111,7 +121,7 @@ const useAddOnsModel = () => {
         onAddOns(null);
         return;
       }
-      const uAddOnList = convertQuerySnapshotUAddOn(snapshot);
+      const uAddOnList = convertQuerySnapshotUAddOn(snapshot, orderId, "");
       onAddOns(uAddOnList);
     };
     getAddOnsFromOrderInFirebase(orderId, cb);
@@ -137,6 +147,8 @@ const useAddOnsModel = () => {
       ProductId: productId,
       Name: uAddOn.Name,
       Price: uAddOn.Price,
+      OrderId: orderId,
+      CartId: "",
     };
     appendAddOnInOrderInFirebase(orderId, addOn, cb);
   };

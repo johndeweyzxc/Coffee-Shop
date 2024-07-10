@@ -41,7 +41,7 @@ const useCartController = (userId: string) => {
     listenAddOnsFromCart,
     listenAddOnsFromProduct,
     appendAddOnsInCartVM,
-    removeAddOnInCart,
+    removeAddOnInCartVM,
   } = useCartViewModel();
 
   const { uploadOrderVM } = useOrderViewModel();
@@ -85,7 +85,7 @@ const useCartController = (userId: string) => {
         );
       }
     };
-    removeAddOnInCart(userId, selectedCart.id, uAddOn.id, onRemovedAddOn);
+    removeAddOnInCartVM(userId, selectedCart, uAddOn.id, onRemovedAddOn);
   };
 
   const onRemoveAddOnFromAvaialableAddOns = (uAddOn: UAddOn) => {
@@ -99,13 +99,7 @@ const useCartController = (userId: string) => {
         );
       }
     };
-    appendAddOnsInCartVM(
-      userId,
-      selectedCart.id,
-      selectedCart.ProductId,
-      uAddOn,
-      onRemovedAddOn
-    );
+    appendAddOnsInCartVM(userId, selectedCart, uAddOn, onRemovedAddOn);
   };
 
   const filterAddOnsAlreadyListed = (uAddOns: UAddOn[]) => {
@@ -226,12 +220,15 @@ const useCartController = (userId: string) => {
         notify.HandleOpenAlert("error", "Failed to edit cart");
       }
     };
-    const newSelectedCart: UCart = {
-      ...selectedCart,
-      Quantity: quantity,
-      TotalPrice: totalPrice,
-    };
-    editCartVM(userId, selectedCart.id, newSelectedCart, onEditedCart);
+    editCartVM(
+      userId,
+      selectedCart.id,
+      quantity,
+      totalPrice,
+      selectedCartAddOns,
+      selectedCart,
+      onEditedCart
+    );
     onCloseEditor();
   };
   const onOpenEditor = (selectedCart: UCart) => {

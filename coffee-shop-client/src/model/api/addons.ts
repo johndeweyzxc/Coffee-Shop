@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 
 import { AddOn } from "../useAddOnsModel";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { FIREBASE_CONFIG } from "../../FirebaseConfig";
 import {
   COL_ADDONS,
   COL_ORDERS,
@@ -165,7 +165,7 @@ export const appendAddOnInCartInFirebase = (
   userId: string,
   cartId: string,
   addOn: AddOn,
-  onUploadedAddOn: (success: boolean) => void
+  onUploadedAddOn: (success: boolean, addOnId: string) => void
 ) => {
   addDoc(
     collection(db, COL_USERS, userId, COL_USERS_CARTS, cartId, COL_ADDONS),
@@ -175,7 +175,7 @@ export const appendAddOnInCartInFirebase = (
       console.log(
         `addOns.appendAddOnInCartInFirebase: Successfully added addon with id ${value.id} in addons for cart with id ${cartId}`
       );
-      onUploadedAddOn(true);
+      onUploadedAddOn(true, value.id);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -184,7 +184,7 @@ export const appendAddOnInCartInFirebase = (
           `addOns.appendAddOnInCartInFirebase: There is an error adding addon with name ${addOn.Name} in addons for cart with id ${cartId}`
         );
       }
-      onUploadedAddOn(false);
+      onUploadedAddOn(false, "");
     });
 };
 

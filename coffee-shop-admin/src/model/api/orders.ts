@@ -13,7 +13,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../firebaseConf";
+import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../FirebaseConfig";
 import { COL_ORDERS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);

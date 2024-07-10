@@ -16,7 +16,7 @@ import {
   ref,
 } from "firebase/storage";
 
-import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { FIREBASE_CONFIG } from "../../FirebaseConfig";
 import { PRODUCTS_STATUS } from "../../status";
 import {
   COL_PRODUCTS,

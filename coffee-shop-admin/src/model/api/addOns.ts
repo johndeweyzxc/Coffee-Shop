@@ -16,7 +16,7 @@ import {
 } from "firebase/firestore";
 
 import { AddOn } from "../useAddOnsModel";
-import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../firebaseConf";
+import { FIREBASE_CONFIG, IS_DEV_MODE } from "../../FirebaseConfig";
 import { COL_ADDONS, COL_ORDERS, COL_PRODUCTS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);

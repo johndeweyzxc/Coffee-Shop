@@ -106,6 +106,8 @@ export default function UploadProductDialog(props: UploadProductDialogProps) {
   };
 
   const RenderSelectedProductImage = () => {
+    // TODO: Fix a render issue that causes lag
+    // TODO: Fix issue where the new product image is not reflected on UI upon successful upload of product image
     if (props.productImage === null) {
       return (
         <>

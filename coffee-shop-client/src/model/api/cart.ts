@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 
 import { Cart } from "../useCartsModel";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { FIREBASE_CONFIG } from "../../FirebaseConfig";
 import { COL_USERS, COL_USERS_CARTS } from "../../strings";
 
 const app = initializeApp(FIREBASE_CONFIG);

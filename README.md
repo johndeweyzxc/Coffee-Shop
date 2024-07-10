@@ -6,7 +6,7 @@ Coffee Shop App is a web application designed for coffee shop owners and adminis
 
 ## Use case diagram
 
-<img src="architecture and use case/Coffee Shop App Use Case diagram.png">
+<img src="architecture and use case/Coffee Shop App Use Case diagram.png" width=600>
 
 ### Client use cases
 
@@ -18,11 +18,11 @@ Coffee Shop App is a web application designed for coffee shop owners and adminis
 
 ### Admin use cases
 
-- <b>Create product - Create a product and its available addons
-- <b>View order - View orders placed by all clients, admin can delete them
-- <b>Update order status - Updates the status of the order
+- <b>Create product</b> - Create a product and its available addons
+- <b>View order</b> - View orders placed by all clients, admin can delete them
+- <b>Update order status</b> - Updates the status of the order
 
-#### \*An admin can also be the owner of the shop
+#### NOTE: An admin can also be the owner of the shop or vice versa
 
 ## Web app architecture
 
@@ -56,13 +56,13 @@ Coffee Shop App is a web application designed for coffee shop owners and adminis
 
 ## Admin authentication and user accounts
 
-#### The admin can log in to the system using an email and password while the user can authenticate using Google Sign-In
+#### NOTE: The admin can log in to the system using an email and password while the user can authenticate using Google Sign-In.
 
 <img src="database structure/Auth.png" width=900>
 
 ## Database structure
 
-#### Coffee shop app uses Firebase Firestore for its database which is a NoSQL document oriented database. Each document is stored inside of a collection and each document contains a set of key-value pairs. The images is stored using Firebase storage.
+#### Coffee shop app uses Firebase Firestore for its database which is a NoSQL document oriented database. Each document is stored inside of a collection and each document contains a set of key-value pairs. Admin can set image or picture of a product by uploading an image file, the image files is stored in Firebase storage.
 
 ### Products
 
@@ -82,7 +82,7 @@ Coffee Shop App is a web application designed for coffee shop owners and adminis
 
 <img src="database structure/Orders.png" width=900>
 
-#### Each documents in the database is secured using security rules that are applied to each document when performing create, read, update or delete
+#### Each documents in the database is secured using security rules that are applied to each document when performing create, read, update or delete.
 
 ## Technologies used
 

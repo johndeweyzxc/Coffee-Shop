@@ -14,7 +14,7 @@ import {
   where,
 } from "firebase/firestore";
 
-import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { FIREBASE_CONFIG } from "../../FirebaseConfig";
 import { COL_ORDERS } from "../../strings";
 import { Order } from "../useOrderModel";
 

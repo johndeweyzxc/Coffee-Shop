@@ -11,7 +11,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { initializeApp } from "firebase/app";
-import { FIREBASE_CONFIG } from "../../firebaseConf";
+import { FIREBASE_CONFIG } from "../../FirebaseConfig";
 import {
   AUTH_LISTENER_STATUS,
   LOGIN_WITH_EMAIL_STATUS,
