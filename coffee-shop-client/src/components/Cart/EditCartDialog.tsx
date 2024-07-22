@@ -1,4 +1,3 @@
-import { ChangeEvent } from "react";
 import {
   Box,
   Button,
@@ -13,6 +12,8 @@ import {
 } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import { UCart } from "../../model/useCartsModel";
 import { UAddOn } from "../../model/useAddOnsModel";
 import { truncateName } from "../../utils/stringUtils";
@@ -103,12 +104,16 @@ interface EditCartDialogProps {
   selectedCart: UCart;
   quantity: number;
   totalPrice: number;
-  onChangeQuantity: (e: ChangeEvent<HTMLInputElement>) => void;
-  onEditCart: (dialogImproperlyClosed: boolean) => void;
+  onChangeQuantity: (isIncrement: boolean) => void;
+  onEditCart: (dialogImproperlyClosed: boolean) => [number, number];
   selectedCartAddOns: UAddOn[];
   onRemoveAddOnFromSelectedCart: (uAddOn: UAddOn) => void;
   availableAddOns: UAddOn[];
   onRemoveAddOnFromAvaialableAddOns: (uAddOn: UAddOn) => void;
+  onOpenDelete: (selectedCart: UCart) => void;
+  onCloseDelete: () => void;
+  onOpenCheckOut: (uCart: UCart) => void;
+  onCloseCheckOut: () => void;
 }
 export default function EditCartDialog(props: EditCartDialogProps) {
   const RenderSelectedAddOns = () => {
@@ -159,17 +164,7 @@ export default function EditCartDialog(props: EditCartDialogProps) {
   };
 
   return (
-    <Dialog
-      open={props.isOpen}
-      onClose={() => props.onEditCart(true)}
-      PaperProps={{
-        component: "form",
-        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-          event.preventDefault();
-          props.onEditCart(false);
-        },
-      }}
-    >
+    <Dialog open={props.isOpen} onClose={() => props.onEditCart(true)}>
       <DialogTitle>{truncateName(props.selectedCart.Name)}</DialogTitle>
       <DialogContent dividers>
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
@@ -199,9 +194,27 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           type="number"
           value={props.quantity}
           sx={{ marginBottom: "1rem" }}
-          onChange={props.onChangeQuantity}
           fullWidth
         />
+        <Box sx={{ display: "flex", marginBottom: "1rem" }}>
+          <Button
+            startIcon={<AddIcon />}
+            color="success"
+            variant="contained"
+            sx={{
+              width: "100%",
+              marginRight: ".5rem",
+            }}
+            onClick={() => props.onChangeQuantity(true)}
+          />
+          <Button
+            startIcon={<RemoveIcon />}
+            color="error"
+            variant="contained"
+            sx={{ width: "100%", marginLeft: ".5rem" }}
+            onClick={() => props.onChangeQuantity(false)}
+          />
+        </Box>
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
           Selected Add ons
         </Typography>
@@ -213,6 +226,31 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           Available Add ons
         </Typography>
         <RenderAvailableAddOns />
+        <Button
+          color="info"
+          variant="contained"
+          sx={{
+            marginTop: "1rem",
+            marginBottom: ".5rem",
+            textTransform: "none",
+          }}
+          fullWidth
+          onClick={() => props.onEditCart(false)}
+        >
+          Update cart
+        </Button>
+        <Button
+          color="error"
+          variant="contained"
+          sx={{ textTransform: "none" }}
+          fullWidth
+          onClick={() => {
+            props.onClose();
+            props.onOpenDelete(props.selectedCart);
+          }}
+        >
+          Delete cart
+        </Button>
       </DialogContent>
       <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
         Total Price: ${props.totalPrice}
@@ -225,8 +263,17 @@ export default function EditCartDialog(props: EditCartDialogProps) {
         >
           Cancel
         </Button>
-        <Button type="submit" sx={{ textTransform: "none" }} color="success">
-          Update
+        <Button
+          sx={{ textTransform: "none" }}
+          color="success"
+          onClick={() => {
+            const [quantity, totalPrice] = props.onEditCart(true);
+            props.selectedCart.TotalPrice = totalPrice;
+            props.selectedCart.Quantity = quantity;
+            props.onOpenCheckOut(props.selectedCart);
+          }}
+        >
+          Checkout
         </Button>
       </DialogActions>
     </Dialog>

@@ -165,7 +165,7 @@ export const appendAddOnInCartInFirebase = (
   userId: string,
   cartId: string,
   addOn: AddOn,
-  onUploadedAddOn: (success: boolean, addOnId: string) => void
+  onUploadedAddOn: (success: boolean) => void
 ) => {
   addDoc(
     collection(db, COL_USERS, userId, COL_USERS_CARTS, cartId, COL_ADDONS),
@@ -175,7 +175,7 @@ export const appendAddOnInCartInFirebase = (
       console.log(
         `addOns.appendAddOnInCartInFirebase: Successfully added addon with id ${value.id} in addons for cart with id ${cartId}`
       );
-      onUploadedAddOn(true, value.id);
+      onUploadedAddOn(true);
     })
     .catch((reason) => {
       if (reason !== null || reason !== undefined) {
@@ -184,7 +184,7 @@ export const appendAddOnInCartInFirebase = (
           `addOns.appendAddOnInCartInFirebase: There is an error adding addon with name ${addOn.Name} in addons for cart with id ${cartId}`
         );
       }
-      onUploadedAddOn(false, "");
+      onUploadedAddOn(false);
     });
 };
 

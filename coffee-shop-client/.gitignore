@@ -22,6 +22,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+NOTES.md
+
 src/FirebaseConfig.ts
 
 .firebase
@@ -31,4 +33,4 @@ firestore-debug.log
 ui-debug.log
 firebase-storage.rules
 firebase-firestore.rules
-firebase-data
+firebase-emulator-data

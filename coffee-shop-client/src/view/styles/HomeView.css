@@ -1,0 +1,36 @@
+.branding {
+    width: 70%;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+@media screen and (max-width: 1024px) {
+    .branding {
+        width: 90%;
+    }
+}
+
+.available-coffee {
+    padding-left: 2.25rem;
+    padding-right: 2.25rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    border: 1px solid var(--md-sys-color-on-primary);
+    border-radius: 9999px;
+    font-family: "Inter", sans-serif;
+    color: var(--md-sys-color-on-primary);
+    font-weight: 600;
+    transition: ease-in-out;
+    transition-duration: 200ms;
+    text-align: center;
+}
+
+.available-coffee:hover {
+    background-color: #ffffff20;
+}

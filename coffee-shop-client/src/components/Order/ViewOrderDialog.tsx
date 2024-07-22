@@ -157,7 +157,11 @@ export default function ViewOrderDialog(props: ViewOrderDialogProps) {
         <b>Total Price: </b>${props.selectedOrder.ProductOrderInfo.TotalPrice}
       </Typography>
       <DialogActions>
-        <Button onClick={props.onClose} color="info">
+        <Button
+          onClick={props.onClose}
+          sx={{ textTransform: "none" }}
+          color="info"
+        >
           Close
         </Button>
       </DialogActions>

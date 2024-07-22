@@ -53,6 +53,7 @@ interface CheckoutDialogProps {
   onChangeShipAddress: (e: ChangeEvent<HTMLInputElement>) => void;
   onCheckout: () => void;
   checkoutAddOns: UAddOn[];
+  shipInfoErrText: string;
 }
 export default function CheckoutDialog(props: CheckoutDialogProps) {
   const RenderSelectedAddOns = () => {
@@ -64,6 +65,22 @@ export default function CheckoutDialog(props: CheckoutDialogProps) {
       );
     } else {
       return <SelectedAddOns uAddOns={props.checkoutAddOns} />;
+    }
+  };
+
+  const RenderInfoErrorText = () => {
+    if (props.shipInfoErrText.length !== 0) {
+      return (
+        <Typography
+          variant="subtitle2"
+          color="red"
+          sx={{ marginBottom: ".5rem" }}
+        >
+          *{props.shipInfoErrText}
+        </Typography>
+      );
+    } else {
+      return null;
     }
   };
 
@@ -81,6 +98,9 @@ export default function CheckoutDialog(props: CheckoutDialogProps) {
     >
       <DialogTitle>Checkout</DialogTitle>
       <DialogContent dividers>
+        <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
+          Product Information
+        </Typography>
         <TextField
           value={props.selectedCart.Name}
           sx={{ marginBottom: ".5rem" }}
@@ -113,6 +133,7 @@ export default function CheckoutDialog(props: CheckoutDialogProps) {
         >
           Shipping Information
         </Typography>
+        <RenderInfoErrorText />
         <TextField
           name="ClientName"
           label="Client name"
@@ -130,6 +151,7 @@ export default function CheckoutDialog(props: CheckoutDialogProps) {
             value={props.shipAddress.Region}
             sx={{ marginRight: ".5rem" }}
             onChange={props.onChangeShipAddress}
+            fullWidth
           />
           <TextField
             name="City"
@@ -137,25 +159,27 @@ export default function CheckoutDialog(props: CheckoutDialogProps) {
             variant="standard"
             value={props.shipAddress.City}
             onChange={props.onChangeShipAddress}
+            fullWidth
           />
         </Box>
-        <Box sx={{ marginBottom: ".5rem" }}>
-          <TextField
-            name="District"
-            label="District"
-            variant="standard"
-            value={props.shipAddress.District}
-            sx={{ marginRight: ".5rem" }}
-            onChange={props.onChangeShipAddress}
-          />
-          <TextField
-            name="Street"
-            label="Street"
-            variant="standard"
-            value={props.shipAddress.Street}
-            onChange={props.onChangeShipAddress}
-          />
-        </Box>
+        <TextField
+          name="District"
+          label="District"
+          variant="standard"
+          value={props.shipAddress.District}
+          sx={{ marginBottom: ".5rem" }}
+          onChange={props.onChangeShipAddress}
+          fullWidth
+        />
+        <TextField
+          name="Street"
+          label="Street"
+          variant="standard"
+          value={props.shipAddress.Street}
+          sx={{ marginBottom: "1rem" }}
+          onChange={props.onChangeShipAddress}
+          fullWidth
+        />
       </DialogContent>
       <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
         <b>Total Price: </b>₱{props.selectedCart.TotalPrice}

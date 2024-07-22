@@ -1,8 +1,8 @@
-export const HOME_PAGE = "HOME";
-export const MENU_PAGE = "MENU";
-export const CART_PAGE = "CART";
-export const ABOUT_PAGE = "ABOUT";
-export const ORDER_PAGE = "ORDER";
+export const HOME_PAGE = "Home";
+export const MENU_PAGE = "Menu";
+export const CART_PAGE = "Cart";
+export const ABOUT_PAGE = "About";
+export const ORDER_PAGE = "Order";
 
 export const NAV_LIST = [
   HOME_PAGE,

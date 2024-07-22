@@ -1,6 +1,7 @@
+import { Unsubscribe } from "firebase/firestore";
+
 import useCartsModel, { UCart } from "../model/useCartsModel";
 import useAddOnsModel, { UAddOn } from "../model/useAddOnsModel";
-import { Unsubscribe } from "firebase/firestore";
 import useProductsModel, { UProduct } from "../model/useProductsModel";
 
 export const useCartViewModel = () => {
@@ -59,7 +60,7 @@ export const useCartViewModel = () => {
     cb: (success: boolean) => void
   ) => {
     let addOnIds: string[] = [];
-    selectedCartAddOns.forEach((uAddOn) => addOnIds.push(uAddOn.id));
+    selectedCartAddOns.forEach((uAddOn) => addOnIds.push(uAddOn.AddOnId));
     const newSelectedCart: UCart = {
       ...uCart,
       AddOnIds: addOnIds,

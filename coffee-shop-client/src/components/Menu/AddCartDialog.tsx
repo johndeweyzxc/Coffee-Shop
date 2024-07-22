@@ -10,7 +10,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { ChangeEvent } from "react";
+import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { UProduct } from "../../model/useProductsModel";
@@ -95,7 +95,7 @@ function SelectedAddOnList(props: SelectedAddOnListProps) {
   );
 }
 
-interface SetQuantityDialogProps {
+interface AddCartDialogProps {
   isOpen: boolean;
   onClose: () => void;
   uProduct: UProduct;
@@ -105,10 +105,10 @@ interface SetQuantityDialogProps {
   onRemoveAddon: (addOnId: string) => void;
   quantity: number;
   totalPrice: number;
-  onChangeQuantity: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeQuantity: (isIncrement: boolean) => void;
   onQuantitySet: () => void;
 }
-export default function SetQuantityDialog(props: SetQuantityDialogProps) {
+export default function AddCartDialog(props: AddCartDialogProps) {
   const RenderSelectedAddOns = () => {
     if (props.currentAddOns.length === 0) {
       return (
@@ -194,10 +194,28 @@ export default function SetQuantityDialog(props: SetQuantityDialogProps) {
           variant="standard"
           type="number"
           value={props.quantity}
-          sx={{ marginBottom: "1rem" }}
+          sx={{ marginBottom: ".5rem" }}
           fullWidth
-          onChange={props.onChangeQuantity}
         />
+        <Box sx={{ display: "flex", marginBottom: "1rem" }}>
+          <Button
+            startIcon={<AddIcon />}
+            color="success"
+            variant="contained"
+            sx={{
+              width: "100%",
+              marginRight: ".5rem",
+            }}
+            onClick={() => props.onChangeQuantity(true)}
+          />
+          <Button
+            startIcon={<RemoveIcon />}
+            color="error"
+            variant="contained"
+            sx={{ width: "100%", marginLeft: ".5rem" }}
+            onClick={() => props.onChangeQuantity(false)}
+          />
+        </Box>
         <Typography variant="h6" sx={{ marginBottom: ".5rem" }}>
           Add ons
         </Typography>

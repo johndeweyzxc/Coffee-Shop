@@ -2,9 +2,9 @@ import { User } from "firebase/auth";
 import {
   authListenerInFirebase,
   registerUsingEmailAndPasswordInFirebase,
-  signInUsingEmailAndPasswordInFirebase,
   signInWithGoogleInFirebase,
-  signOutInFirebase,
+  logInUsingEmailAndPasswordInFirebase,
+  logOutInFirebase,
 } from "./auth/appAuth";
 import {
   AUTH_LISTENER_STATUS,
@@ -50,7 +50,7 @@ const useAppAuthModel = () => {
     return authListenerInFirebase(cb);
   };
 
-  const signInGoogle = (
+  const signInWithGoogle = (
     onSignedIn: (appUser: AppUser, status: LOGIN_WITH_GOOGLE_STATUS) => void
   ) => {
     const cb = (user: User | null, status: LOGIN_WITH_GOOGLE_STATUS) => {
@@ -59,39 +59,62 @@ const useAppAuthModel = () => {
     signInWithGoogleInFirebase(cb);
   };
 
-  const signOut = (cb: (status: SIGNOUT_STATUS) => void) =>
-    signOutInFirebase(cb);
+  const logOut = (cb: (status: SIGNOUT_STATUS) => void) => logOutInFirebase(cb);
 
-  const signInUsingEmailAndPassword = (
+  const logInUsingEmailAndPassword = (
     loginInfo: LoginInfo,
-    onSignedIn: (user: User | null, status: LOGIN_WITH_EMAIL_STATUS) => void
+    onSignedIn: (user: AppUser | null, status: LOGIN_WITH_EMAIL_STATUS) => void
   ) => {
-    signInUsingEmailAndPasswordInFirebase(
+    const cb = (user: User | null, status: LOGIN_WITH_EMAIL_STATUS) => {
+      if (user !== null) {
+        const appUser: AppUser = {
+          id: user.uid,
+          Email: user.email === null ? "" : user.email,
+          PhotoURL: user.photoURL === null ? "" : user.photoURL,
+        };
+        onSignedIn(appUser, status);
+      } else {
+        onSignedIn(null, status);
+      }
+    };
+    logInUsingEmailAndPasswordInFirebase(
       loginInfo.Email,
       loginInfo.Password,
-      onSignedIn
+      cb
     );
   };
 
   const registerUsingEmailAndPassword = (
     loginInfo: LoginInfo,
     onRegistered: (
-      user: User | null,
+      user: AppUser | null,
       status: REGISTER_WITH_EMAIL_STATUS
     ) => void
   ) => {
+    const cb = (user: User | null, status: REGISTER_WITH_EMAIL_STATUS) => {
+      if (user !== null) {
+        const appUser: AppUser = {
+          id: user.uid,
+          Email: user.email === null ? "" : user.email,
+          PhotoURL: user.photoURL === null ? "" : user.photoURL,
+        };
+        onRegistered(appUser, status);
+      } else {
+        onRegistered(null, status);
+      }
+    };
     registerUsingEmailAndPasswordInFirebase(
       loginInfo.Email,
       loginInfo.Password,
-      onRegistered
+      cb
     );
   };
 
   return {
     addAuthListener,
-    signInGoogle,
-    signOut,
-    signInUsingEmailAndPassword,
+    signInWithGoogle,
+    logOut,
+    logInUsingEmailAndPassword,
     registerUsingEmailAndPassword,
   };
 };

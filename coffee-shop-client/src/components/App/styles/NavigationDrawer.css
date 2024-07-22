@@ -1,0 +1,10 @@
+.user-info-nav-drawer {
+    width: 50vw;
+    margin: 1rem;
+    color: var(--md-sys-color-primary);
+    font-family: "Inter", sans-serif;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}

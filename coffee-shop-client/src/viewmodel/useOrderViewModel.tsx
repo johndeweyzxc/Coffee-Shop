@@ -52,6 +52,25 @@ export const useOrderViewModel = () => {
     return listenOrders(clientUID, onReceivedOrders);
   };
 
+  const validateOrderVM = (
+    shippingAddress: ShippingAddress,
+    clientName: string
+  ): [boolean, string] => {
+    const isRegionEmpty = shippingAddress.Region.length === 0;
+    const isCityEmpty = shippingAddress.City.length === 0;
+    const isDistrictEmpty = shippingAddress.District.length === 0;
+    const isStreetEmpty = shippingAddress.Street.length === 0;
+    const isShipAddrEmpty =
+      isRegionEmpty || isCityEmpty || isDistrictEmpty || isStreetEmpty;
+    const isClientNameEmpty = clientName.length === 0;
+
+    if (isShipAddrEmpty || isClientNameEmpty) {
+      return [false, "Shipping information cannot be empty"];
+    } else {
+      return [true, ""];
+    }
+  };
+
   const uploadOrderVM = (
     uCart: UCart,
     shippingAddr: ShippingAddress,
@@ -125,5 +144,5 @@ export const useOrderViewModel = () => {
     getAddOnsFromCart(clientUID, uCart.id, onAddOns);
   };
 
-  return { listenOrdersVM, uploadOrderVM, getAddOnsFromOrder };
+  return { listenOrdersVM, uploadOrderVM, validateOrderVM, getAddOnsFromOrder };
 };

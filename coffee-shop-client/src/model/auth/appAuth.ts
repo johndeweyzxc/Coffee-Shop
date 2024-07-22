@@ -65,7 +65,7 @@ export const signInWithGoogleInFirebase = (
     });
 };
 
-export const signInUsingEmailAndPasswordInFirebase = (
+export const logInUsingEmailAndPasswordInFirebase = (
   email: string,
   password: string,
   onSignedIn: (user: User | null, status: LOGIN_WITH_EMAIL_STATUS) => void
@@ -73,20 +73,29 @@ export const signInUsingEmailAndPasswordInFirebase = (
   signInWithEmailAndPassword(auth, email, password)
     .then((userCreds) => {
       console.log(
-        `appAuth.signInUsingEmailAndPasswordInFirebase: User signed in using email ${email} and password`
+        `appAuth.logInUsingEmailAndPasswordInFirebase: User signed in using email ${email} and password`
       );
       onSignedIn(userCreds.user, LOGIN_WITH_EMAIL_STATUS.SUCCESS);
     })
     .catch((error) => {
       console.log(
-        `appAuth.signInUsingEmailAndPasswordInFirebase: There is a problem signing in using email and password`
+        `appAuth.logInUsingEmailAndPasswordInFirebase: There is a problem signing in using email and password`
       );
 
-      onSignedIn(null, LOGIN_WITH_EMAIL_STATUS.ERROR);
       if (error !== null || error !== undefined) {
         const errorMessage = error.message;
-        console.log(errorMessage);
+        // console.log(
+        //   "appAuth:logInUsingEmailAndPasswordInFirebase: ",
+        //   errorMessage
+        // );
+        if (errorMessage === "Firebase: Error (auth/invalid-email).") {
+          onSignedIn(null, LOGIN_WITH_EMAIL_STATUS.INVALID_EMAIL);
+        } else if (errorMessage === "Firebase: Error (auth/wrong-password).") {
+          onSignedIn(null, LOGIN_WITH_EMAIL_STATUS.WRONG_PASSWORD);
+        }
+        return;
       }
+      onSignedIn(null, LOGIN_WITH_EMAIL_STATUS.ERROR);
     });
 };
 
@@ -107,24 +116,28 @@ export const registerUsingEmailAndPasswordInFirebase = (
         `appAuth.registerUsingEmailAndPasswordInFirebase: There is a problem registering using email and password`
       );
 
-      onRegistered(null, REGISTER_WITH_EMAIL_STATUS.ERROR);
       if (error !== null || error !== undefined) {
         const errorMessage = error.message;
-        console.log(errorMessage);
+        // console.log(
+        //   "appAuth:registerUsingEmailAndPasswordInFirebase",
+        //   errorMessage
+        // );
+        if (errorMessage === "Firebase: Error (auth/email-already-taken).") {
+          onRegistered(null, REGISTER_WITH_EMAIL_STATUS.EMAIL_ALREADY_EXISTS);
+        }
       }
+      onRegistered(null, REGISTER_WITH_EMAIL_STATUS.ERROR);
     });
 };
 
-export const signOutInFirebase = (cb: (status: SIGNOUT_STATUS) => void) => {
+export const logOutInFirebase = (cb: (status: SIGNOUT_STATUS) => void) => {
   signOut(auth)
     .then(() => {
-      console.log("appAuth.signOutWithGoogleInFirebase: User signed out");
+      console.log("appAuth.logOutInFirebase: User signed out");
       cb(SIGNOUT_STATUS.SUCCESS);
     })
     .catch((error) => {
-      console.log(
-        "appAuth.signOutWithGoogleInFirebase: There is a problem signing out"
-      );
+      console.log("appAuth.logOutInFirebase: There is a problem signing out");
       cb(SIGNOUT_STATUS.ERROR);
       if (error !== null || error !== undefined) {
         console.log(error);

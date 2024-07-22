@@ -69,6 +69,10 @@ const useAddOnsModel = () => {
     uAddOn: UAddOn,
     cb: (success: boolean, addOnId: string) => void
   ) => {
+    const onUploadedAddOn = (success: boolean) => {
+      cb(success, uAddOn.id);
+    };
+
     const addOn: AddOn = {
       AddOnId: uAddOn.id,
       ProductId: productId,
@@ -77,7 +81,7 @@ const useAddOnsModel = () => {
       CartId: cartId,
       OrderId: "",
     };
-    appendAddOnInCartInFirebase(userId, cartId, addOn, cb);
+    appendAddOnInCartInFirebase(userId, cartId, addOn, onUploadedAddOn);
   };
 
   const listenAddOnsFromCart = (

@@ -1,77 +1,46 @@
 import {
-  Box,
   Card,
-  CardActions,
+  CardActionArea,
   CardContent,
   CardMedia,
-  Divider,
-  IconButton,
-  Tooltip,
   Typography,
 } from "@mui/material";
+
+import { UCart } from "../model/useCartsModel";
 import useCartController from "../controller/useCartController";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditCartDialog from "../components/Cart/EditCartDialog";
 import DeleteCartDialog from "../components/Cart/DeleteCartDialog";
-import EditIcon from "@mui/icons-material/Edit";
-import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import CheckoutDialog from "../components/Cart/CheckoutDialog";
-import { UCart } from "../model/useCartsModel";
 import DefaultProductImage from "../assets/images/default-product-image.png";
 import { truncateDescription, truncateName } from "../utils/stringUtils";
 
 interface CartsCardProps {
   uCart: UCart;
   onOpenEditor: (selectedCart: UCart) => void;
-  onCloseEditor: () => void;
-  onOpenDelete: (selectedCart: UCart) => void;
-  onCloseDelete: () => void;
-  onOpenCheckOut: (uCart: UCart) => void;
 }
 function CartsCard(props: CartsCardProps) {
   return (
     <Card sx={{ width: 300, margin: ".5rem", padding: "0" }}>
-      <CardMedia
-        sx={{ height: 200 }}
-        image={
-          props.uCart.ProductImageURL === ""
-            ? DefaultProductImage
-            : props.uCart.ProductImageURL
-        }
-        title={`An image of ${props.uCart.Name}`}
-      />
-      <CardContent sx={{ width: "100%" }}>
-        <Typography variant="h5">{truncateName(props.uCart.Name)}</Typography>
-        <Typography variant="body2">
-          {truncateDescription(props.uCart.Description)}
-        </Typography>
-        <Typography variant="body2" sx={{ marginTop: "1rem" }}>
-          <b>Total Price: </b>₱{props.uCart.TotalPrice}
-        </Typography>
-      </CardContent>
-      <Divider />
-      <CardActions
-        disableSpacing
-        sx={{ display: "flex", justifyContent: "space-between" }}
-      >
-        <Box>
-          <Tooltip title="Remove from cart">
-            <IconButton onClick={() => props.onOpenDelete(props.uCart)}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit cart">
-            <IconButton onClick={() => props.onOpenEditor(props.uCart)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-        <Tooltip title="Checkout">
-          <IconButton onClick={() => props.onOpenCheckOut(props.uCart)}>
-            <ShoppingCartCheckoutIcon />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
+      <CardActionArea onClick={() => props.onOpenEditor(props.uCart)}>
+        <CardMedia
+          sx={{ height: 200 }}
+          image={
+            props.uCart.ProductImageURL === ""
+              ? DefaultProductImage
+              : props.uCart.ProductImageURL
+          }
+          title={`An image of ${props.uCart.Name}`}
+        />
+        <CardContent sx={{ width: "100%" }}>
+          <Typography variant="h5">{truncateName(props.uCart.Name)}</Typography>
+          <Typography variant="body2">
+            {truncateDescription(props.uCart.Description)}
+          </Typography>
+          <Typography variant="body2" sx={{ marginTop: "1rem" }}>
+            <b>Total Price: </b>₱{props.uCart.TotalPrice}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
     </Card>
   );
 }
@@ -110,6 +79,7 @@ export default function CartsView(props: CartsViewProps) {
     isOpenCheckout,
     onOpenCheckOut,
     onCloseCheckOut,
+    shipInfoErrText,
     onCheckout,
 
     checkoutAddOns,
@@ -120,15 +90,7 @@ export default function CartsView(props: CartsViewProps) {
       <div className="flex flex-wrap w-full max-md:justify-center">
         {carts.map((cart, index) => {
           return (
-            <CartsCard
-              key={index}
-              uCart={cart}
-              onOpenDelete={onOpenDelete}
-              onCloseDelete={onCloseDelete}
-              onOpenEditor={onOpenEditor}
-              onCloseEditor={onCloseEditor}
-              onOpenCheckOut={onOpenCheckOut}
-            />
+            <CartsCard uCart={cart} key={index} onOpenEditor={onOpenEditor} />
           );
         })}
       </div>
@@ -144,6 +106,10 @@ export default function CartsView(props: CartsViewProps) {
         onRemoveAddOnFromSelectedCart={onRemoveAddOnFromSelectedCart}
         availableAddOns={availableAddOns}
         onRemoveAddOnFromAvaialableAddOns={onRemoveAddOnFromAvaialableAddOns}
+        onOpenCheckOut={onOpenCheckOut}
+        onCloseCheckOut={onCloseCheckOut}
+        onOpenDelete={onOpenDelete}
+        onCloseDelete={onCloseDelete}
       />
       <DeleteCartDialog
         isOpen={isOpenDelete}
@@ -161,6 +127,7 @@ export default function CartsView(props: CartsViewProps) {
         selectedCart={selectedCart}
         shipAddress={shipAddress}
         checkoutAddOns={checkoutAddOns}
+        shipInfoErrText={shipInfoErrText}
       />
       {alertSnackbar}
     </div>

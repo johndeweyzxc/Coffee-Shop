@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Notification from "../components/Notification";
 import useMenuViewModel from "../viewmodel/useMenuViewModel";
 import { useCartViewModel } from "../viewmodel/useCartViewModel";
@@ -106,22 +106,26 @@ const useMenuController = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpenQuantity]);
 
-  const onChangeQuantity = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    if (parseInt(value) <= 0) return;
-    let isIncrement = true;
-    // Compare the new value and old value of quantity
-    if (parseInt(value) < quantity) {
-      isIncrement = false;
-    } else if (parseInt(value) > quantity) {
-      isIncrement = true;
+  const onChangeQuantity = (isIncrement: boolean) => {
+    if (!isIncrement) {
+      if (quantity === 1) {
+        return;
+      } else if (quantity > 1) {
+        setQuantity((prev) => (prev -= 1));
+      }
+    } else if (isIncrement) {
+      setQuantity((prev) => (prev += 1));
     }
-
-    setQuantity(parseInt(value));
     if (isIncrement) {
-      setTotalPrice((prev) => prev + (selectedProduct.Price as number));
+      setTotalPrice((prev) => {
+        console.log(prev, "+", selectedProduct.Price as number);
+        return prev + (selectedProduct.Price as number);
+      });
     } else {
-      setTotalPrice((prev) => prev - (selectedProduct.Price as number));
+      setTotalPrice((prev) => {
+        console.log(prev, "-", selectedProduct.Price as number);
+        return prev - (selectedProduct.Price as number);
+      });
     }
   };
   const onAddToCart = (product: UProduct) => {

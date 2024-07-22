@@ -1,11 +1,12 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import Notification from "../components/Notification";
-import { useCartViewModel } from "../viewmodel/useCartViewModel";
 import { Unsubscribe } from "firebase/auth";
-import { useOrderViewModel } from "../viewmodel/useOrderViewModel";
+
 import { ShippingAddress } from "../model/useOrderModel";
 import { UCart } from "../model/useCartsModel";
 import { UAddOn } from "../model/useAddOnsModel";
+import { useCartViewModel } from "../viewmodel/useCartViewModel";
+import { useOrderViewModel } from "../viewmodel/useOrderViewModel";
+import Notification from "../components/Notification";
 
 const useCartController = (userId: string) => {
   const EMPTY_CART = () => {
@@ -44,7 +45,7 @@ const useCartController = (userId: string) => {
     removeAddOnInCartVM,
   } = useCartViewModel();
 
-  const { uploadOrderVM } = useOrderViewModel();
+  const { uploadOrderVM, validateOrderVM } = useOrderViewModel();
 
   // * STATE MANAGEMENT FOR CARTS
   // Use in dialog for editing cart
@@ -73,6 +74,8 @@ const useCartController = (userId: string) => {
   const [clientName, setClientName] = useState<string>("");
   // When checkout dialog appears, list all selected addons for that cart
   const [checkoutAddOns, setCheckoutAddOns] = useState<UAddOn[]>([]);
+  // Error text for shipping information
+  const [shipInfoErrText, setShipInfoErrText] = useState<string>("");
 
   const onRemoveAddOnFromSelectedCart = (uAddOn: UAddOn) => {
     const onRemovedAddOn = (success: boolean) => {
@@ -211,7 +214,7 @@ const useCartController = (userId: string) => {
     removeFromCartVM(userId, selectedCart.id, onDeletedCart);
     onCloseDelete();
   };
-  const onEditCart = (dialogImproperlyClosed: boolean) => {
+  const onEditCart = (dialogImproperlyClosed: boolean): [number, number] => {
     const onEditedCart = (success: boolean) => {
       if (dialogImproperlyClosed) return;
       if (success) {
@@ -230,6 +233,7 @@ const useCartController = (userId: string) => {
       onEditedCart
     );
     onCloseEditor();
+    return [quantity, totalPrice];
   };
   const onOpenEditor = (selectedCart: UCart) => {
     setSelectedCart(selectedCart);
@@ -246,19 +250,16 @@ const useCartController = (userId: string) => {
     setTotalPrice(0);
   };
 
-  const onChangeQuantity = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    if (parseInt(value) <= 0) return;
-
-    let isIncrement = true;
-    // Compare the new value and old value of quantity
-    if (parseInt(value) < quantity) {
-      isIncrement = false;
-    } else if (parseInt(value) > quantity) {
-      isIncrement = true;
+  const onChangeQuantity = (isIncrement: boolean) => {
+    if (!isIncrement) {
+      if (quantity === 1) {
+        return;
+      } else if (quantity > 1) {
+        setQuantity((prev) => (prev -= 1));
+      }
+    } else if (isIncrement) {
+      setQuantity((prev) => (prev += 1));
     }
-
-    setQuantity(parseInt(value));
     if (isIncrement) {
       setTotalPrice((prev) => prev + (selectedCart.Price as number));
     } else {
@@ -271,11 +272,6 @@ const useCartController = (userId: string) => {
   };
   const onCloseDelete = () => {
     setIsOpenDelete(false);
-    setSelectedCart(EMPTY_CART());
-    setSelectedCartAddOns([]);
-    setAvailableAddOns([]);
-    setQuantity(1);
-    setTotalPrice(0);
   };
   const onChangeClientName = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -303,6 +299,14 @@ const useCartController = (userId: string) => {
     setSelectedCart(EMPTY_CART());
   };
   const onCheckout = () => {
+    const [success, message] = validateOrderVM(shipAddress, clientName);
+    if (!success) {
+      setShipInfoErrText(message);
+      return;
+    } else {
+      setShipInfoErrText("");
+    }
+
     const onSuccessfullyCheckedOut = (success: boolean) => {
       if (success) {
         notify.HandleOpenAlert("success", "Successfully checked out");
@@ -371,6 +375,7 @@ const useCartController = (userId: string) => {
     isOpenCheckout,
     onOpenCheckOut,
     onCloseCheckOut,
+    shipInfoErrText,
     onCheckout,
 
     checkoutAddOns,

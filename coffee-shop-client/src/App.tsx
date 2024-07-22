@@ -10,13 +10,16 @@ import MenuView from "./view/MenuView";
 import CartsView from "./view/CartsView";
 import OrdersView from "./view/OrdersView";
 import AboutView from "./view/AboutView";
-import Header from "./components/App/Header";
-import LoginWGoogle from "./components/Login/LoginWGoogle";
-import Footer from "./components/App/Footer";
-import NavDrawer from "./components/App/NavDrawer";
+import NavigationBar from "./components/App/NavigationBar";
+import NavigationDrawer from "./components/App/NavigationDrawer";
+import RegisterDialog from "./components/App/RegisterDialog";
+import LoginDialog from "./components/App/LoginDialog";
 import { ABOUT_PAGE, CART_PAGE, MENU_PAGE, ORDER_PAGE } from "./strings";
+import Notification from "./components/Notification";
 
 function App() {
+  const notification = Notification();
+
   const {
     currentPage,
     onChangeCurrentPage,
@@ -28,50 +31,57 @@ function App() {
   const {
     isLoggedIn,
     currentUser,
-    isOpenLoginWGoogle,
-    onOpenLoginWithGoogle,
-    onCloseLoginWithGoogle,
     onSignInWithGoogle,
-    onSignOutWithGoogle,
-  } = useAuthController();
+    onLogOut,
+
+    isOpenUserLogin,
+    onOpenLogin,
+    loginUserInfo,
+    onChangeLogin,
+    onCloseLogin,
+    onLogInUsingEmailAndPassword,
+
+    isOpenUserRegister,
+    onOpenRegistration,
+    registerUser,
+    onChangeRegister,
+    onCloseRegistration,
+    onRegisterUsingEmailAndPassword,
+
+    inputHelperText,
+  } = useAuthController(notification.HandleOpenAlert);
 
   let component = <div className="w-screen h-screen"></div>;
 
   const setHomeViewComponent = () => {
-    onCloseLoginWithGoogle();
     component = <HomeView onChangeCurrentPage={onChangeCurrentPage} />;
   };
   const setMenuViewComponent = () => {
-    if (!isLoggedIn) {
-      onOpenLoginWithGoogle();
-      return;
-    } else {
-      onCloseLoginWithGoogle();
-    }
-    component = <MenuView userId={currentUser.id} />;
+    component = (
+      <MenuView
+        userId={currentUser.id}
+        isLoggedIn={isLoggedIn}
+        onCloseLogin={onCloseLogin}
+        onOpenLogin={onOpenLogin}
+      />
+    );
     if (currentPage !== MENU_PAGE) onChangeCurrentPage(MENU_PAGE);
   };
   const setCartViewComponent = () => {
-    if (!isLoggedIn) {
-      onOpenLoginWithGoogle();
-      return;
-    } else {
-      onCloseLoginWithGoogle();
+    isLoggedIn === false ? onOpenLogin() : onCloseLogin();
+    if (isLoggedIn) {
+      component = <CartsView userId={currentUser.id} />;
+      if (currentPage !== CART_PAGE) onChangeCurrentPage(CART_PAGE);
     }
-    component = <CartsView userId={currentUser.id} />;
-    if (currentPage !== CART_PAGE) onChangeCurrentPage(CART_PAGE);
   };
   const setOrderViewComponent = () => {
-    if (!isLoggedIn) {
-      onOpenLoginWithGoogle();
-    } else {
-      onCloseLoginWithGoogle();
+    isLoggedIn === false ? onOpenLogin() : onCloseLogin();
+    if (isLoggedIn) {
+      component = <OrdersView userId={currentUser.id} />;
+      if (currentPage !== ORDER_PAGE) onChangeCurrentPage(ORDER_PAGE);
     }
-    component = <OrdersView userId={currentUser.id} />;
-    if (currentPage !== ORDER_PAGE) onChangeCurrentPage(ORDER_PAGE);
   };
   const setAboutViewComponent = () => {
-    onCloseLoginWithGoogle();
     component = <AboutView />;
     if (currentPage !== ABOUT_PAGE) onChangeCurrentPage(ABOUT_PAGE);
   };
@@ -99,30 +109,47 @@ function App() {
 
   return (
     <div className="w-screen h-screen">
-      <Header
+      <NavigationBar
         selectedNav={currentPage}
         onChangeCurrentPage={onChangeCurrentPage}
         userEmail={currentUser.Email}
         userPhotoUrl={currentUser.PhotoURL}
-        onSignOut={onSignOutWithGoogle}
-        onSignIn={onSignInWithGoogle}
+        onOpenRegister={onOpenRegistration}
+        onLogOut={onLogOut}
+        onOpenSignIn={onOpenLogin}
         onOpenDrawer={onOpenDrawer}
       />
       {component}
-      <LoginWGoogle
-        isOpen={isOpenLoginWGoogle}
-        onLoginWithGoogle={onSignInWithGoogle}
-        onClose={onCloseLoginWithGoogle}
+      <LoginDialog
+        isOpenUserLogin={isOpenUserLogin}
+        onSignInWithGoogle={onSignInWithGoogle}
+        onOpenRegistration={onOpenRegistration}
+        onChangeLogin={onChangeLogin}
+        loginUserInfo={loginUserInfo}
+        onCloseLogin={onCloseLogin}
+        onLogInUsingEmailAndPassword={onLogInUsingEmailAndPassword}
+        inputHelperText={inputHelperText}
       />
-      <Footer />
-      <NavDrawer
+      <RegisterDialog
+        isOpenUserRegister={isOpenUserRegister}
+        onChangeRegister={onChangeRegister}
+        onCloseRegistration={onCloseRegistration}
+        onRegisterUsingEmailAndPassword={onRegisterUsingEmailAndPassword}
+        registerUser={registerUser}
+        onOpenLogin={onOpenLogin}
+        inputHelperText={inputHelperText}
+        onSignInWithGoogle={onSignInWithGoogle}
+      />
+      <NavigationDrawer
         isOpenDrawer={isOpenDrawer}
         onCloseDrawer={onCloseDrawer}
         userEmail={currentUser.Email}
         userPhotoUrl={currentUser.PhotoURL}
-        onSignIn={onSignInWithGoogle}
-        onSignOut={onSignOutWithGoogle}
+        onChangeCurrentPage={onChangeCurrentPage}
+        onOpenLogin={onOpenLogin}
+        onLogOut={onLogOut}
       />
+      {notification.SnackBar}
     </div>
   );
 }
