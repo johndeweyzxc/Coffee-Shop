@@ -17,9 +17,10 @@ import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import InfoIcon from "@mui/icons-material/Info";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
-import "./styles/NavigationDrawer.css";
 import { HOME_PAGE, NAV_LIST } from "../../strings";
+import "./styles/NavigationDrawer.css";
 
 interface UserInfoProps {
   userPhotoUrl: string | null;
@@ -81,24 +82,35 @@ const UserInfo = (props: UserInfoProps) => {
 
 interface AuthButtonProps {
   onOpenLogin: () => void;
+  onOpenRegister: () => void;
   onLogOut: () => void;
   userEmail: string | null;
 }
 const AuthButtons = (props: AuthButtonProps) => {
-  const onButtonClicked = () => {
+  const onButtonLoginClicked = () => {
     props.userEmail === "" ? props.onOpenLogin() : props.onLogOut();
   };
-  const renderIcon = () => {
+  const renderLoginIcon = () => {
     return props.userEmail === "" ? <LoginIcon /> : <LogoutIcon />;
   };
 
   return (
-    <ListItem disablePadding>
-      <ListItemButton onClick={onButtonClicked}>
-        <ListItemIcon>{renderIcon()}</ListItemIcon>
-        <ListItemText primary={props.userEmail === "" ? "Login" : "Logout"} />
-      </ListItemButton>
-    </ListItem>
+    <>
+      <ListItem disablePadding>
+        <ListItemButton onClick={onButtonLoginClicked}>
+          <ListItemIcon>{renderLoginIcon()}</ListItemIcon>
+          <ListItemText primary={props.userEmail === "" ? "Login" : "Logout"} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding>
+        <ListItemButton onClick={props.onOpenRegister}>
+          <ListItemIcon>
+            <PersonAddIcon />
+          </ListItemIcon>
+          <ListItemText>Register</ListItemText>
+        </ListItemButton>
+      </ListItem>
+    </>
   );
 };
 
@@ -109,6 +121,7 @@ interface NavigationDrawerProps {
   userPhotoUrl: string | null;
   onChangeCurrentPage: (page: string) => void;
   onOpenLogin: () => void;
+  onOpenRegister: () => void;
   onLogOut: () => void;
 }
 export default function NavigationDrawer(props: NavigationDrawerProps) {
@@ -159,6 +172,7 @@ export default function NavigationDrawer(props: NavigationDrawerProps) {
             onOpenLogin={props.onOpenLogin}
             onLogOut={props.onLogOut}
             userEmail={props.userEmail}
+            onOpenRegister={props.onOpenRegister}
           />
         </List>
       </Box>

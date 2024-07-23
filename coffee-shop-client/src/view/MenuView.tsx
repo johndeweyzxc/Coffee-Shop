@@ -3,13 +3,15 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Divider,
   Typography,
 } from "@mui/material";
+
+import { UProduct } from "../model/useProductsModel";
 import useMenuController from "../controller/useMenuController";
 import AddCartDialog from "../components/Menu/AddCartDialog";
-import DefaultProductImage from "../assets/images/default-product-image.png";
 import { truncateDescription, truncateName } from "../utils/stringUtils";
-import { UProduct } from "../model/useProductsModel";
+import DefaultProductImage from "../assets/images/default-product-image.png";
 
 interface MenuViewProps {
   userId: string;
@@ -65,12 +67,10 @@ export default function MenuView(props: MenuViewProps) {
             <Typography variant="body2">
               {truncateDescription(product.Description)}
             </Typography>
-            <Typography
-              variant="h6"
-              sx={{ marginTop: ".75rem", textAlign: "end" }}
-            >
-              ₱{product.Price}
-            </Typography>
+          </CardContent>
+          <Divider />
+          <CardContent sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Typography variant="subtitle2">₱{product.Price}</Typography>
           </CardContent>
         </CardActionArea>
       </Card>
@@ -78,7 +78,7 @@ export default function MenuView(props: MenuViewProps) {
   };
 
   return (
-    <div className="w-screen h-screen p-4">
+    <main className="w-screen h-screen p-4">
       <div className="flex flex-wrap w-full max-md:justify-center">
         {products.map((product, index) => renderProductCart(product, index))}
       </div>
@@ -96,6 +96,6 @@ export default function MenuView(props: MenuViewProps) {
         onChangeQuantity={onChangeQuantity}
         onQuantitySet={() => onQuantitySet(props.userId)}
       />
-    </div>
+    </main>
   );
 }

@@ -1,5 +1,4 @@
 import { ChangeEvent } from "react";
-import { LoginInfo } from "../../model/useAppAuthModel";
 import {
   Box,
   Button,
@@ -16,6 +15,8 @@ import EmailIcon from "@mui/icons-material/Email";
 import PasswordIcon from "@mui/icons-material/Password";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import GoogleIcon from "@mui/icons-material/Google";
+
+import { LoginInfo } from "../../model/useAppAuthModel";
 import { InputHelperText } from "../../controller/special/useAuthController";
 
 interface RegisterDialogProps {

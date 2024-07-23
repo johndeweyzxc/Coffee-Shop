@@ -3,14 +3,18 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Divider,
   Typography,
 } from "@mui/material";
+import CoffeeIcon from "@mui/icons-material/Coffee";
 
 import { UOrder } from "../model/useOrderModel";
 import useOrderController from "../controller/useOrderController";
 import ViewOrderDialog from "../components/Order/ViewOrderDialog";
-import DefaultProductImage from "../assets/images/default-product-image.png";
 import { truncateDescription, truncateName } from "../utils/stringUtils";
+import DefaultProductImage from "../assets/images/default-product-image.png";
+import { MENU_PAGE } from "../strings";
+import "./styles/OrdersView.css";
 
 interface OrderCardProps {
   uOrder: UOrder;
@@ -36,12 +40,12 @@ function OrderCard(props: OrderCardProps) {
           <Typography variant="body2">
             {truncateDescription(props.uOrder.ProductOrderInfo.Description)}
           </Typography>
-          <Typography variant="body2" sx={{ marginTop: "1rem" }}>
-            <b>Total Price: </b>${props.uOrder.ProductOrderInfo.TotalPrice}
-          </Typography>
-          <Typography variant="body2" sx={{ marginTop: ".25rem" }}>
-            <b>Status: </b>
-            {props.uOrder.Status}
+        </CardContent>
+        <Divider />
+        <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="subtitle2">{props.uOrder.Status}</Typography>
+          <Typography variant="subtitle2">
+            ₱{props.uOrder.ProductOrderInfo.TotalPrice}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -64,19 +68,62 @@ export default function OrdersView(props: OrdersViewProps) {
     currAddOns,
   } = useOrderController(props.userId);
 
+  const renderOrders = () => {
+    if (orders.length === 0) {
+      return (
+        <div className="w-full h-full flex flex-col justify-center items-center">
+          <Typography
+            variant="h4"
+            sx={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 600,
+              color: "var(--md-sys-color-outline-variant)",
+            }}
+          >
+            Order is empty
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 600,
+              color: "var(--md-sys-color-outline-variant)",
+              marginBottom: ".5rem",
+            }}
+          >
+            Order now by clicking the button below
+          </Typography>
+          <button
+            className="menu-button"
+            onClick={() =>
+              (window.location.href = `/${MENU_PAGE.toLowerCase()}`)
+            }
+          >
+            <CoffeeIcon sx={{ marginRight: ".25rem" }} />
+            Available coffee
+          </button>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex flex-wrap w-full max-md:justify-center">
+          {orders.map((uOrder, index) => {
+            return (
+              <OrderCard
+                onOrderClicked={onOrderClicked}
+                uOrder={uOrder}
+                key={index}
+              />
+            );
+          })}
+        </div>
+      );
+    }
+  };
+
   return (
-    <div className="w-screen h-screen p-4">
-      <div className="flex flex-wrap w-full max-md:justify-center">
-        {orders.map((uOrder, index) => {
-          return (
-            <OrderCard
-              onOrderClicked={onOrderClicked}
-              uOrder={uOrder}
-              key={index}
-            />
-          );
-        })}
-      </div>
+    <main className="w-screen h-screen p-4">
+      {renderOrders()}
       <ViewOrderDialog
         isOpen={isOpenOrderDialog}
         onClose={onCloseOrderDialog}
@@ -84,6 +131,6 @@ export default function OrdersView(props: OrdersViewProps) {
         selectedOrder={currentOrder}
       />
       {snackbar}
-    </div>
+    </main>
   );
 }

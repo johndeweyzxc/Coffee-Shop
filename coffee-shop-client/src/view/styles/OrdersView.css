@@ -1,0 +1,26 @@
+.menu-button {
+    padding-left: 2.25rem;
+    padding-right: 2.25rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    font-family: "Inter", sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-primary);
+    border-width: 1px;
+    border-radius: 9999px;
+    transition: ease-in-out;
+    transition-duration: 150ms;
+    cursor: pointer;
+    align-self: center;
+    text-wrap: nowrap;
+    opacity: .7;
+    
+}
+
+.menu-button:hover {
+    opacity: 1.0;
+}

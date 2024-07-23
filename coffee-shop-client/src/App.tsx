@@ -14,8 +14,8 @@ import NavigationBar from "./components/App/NavigationBar";
 import NavigationDrawer from "./components/App/NavigationDrawer";
 import RegisterDialog from "./components/App/RegisterDialog";
 import LoginDialog from "./components/App/LoginDialog";
-import { ABOUT_PAGE, CART_PAGE, MENU_PAGE, ORDER_PAGE } from "./strings";
 import Notification from "./components/Notification";
+import { ABOUT_PAGE, CART_PAGE, MENU_PAGE, ORDER_PAGE } from "./strings";
 
 function App() {
   const notification = Notification();
@@ -108,7 +108,7 @@ function App() {
   }
 
   return (
-    <div className="w-screen h-screen">
+    <>
       <NavigationBar
         selectedNav={currentPage}
         onChangeCurrentPage={onChangeCurrentPage}
@@ -148,9 +148,10 @@ function App() {
         onChangeCurrentPage={onChangeCurrentPage}
         onOpenLogin={onOpenLogin}
         onLogOut={onLogOut}
+        onOpenRegister={onOpenRegistration}
       />
       {notification.SnackBar}
-    </div>
+    </>
   );
 }
 

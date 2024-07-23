@@ -9,7 +9,7 @@ import {
   REGISTER_WITH_EMAIL_STATUS,
   SIGNOUT_STATUS,
 } from "../../status";
-import { HOME_PAGE, MENU_PAGE } from "../../strings";
+import { MENU_PAGE } from "../../strings";
 
 export interface InputHelperText {
   IsError: boolean;

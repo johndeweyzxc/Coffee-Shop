@@ -106,7 +106,15 @@
     transition-duration: 150ms;
     cursor: pointer;
     align-self: center;
+    display: flex;
+    align-items: center;
     text-wrap: nowrap;
+    opacity: .7;
+}
+
+.auth-button:hover {
+    opacity: 1.0;
+    background-color: #ffffff20;
 }
 
 .auth-button-not-home {
@@ -128,14 +136,15 @@
     transition-duration: 150ms;
     cursor: pointer;
     align-self: center;
+    display: flex;
+    align-items: center;
     text-wrap: nowrap;
+    opacity: .7;
 }
 
-.auth-button:hover {
-    background-color: #ffffff20;
-}
 .auth-button-not-home:hover {
-    background-color: #00000020;;
+    opacity: 1.0;
+    background-color: #ffffff20;
 }
 
 @media screen and (max-width: 768px) {

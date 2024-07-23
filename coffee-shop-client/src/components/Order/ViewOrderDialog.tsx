@@ -153,8 +153,11 @@ export default function ViewOrderDialog(props: ViewOrderDialogProps) {
           fullWidth
         />
       </DialogContent>
-      <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
-        <b>Total Price: </b>${props.selectedOrder.ProductOrderInfo.TotalPrice}
+      <Typography
+        variant="subtitle2"
+        sx={{ marginTop: "1rem", marginLeft: "1.5rem" }}
+      >
+        Total Price: ${props.selectedOrder.ProductOrderInfo.TotalPrice}
       </Typography>
       <DialogActions>
         <Button

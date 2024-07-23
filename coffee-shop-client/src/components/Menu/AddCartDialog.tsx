@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -10,9 +11,9 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+
 import { UProduct } from "../../model/useProductsModel";
 import { UAddOn } from "../../model/useAddOnsModel";
 import { truncateName } from "../../utils/stringUtils";
@@ -228,7 +229,10 @@ export default function AddCartDialog(props: AddCartDialogProps) {
         </Typography>
         <RenderAvailableAddOns />
       </DialogContent>
-      <Typography variant="body1" sx={{ fontWeight: "normal", margin: "1rem" }}>
+      <Typography
+        variant="subtitle2"
+        sx={{ marginTop: "1rem", marginLeft: "1.5rem" }}
+      >
         Total Price: ₱{props.totalPrice}
       </Typography>
       <DialogActions>

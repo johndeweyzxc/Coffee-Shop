@@ -1,9 +1,12 @@
-import MenuIcon from "@mui/icons-material/Menu";
 import { Avatar, IconButton } from "@mui/material";
-
-import { HOME_PAGE, NAV_LIST } from "../../strings";
-import CoffeeShopLogo from "../../assets/images/coffee-shop-logo.png";
+import MenuIcon from "@mui/icons-material/Menu";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
+import CoffeeShopLogo from "../../assets/images/coffee-shop-logo.png";
+import { HOME_PAGE, NAV_LIST } from "../../strings";
 import "./styles/NavigationBar.css";
 
 interface UserInfoProps {
@@ -91,6 +94,9 @@ const AuthButtons = (props: AuthButtonsProps) => {
           className={authButtonClassName()}
           onClick={props.onOpenRegister}
         >
+          <PersonAddIcon
+            sx={{ marginRight: ".25rem", width: "1rem", height: "1rem" }}
+          />
           Register
         </button>
       );
@@ -99,9 +105,22 @@ const AuthButtons = (props: AuthButtonsProps) => {
     }
   };
 
+  const renderLoginButtonIcon = () => {
+    return props.userEmail === "" ? (
+      <LoginIcon
+        sx={{ marginRight: ".25rem", width: "1rem", height: "1rem" }}
+      />
+    ) : (
+      <LogoutIcon
+        sx={{ marginRight: ".25rem", width: "1rem", height: "1rem" }}
+      />
+    );
+  };
+
   return (
     <>
       <button className={authButtonClassName()} onClick={onClicked}>
+        {renderLoginButtonIcon()}
         {props.userEmail === "" ? "Login" : "Logout"}
       </button>
       <RegisterButton />

@@ -3,16 +3,20 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Divider,
   Typography,
 } from "@mui/material";
+import CoffeeIcon from "@mui/icons-material/Coffee";
 
 import { UCart } from "../model/useCartsModel";
 import useCartController from "../controller/useCartController";
 import EditCartDialog from "../components/Cart/EditCartDialog";
 import DeleteCartDialog from "../components/Cart/DeleteCartDialog";
 import CheckoutDialog from "../components/Cart/CheckoutDialog";
-import DefaultProductImage from "../assets/images/default-product-image.png";
 import { truncateDescription, truncateName } from "../utils/stringUtils";
+import DefaultProductImage from "../assets/images/default-product-image.png";
+import { MENU_PAGE } from "../strings";
+import "./styles/CartsView.css";
 
 interface CartsCardProps {
   uCart: UCart;
@@ -36,9 +40,10 @@ function CartsCard(props: CartsCardProps) {
           <Typography variant="body2">
             {truncateDescription(props.uCart.Description)}
           </Typography>
-          <Typography variant="body2" sx={{ marginTop: "1rem" }}>
-            <b>Total Price: </b>₱{props.uCart.TotalPrice}
-          </Typography>
+        </CardContent>
+        <Divider />
+        <CardContent sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Typography variant="subtitle2">₱{props.uCart.TotalPrice}</Typography>
         </CardContent>
       </CardActionArea>
     </Card>
@@ -85,15 +90,59 @@ export default function CartsView(props: CartsViewProps) {
     checkoutAddOns,
   } = useCartController(props.userId);
 
+  const renderCarts = () => {
+    if (carts.length === 0) {
+      return (
+        <div className="w-full h-full flex flex-col justify-center items-center">
+          <Typography
+            variant="h4"
+            sx={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 600,
+              color: "var(--md-sys-color-outline-variant)",
+            }}
+          >
+            Cart is empty
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 600,
+              color: "var(--md-sys-color-outline-variant)",
+              marginBottom: ".5rem",
+            }}
+          >
+            Add something to cart by clicking the button below
+          </Typography>
+
+          <button
+            className="menu-button"
+            onClick={() =>
+              (window.location.href = `/${MENU_PAGE.toLowerCase()}`)
+            }
+          >
+            <CoffeeIcon sx={{ marginRight: ".25rem" }} />
+            Available coffee
+          </button>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex flex-wrap w-full max-md:justify-center">
+          {carts.map((cart, index) => {
+            return (
+              <CartsCard uCart={cart} key={index} onOpenEditor={onOpenEditor} />
+            );
+          })}
+        </div>
+      );
+    }
+  };
+
   return (
-    <div className="w-screen h-screen p-4">
-      <div className="flex flex-wrap w-full max-md:justify-center">
-        {carts.map((cart, index) => {
-          return (
-            <CartsCard uCart={cart} key={index} onOpenEditor={onOpenEditor} />
-          );
-        })}
-      </div>
+    <main className="w-screen h-screen p-4">
+      {renderCarts()}
       <EditCartDialog
         isOpen={isOpenEditor}
         onClose={onCloseEditor}
@@ -130,6 +179,6 @@ export default function CartsView(props: CartsViewProps) {
         shipInfoErrText={shipInfoErrText}
       />
       {alertSnackbar}
-    </div>
+    </main>
   );
 }

@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import CoffeeIcon from "@mui/icons-material/Coffee";
 
 import WallpaperCarousel from "../components/App/WallpaperCarousel";
 import { MENU_PAGE } from "../strings";
@@ -43,6 +44,7 @@ export default function HomeView(props: HomePageProps) {
             Click the button below to view all available coffee
           </Typography>
           <button className="available-coffee" onClick={navigateToMenu}>
+            <CoffeeIcon sx={{ marginRight: ".25rem" }} />
             Available coffee
           </button>
         </div>

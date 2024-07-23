@@ -14,6 +14,7 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+
 import { UCart } from "../../model/useCartsModel";
 import { UAddOn } from "../../model/useAddOnsModel";
 import { truncateName } from "../../utils/stringUtils";
@@ -252,7 +253,10 @@ export default function EditCartDialog(props: EditCartDialogProps) {
           Delete cart
         </Button>
       </DialogContent>
-      <Typography variant="body2" sx={{ fontWeight: "normal", margin: "1rem" }}>
+      <Typography
+        variant="subtitle2"
+        sx={{ marginTop: "1rem", marginLeft: "1.5rem" }}
+      >
         Total Price: ${props.totalPrice}
       </Typography>
       <DialogActions>
