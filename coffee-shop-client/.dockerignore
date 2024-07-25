@@ -1,0 +1,13 @@
+node_modules
+build
+
+.firebase
+firebase-emulator-data
+database-debug.log
+firebase-firestore.rules
+firebase-storage.rules
+.firebaserc
+firebase.json
+firestore-debug.log
+NOTES.md
+ui-debug.log

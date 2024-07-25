@@ -84,6 +84,10 @@ Coffee Shop App is a web application designed for coffee shop owners and adminis
 
 #### Each documents in the database is secured using security rules that are applied to each document when performing create, read, update or delete.
 
+## Run locally using Docker
+
+#### Kindly check the .docker directory for instructions on how to run locally using Docker
+
 ## Technologies used
 
 <img src="https://skillicons.dev/icons?i=html,css,ts,react,tailwind,materialui,firebase" width=700 />

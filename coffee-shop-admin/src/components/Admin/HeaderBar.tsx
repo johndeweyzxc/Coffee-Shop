@@ -2,7 +2,7 @@ import { Context, useContext } from "react";
 import { User } from "firebase/auth";
 import { Avatar } from "@mui/material";
 
-import CoffeeShopLogo from "../../assets/images/coffee-shop-logo.jpg";
+import CoffeeShopLogo from "../../assets/images/coffee-shop-logo.png";
 import {
   ADMIN_NEW_PRODUCT,
   ADMIN_ORDER_TAB,

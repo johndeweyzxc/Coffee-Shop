@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  coffee-shop-test-client:
+    build:
+      context: ../coffee-shop-client
+      dockerfile: ../coffee-shop-client/Dockerfile.client
+    image: coffee-shop-test-client:latest
+    container_name: coffee-shop-test-client
+    ports:
+      - "3000:3000"
+
+  coffee-shop-test-admin:
+    build:
+      context: ../coffee-shop-admin
+      dockerfile: ../coffee-shop-admin/Dockerfile.admin
+    image: coffee-shop-test-admin:latest
+    container_name: coffee-shop-test-admin
+    ports:
+      - "3001:3001"
+  
+  firebase-emulator-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.firebase
+    image: firebase-emulator-coffee-shop-test:latest
+    container_name: firebase-emulator-coffee-shop-test
+    ports:
+      - "4000:4000"
+      - "9099:9099"
+      - "8080:8080"
+      - "9199:9199"
+  
